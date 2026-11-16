@@ -1,0 +1,26 @@
+{
+  "name": "studentverse-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "StudentVerse - Global Digital Skills Learning & Talent Hiring Platform (RankGood Tech)",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "db:generate": "pnpm --filter @studentverse/api db:generate",
+    "db:push": "pnpm --filter @studentverse/api db:push",
+    "db:seed": "pnpm --filter @studentverse/api db:seed"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "@scarf/scarf"
+    ]
+  }
+}

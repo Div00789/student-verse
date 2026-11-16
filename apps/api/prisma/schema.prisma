@@ -1,0 +1,485 @@
+// StudentVerse Database Schema (PostgreSQL)
+// Planning baseline Version 1.0 - RankGood Tech
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  VISITOR
+  LEARNER
+  EMPLOYER_OWNER
+  EMPLOYER_RECRUITER
+  INSTRUCTOR
+  CAREER_ADVISOR
+  CONTENT_MANAGER
+  PLATFORM_ADMIN
+  SUPER_ADMIN
+}
+
+enum EmployerVerificationStatus {
+  UNVERIFIED
+  PENDING
+  VERIFIED
+  REJECTED
+  SUSPENDED
+}
+
+enum TalentVisibility {
+  PRIVATE
+  SEARCHABLE
+}
+
+enum CourseLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum CourseFormat {
+  SELF_PACED
+  COHORT_BASED
+  HYBRID
+}
+
+enum CoursePublishStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum LessonContentType {
+  VIDEO
+  READING
+  QUIZ
+  PROJECT
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+}
+
+enum WorkplaceType {
+  REMOTE
+  HYBRID
+  ON_SITE
+}
+
+enum JobStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  ARCHIVED
+  SUSPENDED
+}
+
+enum ApplicationStatus {
+  NEW
+  REVIEWING
+  SHORTLISTED
+  INTERVIEW
+  OFFER
+  HIRED
+  REJECTED
+  WITHDRAWN
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum CredentialStatus {
+  ISSUED
+  REVOKED
+}
+
+// -------------------------------------------------------------
+// 1. IDENTITY & ORGANISATIONS
+// -------------------------------------------------------------
+
+model User {
+  id              String           @id @default(uuid())
+  email           String           @unique
+  passwordHash    String?
+  fullName        String?
+  country         String?
+  timezone        String           @default("UTC")
+  isEmailVerified Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  roles           UserRoleAssignment[]
+  sessions        Session[]
+  learnerProfile  LearnerProfile?
+  orgMemberships  OrganisationMember[]
+  enrollments     Enrollment[]
+  orders          Order[]
+  applications    Application[]
+  certificates    Certificate[]
+  auditEvents     AuditEvent[]
+
+  @@index([email])
+}
+
+model UserRoleAssignment {
+  id        String   @id @default(uuid())
+  userId    String
+  role      Role
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, role])
+  @@index([userId])
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Organisation {
+  id                 String                     @id @default(uuid())
+  name               String
+  slug               String                     @unique
+  website            String
+  country            String
+  verificationStatus EmployerVerificationStatus @default(UNVERIFIED)
+  rejectionReason    String?
+  verifiedAt         DateTime?
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+
+  members            OrganisationMember[]
+  verificationLogs   EmployerVerificationLog[]
+  jobPosts           JobPost[]
+  shortlists         Shortlist[]
+
+  @@index([verificationStatus])
+}
+
+model OrganisationMember {
+  id             String       @id @default(uuid())
+  organisationId String
+  userId         String
+  role           Role         @default(EMPLOYER_RECRUITER)
+  createdAt      DateTime     @default(now())
+
+  organisation   Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organisationId, userId])
+}
+
+model EmployerVerificationLog {
+  id             String                     @id @default(uuid())
+  organisationId String
+  status         EmployerVerificationStatus
+  notes          String?
+  adminUserId    String?
+  createdAt      DateTime                   @default(now())
+
+  organisation   Organisation               @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+}
+
+// -------------------------------------------------------------
+// 2. EDUCATION & COURSES
+// -------------------------------------------------------------
+
+model Course {
+  id               String              @id @default(uuid())
+  slug             String              @unique
+  title            String
+  subtitle         String?
+  category         String
+  level            CourseLevel         @default(BEGINNER)
+  format           CourseFormat        @default(SELF_PACED)
+  status           CoursePublishStatus @default(DRAFT)
+  durationHours    Int                 @default(10)
+  priceMinorUnits  Int                 @default(0) // 0 for free or amount in integer cents/pence
+  currency         String              @default("USD")
+  description      String
+  prerequisites    String[]
+  learningOutcomes String[]
+  thumbnailUrl     String?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  modules          CourseModule[]
+  enrollments      Enrollment[]
+  certificates     Certificate[]
+
+  @@index([slug])
+  @@index([category])
+  @@index([status])
+}
+
+model CourseModule {
+  id          String   @id @default(uuid())
+  courseId    String
+  title       String
+  orderIndex  Int      @default(0)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons     Lesson[]
+
+  @@index([courseId, orderIndex])
+}
+
+model Lesson {
+  id              String            @id @default(uuid())
+  moduleId        String
+  title           String
+  orderIndex      Int               @default(0)
+  contentType     LessonContentType @default(VIDEO)
+  contentBody     String?           // Markdown text or video transcript
+  videoUrl        String?
+  durationMinutes Int               @default(10)
+  isFreePreview   Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  module          CourseModule      @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  progress        LessonProgress[]
+
+  @@index([moduleId, orderIndex])
+}
+
+model Enrollment {
+  id             String           @id @default(uuid())
+  userId         String
+  courseId       String
+  orderId        String?
+  progressPct    Float            @default(0.0)
+  isCompleted    Boolean          @default(false)
+  completedAt    DateTime?
+  enrolledAt     DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course         Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessonProgress LessonProgress[]
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+model LessonProgress {
+  id           String     @id @default(uuid())
+  enrollmentId String
+  lessonId     String
+  isCompleted  Boolean    @default(false)
+  score        Float?     // For quizzes
+  completedAt  DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  lesson       Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([enrollmentId, lessonId])
+}
+
+// -------------------------------------------------------------
+// 3. CREDENTIALS & CERTIFICATES
+// -------------------------------------------------------------
+
+model Certificate {
+  id            String           @id @default(uuid())
+  publicCode    String           @unique // Unique verifiable public identifier (e.g. SV-2026-XXXXX)
+  userId        String
+  courseId      String
+  status        CredentialStatus @default(ISSUED)
+  issuer        String           @default("StudentVerse [RankGood Tech]")
+  issuedAt      DateTime         @default(now())
+  revokedAt     DateTime?
+  revokedReason String?
+
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course        Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([publicCode])
+  @@index([userId])
+}
+
+// -------------------------------------------------------------
+// 4. TALENT & CAREER PROFILES (OPT-IN PRIVACY FIRST)
+// -------------------------------------------------------------
+
+model LearnerProfile {
+  id               String                 @id @default(uuid())
+  userId           String                 @unique
+  headline         String?
+  bio              String?
+  visibility       TalentVisibility       @default(PRIVATE) // BR-05: Strict Private default
+  country          String?
+  city             String?
+  remotePreference Boolean                @default(true)
+  resumeUrl        String?
+  skills           String[]
+  portfolioLinks   String[]
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+
+  user             User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  consentRecords   VisibilityConsentLog[]
+  shortlistedBy    Shortlist[]
+
+  @@index([visibility])
+}
+
+model VisibilityConsentLog {
+  id               String           @id @default(uuid())
+  learnerProfileId String
+  previousStatus   TalentVisibility
+  newStatus        TalentVisibility
+  consentVersion   String           @default("v1.0")
+  ipAddress        String?
+  userAgent        String?
+  createdAt        DateTime         @default(now())
+
+  learnerProfile   LearnerProfile   @relation(fields: [learnerProfileId], references: [id], onDelete: Cascade)
+
+  @@index([learnerProfileId])
+}
+
+// -------------------------------------------------------------
+// 5. RECRUITMENT & JOBS
+// -------------------------------------------------------------
+
+model JobPost {
+  id                 String        @id @default(uuid())
+  organisationId     String
+  title              String
+  slug               String        @unique
+  description        String
+  jobType            JobType       @default(FULL_TIME)
+  workplaceType      WorkplaceType @default(REMOTE)
+  status             JobStatus     @default(DRAFT)
+  country            String?
+  salaryMin          Int?
+  salaryMax          Int?
+  currency           String        @default("USD")
+  requiredSkills     String[]
+  screeningQuestions String[]
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  organisation       Organisation  @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  applications       Application[]
+  shortlists         Shortlist[]
+
+  @@index([organisationId])
+  @@index([status])
+  @@index([slug])
+}
+
+model Application {
+  id             String            @id @default(uuid())
+  jobId          String
+  userId         String
+  status         ApplicationStatus @default(NEW)
+  coverNote      String?
+  resumeSnapshot String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  job            JobPost           @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  events         ApplicationEvent[]
+
+  @@unique([jobId, userId]) // AC-09: One application per job
+  @@index([jobId])
+  @@index([userId])
+}
+
+model ApplicationEvent {
+  id            String            @id @default(uuid())
+  applicationId String
+  previousStage ApplicationStatus
+  newStage      ApplicationStatus
+  notes         String?
+  actorUserId   String?
+  createdAt     DateTime          @default(now())
+
+  application   Application       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+}
+
+model Shortlist {
+  id               String         @id @default(uuid())
+  organisationId   String
+  learnerProfileId String
+  jobPostId        String?
+  notes            String?
+  createdAt        DateTime       @default(now())
+
+  organisation     Organisation   @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  learnerProfile   LearnerProfile @relation(fields: [learnerProfileId], references: [id], onDelete: Cascade)
+  jobPost          JobPost?       @relation(fields: [jobPostId], references: [id], onDelete: SetNull)
+
+  @@unique([organisationId, learnerProfileId, jobPostId])
+}
+
+// -------------------------------------------------------------
+// 6. COMMERCE & PAYMENTS
+// -------------------------------------------------------------
+
+model Order {
+  id               String        @id @default(uuid())
+  userId           String
+  courseId         String
+  amountMinorUnits Int
+  currency         String        @default("USD")
+  status           PaymentStatus @default(PENDING)
+  gatewayPaymentId String?       @unique
+  idempotencyKey   String?       @unique
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// -------------------------------------------------------------
+// 7. AUDIT TRAILS & OPERATIONS
+// -------------------------------------------------------------
+
+model AuditEvent {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  resource  String
+  payload   Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([action])
+  @@index([resource])
+}
