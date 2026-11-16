@@ -229,3 +229,4 @@ export default function JobDetailPage({ params }: { params: { slug: string } }) 
     </div>
   );
 }
+

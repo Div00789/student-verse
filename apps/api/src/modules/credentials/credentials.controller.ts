@@ -15,3 +15,4 @@ export class CredentialsController {
     return this.credentialsService.verify(code);
   }
 }
+

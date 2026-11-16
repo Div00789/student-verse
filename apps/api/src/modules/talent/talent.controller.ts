@@ -35,3 +35,4 @@ export class TalentController {
     return this.talentService.updateVisibilityConsent(userId, dto);
   }
 }
+

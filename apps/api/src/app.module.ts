@@ -20,3 +20,4 @@ import { TalentModule } from './modules/talent/talent.module';
   exports: [PrismaService],
 })
 export class AppModule {}
+

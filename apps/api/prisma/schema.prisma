@@ -483,3 +483,4 @@ model AuditEvent {
   @@index([action])
   @@index([resource])
 }
+

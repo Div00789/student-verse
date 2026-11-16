@@ -186,3 +186,4 @@ export default function CredentialResultPage({ params }: { params: { code: strin
     </div>
   );
 }
+

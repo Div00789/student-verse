@@ -103,3 +103,4 @@ pnpm --filter @studentverse/web dev
 | `SV-2026-AI-772910` | Certificate | **VALID** | Marcus Chen (AI Workflow Automation) |
 | `SV-2026-REV-000000` | Certificate | **REVOKED** | Audit flag for non-original capstone |
 | `remote-marketing-operations-associate` | Job | **ACTIVE** | Apex Growth Labs (Verified Partner) |
+

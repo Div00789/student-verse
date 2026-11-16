@@ -126,3 +126,4 @@ export interface CourseSummary {
   description: string;
   skills: string[];
 }
+

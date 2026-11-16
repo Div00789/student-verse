@@ -9,3 +9,4 @@ import { PrismaService } from '../../prisma/prisma.service';
   exports: [RecruitmentService],
 })
 export class RecruitmentModule {}
+

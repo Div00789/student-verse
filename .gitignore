@@ -5,3 +5,5 @@ dist
 .env.local
 .turbo
 *.log
+.env*.local
+.vercel/

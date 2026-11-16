@@ -22,3 +22,4 @@ export class CoursesController {
     return this.coursesService.findBySlug(slug);
   }
 }
+

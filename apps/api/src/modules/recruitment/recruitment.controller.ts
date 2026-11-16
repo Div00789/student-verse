@@ -42,3 +42,4 @@ export class RecruitmentController {
     return this.recruitmentService.submitApplication(jobId, 'user-current', body);
   }
 }
+
