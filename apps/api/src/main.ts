@@ -25,7 +25,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('StudentVerse API')
     .setDescription(
-      'StudentVerse - Global Digital Skills Learning & Talent Hiring Platform (RankGood Tech) OpenAPI 3.0 REST Specification'
+      'StudentVerse - Global Digital Skills Learning & Talent Hiring Platform OpenAPI 3.0 REST Specification'
     )
     .setVersion('1.0')
     .addTag('Identity & Authentication')

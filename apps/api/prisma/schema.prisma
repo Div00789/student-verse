@@ -1,16 +1,22 @@
 // StudentVerse Database Schema (PostgreSQL)
-// Planning baseline Version 1.0 - RankGood Tech
+// Development Owner: Nitesh
+// Production Schema with Live Classes, Cohorts, Rubric-based Evaluations & Intermediated Hiring
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum Role {
+  STUDENT
+  EMPLOYER
+  ADMIN
+  TRAINER
   VISITOR
   LEARNER
   EMPLOYER_OWNER
@@ -42,9 +48,10 @@ enum CourseLevel {
 }
 
 enum CourseFormat {
-  SELF_PACED
+  LIVE_ONLINE
   COHORT_BASED
   HYBRID
+  SELF_PACED
 }
 
 enum CoursePublishStatus {
@@ -54,10 +61,47 @@ enum CoursePublishStatus {
 }
 
 enum LessonContentType {
-  VIDEO
+  LIVE_SESSION
+  RECORDED_VIDEO
   READING
   QUIZ
+  PRACTICAL_PROJECT
+  VIDEO
   PROJECT
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  EXCUSED
+  LATE
+}
+
+enum BatchStatus {
+  UPCOMING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum AssignmentSubmissionStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  EVALUATED
+  RESUBMISSION_REQUESTED
+}
+
+enum HiringRequestStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  STUDENT_CONTACTED
+  STUDENT_INTERESTED
+  INTERVIEW_COORDINATION
+  INTERVIEW_SCHEDULED
+  OFFER_EXTENDED
+  HIRED
+  CLOSED
 }
 
 enum JobType {
@@ -119,15 +163,33 @@ model User {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
-  roles           UserRoleAssignment[]
-  sessions        Session[]
-  learnerProfile  LearnerProfile?
-  orgMemberships  OrganisationMember[]
-  enrollments     Enrollment[]
-  orders          Order[]
-  applications    Application[]
-  certificates    Certificate[]
-  auditEvents     AuditEvent[]
+  roles                   UserRoleAssignment[]
+  sessions                Session[]
+  learnerProfile          LearnerProfile?
+  orgMemberships          OrganisationMember[]
+  enrollments             Enrollment[]
+  orders                  Order[]
+  applications            Application[]
+  certificates            Certificate[]
+  auditEvents             AuditEvent[]
+
+  // Live classes, batches & attendance
+  taughtBatches           Batch[]                  @relation("TrainerBatches")
+  batchEnrollments        BatchStudent[]
+  taughtClasses           LiveClass[]              @relation("TrainerClasses")
+  attendanceRecords       Attendance[]
+
+  // Assignments & evaluations
+  createdAssignments      Assignment[]             @relation("TrainerAssignments")
+  assignmentSubmissions   AssignmentSubmission[]
+  evaluationsGiven        AssignmentEvaluation[]   @relation("EvaluatorEvaluations")
+
+  // Skills & ratings
+  studentSkills           StudentSkill[]
+
+  // Intermediated hiring requests
+  candidateHiringRequests HiringRequest[]          @relation("CandidateHiringRequests")
+  assignedHiringRequests  HiringRequest[]          @relation("AdminHiringRequests")
 
   @@index([email])
 }
@@ -172,6 +234,7 @@ model Organisation {
   verificationLogs   EmployerVerificationLog[]
   jobPosts           JobPost[]
   shortlists         Shortlist[]
+  hiringRequests     HiringRequest[]
 
   @@index([verificationStatus])
 }
@@ -201,7 +264,7 @@ model EmployerVerificationLog {
 }
 
 // -------------------------------------------------------------
-// 2. EDUCATION & COURSES
+// 2. EDUCATION, LIVE TRAINING & BATCHES
 // -------------------------------------------------------------
 
 model Course {
@@ -211,10 +274,11 @@ model Course {
   subtitle         String?
   category         String
   level            CourseLevel         @default(BEGINNER)
-  format           CourseFormat        @default(SELF_PACED)
+  format           CourseFormat        @default(LIVE_ONLINE)
   status           CoursePublishStatus @default(DRAFT)
-  durationHours    Int                 @default(10)
-  priceMinorUnits  Int                 @default(0) // 0 for free or amount in integer cents/pence
+  durationHours    Int                 @default(30)
+  totalSessions    Int                 @default(12)
+  priceMinorUnits  Int                 @default(0)
   currency         String              @default("USD")
   description      String
   prerequisites    String[]
@@ -224,8 +288,11 @@ model Course {
   updatedAt        DateTime            @updatedAt
 
   modules          CourseModule[]
+  batches          Batch[]
   enrollments      Enrollment[]
   certificates     Certificate[]
+  recordedLectures RecordedLecture[]
+  assignments      Assignment[]
 
   @@index([slug])
   @@index([category])
@@ -241,8 +308,9 @@ model CourseModule {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lessons     Lesson[]
+  course           Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons          Lesson[]
+  recordedLectures RecordedLecture[]
 
   @@index([courseId, orderIndex])
 }
@@ -252,10 +320,10 @@ model Lesson {
   moduleId        String
   title           String
   orderIndex      Int               @default(0)
-  contentType     LessonContentType @default(VIDEO)
-  contentBody     String?           // Markdown text or video transcript
+  contentType     LessonContentType @default(LIVE_SESSION)
+  contentBody     String?
   videoUrl        String?
-  durationMinutes Int               @default(10)
+  durationMinutes Int               @default(60)
   isFreePreview   Boolean           @default(false)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
@@ -264,6 +332,100 @@ model Lesson {
   progress        LessonProgress[]
 
   @@index([moduleId, orderIndex])
+}
+
+model Batch {
+  id                  String      @id @default(uuid())
+  courseId            String
+  trainerId           String?
+  batchCode           String      @unique
+  title               String
+  startDate           DateTime
+  endDate             DateTime
+  scheduleTimezone    String      @default("UTC")
+  scheduleDescription String
+  maxSeats            Int         @default(30)
+  status              BatchStatus @default(UPCOMING)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  course              Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  trainer             User?             @relation("TrainerBatches", fields: [trainerId], references: [id], onDelete: SetNull)
+  students            BatchStudent[]
+  liveClasses         LiveClass[]
+  recordedLectures    RecordedLecture[]
+
+  @@index([courseId])
+  @@index([status])
+}
+
+model BatchStudent {
+  id         String   @id @default(uuid())
+  batchId    String
+  userId     String
+  enrolledAt DateTime @default(now())
+
+  batch      Batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([batchId, userId])
+}
+
+model LiveClass {
+  id             String    @id @default(uuid())
+  batchId        String
+  trainerId      String?
+  title          String
+  description    String?
+  scheduledStart DateTime
+  scheduledEnd   DateTime
+  timezone       String    @default("UTC")
+  meetingLink    String?
+  isCompleted    Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  batch          Batch        @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  trainer        User?        @relation("TrainerClasses", fields: [trainerId], references: [id], onDelete: SetNull)
+  attendance     Attendance[]
+
+  @@index([batchId])
+  @@index([scheduledStart])
+}
+
+model Attendance {
+  id          String           @id @default(uuid())
+  liveClassId String
+  userId      String
+  status      AttendanceStatus @default(PRESENT)
+  notes       String?
+  markedAt    DateTime         @default(now())
+
+  liveClass   LiveClass        @relation(fields: [liveClassId], references: [id], onDelete: Cascade)
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([liveClassId, userId])
+}
+
+model RecordedLecture {
+  id              String   @id @default(uuid())
+  courseId        String
+  moduleId        String?
+  batchId         String?
+  title           String
+  description     String?
+  videoUrl        String
+  durationMinutes Int      @default(60)
+  thumbnailUrl    String?
+  isPublished     Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  course          Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module          CourseModule? @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  batch           Batch?        @relation(fields: [batchId], references: [id], onDelete: SetNull)
+
+  @@index([courseId])
 }
 
 model Enrollment {
@@ -291,7 +453,7 @@ model LessonProgress {
   enrollmentId String
   lessonId     String
   isCompleted  Boolean    @default(false)
-  score        Float?     // For quizzes
+  score        Float?
   completedAt  DateTime?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
@@ -303,16 +465,130 @@ model LessonProgress {
 }
 
 // -------------------------------------------------------------
-// 3. CREDENTIALS & CERTIFICATES
+// 3. ASSIGNMENTS, PRACTICAL TASKS & WEIGHTED RUBRICS
+// -------------------------------------------------------------
+
+model Skill {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  category    String
+  description String?
+  createdAt   DateTime @default(now())
+
+  assignments  Assignment[]
+  studentSkills StudentSkill[]
+
+  @@index([category])
+}
+
+model StudentSkill {
+  id                 String               @id @default(uuid())
+  userId             String
+  skillId            String
+  ratingScore        Float                @default(0.0)
+  confidenceLevel    String               @default("LOW") // LOW, MODERATE, HIGH
+  verifiedTasksCount Int                  @default(0)
+  lastAssessedAt     DateTime?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill              Skill                @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  history            SkillRatingHistory[]
+
+  @@unique([userId, skillId])
+  @@index([userId])
+}
+
+model SkillRatingHistory {
+  id             String       @id @default(uuid())
+  studentSkillId String
+  previousScore  Float
+  newScore       Float
+  evaluationId   String?
+  notes          String?
+  createdAt      DateTime     @default(now())
+
+  studentSkill   StudentSkill @relation(fields: [studentSkillId], references: [id], onDelete: Cascade)
+}
+
+model Assignment {
+  id            String   @id @default(uuid())
+  courseId      String
+  skillId       String?
+  trainerId     String?
+  title         String
+  slug          String   @unique
+  description   String
+  instructions  String
+  deliverables  String[]
+  difficulty    String   @default("INTERMEDIATE")
+  maxScore      Int      @default(100)
+  dueDate       DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  course        Course                  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  skill         Skill?                  @relation(fields: [skillId], references: [id], onDelete: SetNull)
+  trainer       User?                   @relation("TrainerAssignments", fields: [trainerId], references: [id], onDelete: SetNull)
+  submissions   AssignmentSubmission[]
+
+  @@index([courseId])
+  @@index([skillId])
+}
+
+model AssignmentSubmission {
+  id            String                     @id @default(uuid())
+  assignmentId  String
+  userId        String
+  status        AssignmentSubmissionStatus @default(SUBMITTED)
+  responseText  String?
+  attachmentUrl String?
+  projectUrl    String?
+  submittedAt   DateTime                   @default(now())
+  createdAt     DateTime                   @default(now())
+  updatedAt     DateTime                   @updatedAt
+
+  assignment    Assignment                 @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  user          User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  evaluation    AssignmentEvaluation?
+
+  @@unique([assignmentId, userId])
+  @@index([assignmentId])
+  @@index([userId])
+}
+
+model AssignmentEvaluation {
+  id                    String   @id @default(uuid())
+  submissionId          String   @unique
+  evaluatorId           String
+  accuracyScore         Float    // 40%
+  executionScore        Float    // 30%
+  problemSolvingScore   Float    // 20%
+  submissionQualityScore Float   // 10%
+  totalScore            Float    // 0-100 weighted
+  feedbackNotes         String
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  submission            AssignmentSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  evaluator             User                 @relation("EvaluatorEvaluations", fields: [evaluatorId], references: [id], onDelete: Cascade)
+
+  @@index([evaluatorId])
+}
+
+// -------------------------------------------------------------
+// 4. CREDENTIALS & CERTIFICATES
 // -------------------------------------------------------------
 
 model Certificate {
   id            String           @id @default(uuid())
-  publicCode    String           @unique // Unique verifiable public identifier (e.g. SV-2026-XXXXX)
+  publicCode    String           @unique
   userId        String
   courseId      String
   status        CredentialStatus @default(ISSUED)
-  issuer        String           @default("StudentVerse [RankGood Tech]")
+  issuer        String           @default("StudentVerse")
   issuedAt      DateTime         @default(now())
   revokedAt     DateTime?
   revokedReason String?
@@ -325,7 +601,7 @@ model Certificate {
 }
 
 // -------------------------------------------------------------
-// 4. TALENT & CAREER PROFILES (OPT-IN PRIVACY FIRST)
+// 5. TALENT & CAREER PROFILES (OPT-IN PRIVACY FIRST)
 // -------------------------------------------------------------
 
 model LearnerProfile {
@@ -333,7 +609,7 @@ model LearnerProfile {
   userId           String                 @unique
   headline         String?
   bio              String?
-  visibility       TalentVisibility       @default(PRIVATE) // BR-05: Strict Private default
+  visibility       TalentVisibility       @default(PRIVATE)
   country          String?
   city             String?
   remotePreference Boolean                @default(true)
@@ -366,7 +642,7 @@ model VisibilityConsentLog {
 }
 
 // -------------------------------------------------------------
-// 5. RECRUITMENT & JOBS
+// 6. RECRUITMENT, INTERMEDIATED HIRING & PARTNERS
 // -------------------------------------------------------------
 
 model JobPost {
@@ -410,7 +686,7 @@ model Application {
   user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   events         ApplicationEvent[]
 
-  @@unique([jobId, userId]) // AC-09: One application per job
+  @@unique([jobId, userId])
   @@index([jobId])
   @@index([userId])
 }
@@ -444,8 +720,68 @@ model Shortlist {
   @@unique([organisationId, learnerProfileId, jobPostId])
 }
 
+model HiringRequest {
+  id               String                      @id @default(uuid())
+  candidateId      String
+  organisationId   String
+  assignedAdminId  String?
+  contactPerson    String
+  businessEmail    String
+  jobTitle         String
+  jobDescription   String
+  requiredSkills   String[]
+  workplaceType    WorkplaceType               @default(REMOTE)
+  salaryRange      String?
+  additionalNotes  String?
+  status           HiringRequestStatus         @default(SUBMITTED)
+  internalNotes    String?
+  createdAt        DateTime                    @default(now())
+  updatedAt        DateTime                    @updatedAt
+
+  candidate        User                        @relation("CandidateHiringRequests", fields: [candidateId], references: [id], onDelete: Cascade)
+  organisation     Organisation                @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  assignedAdmin    User?                       @relation("AdminHiringRequests", fields: [assignedAdminId], references: [id], onDelete: SetNull)
+  statusHistory    HiringRequestStatusHistory[]
+
+  @@index([candidateId])
+  @@index([organisationId])
+  @@index([status])
+}
+
+model HiringRequestStatusHistory {
+  id              String              @id @default(uuid())
+  hiringRequestId String
+  previousStatus  HiringRequestStatus
+  newStatus       HiringRequestStatus
+  notes           String?
+  actorUserId     String?
+  createdAt       DateTime            @default(now())
+
+  hiringRequest   HiringRequest       @relation(fields: [hiringRequestId], references: [id], onDelete: Cascade)
+
+  @@index([hiringRequestId])
+}
+
+model PlacementPartner {
+  id                 String   @id @default(uuid())
+  name               String
+  slug               String   @unique
+  logoUrl            String?
+  industry           String
+  website            String
+  location           String
+  description        String
+  isVerified         Boolean  @default(true)
+  activeHiringTracks String[]
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([slug])
+  @@index([isVerified])
+}
+
 // -------------------------------------------------------------
-// 6. COMMERCE & PAYMENTS
+// 7. COMMERCE & PAYMENTS
 // -------------------------------------------------------------
 
 model Order {
@@ -466,7 +802,7 @@ model Order {
 }
 
 // -------------------------------------------------------------
-// 7. AUDIT TRAILS & OPERATIONS
+// 8. AUDIT TRAILS & OPERATIONS
 // -------------------------------------------------------------
 
 model AuditEvent {
@@ -483,4 +819,3 @@ model AuditEvent {
   @@index([action])
   @@index([resource])
 }
-

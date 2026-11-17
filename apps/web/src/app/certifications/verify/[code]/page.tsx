@@ -19,7 +19,7 @@ const CREDENTIALS_DATABASE: Record<string, any> = {
     status: 'VALID',
     recipientName: 'Elena Rostova',
     courseTitle: 'Digital Marketing Foundations',
-    issuer: 'StudentVerse [RankGood Tech]',
+    issuer: 'StudentVerse',
     issuedDate: '5 November 2026',
     expiry: 'Permanent (No Expiration)',
     competencies: [
@@ -35,7 +35,7 @@ const CREDENTIALS_DATABASE: Record<string, any> = {
     status: 'VALID',
     recipientName: 'Marcus Chen',
     courseTitle: 'AI Workflow Automation (n8n & Make)',
-    issuer: 'StudentVerse [RankGood Tech]',
+    issuer: 'StudentVerse',
     issuedDate: '10 November 2026',
     expiry: 'Permanent (No Expiration)',
     competencies: [
@@ -51,7 +51,7 @@ const CREDENTIALS_DATABASE: Record<string, any> = {
     status: 'REVOKED',
     recipientName: 'Redacted (Revoked Credential)',
     courseTitle: 'HubSpot CRM & Marketing Automation',
-    issuer: 'StudentVerse [RankGood Tech]',
+    issuer: 'StudentVerse',
     issuedDate: '1 September 2026',
     revokedDate: '15 September 2026',
     revocationReason: 'Capstone project flagged during audit for non-original submission.',
@@ -156,14 +156,14 @@ export default function CredentialResultPage({ params }: { params: { code: strin
                     This certificate was officially revoked on <strong>{cred.revokedDate}</strong>. Reason on record: &quot;{cred.revocationReason}&quot;
                   </p>
                   <p className="text-[11px] text-rose-700">
-                    Pursuant to Rule AC-05, revoked credentials no longer represent authentic completion or endorsement by StudentVerse [RankGood Tech].
+                    Pursuant to Rule AC-05, revoked credentials no longer represent authentic completion or endorsement by StudentVerse.
                   </p>
                 </div>
               )}
             </div>
 
             <div className="bg-slate-50 p-6 border-t border-slate-100 text-center text-xs text-slate-500">
-              This record is published by the cryptographic credential registry of <strong>StudentVerse [RankGood Tech]</strong>.
+              This record is published by the cryptographic credential registry of <strong>StudentVerse</strong>.
             </div>
           </div>
         ) : (

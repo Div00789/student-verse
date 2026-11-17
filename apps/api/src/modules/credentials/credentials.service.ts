@@ -18,7 +18,7 @@ const SAMPLE_CREDENTIALS: Record<string, VerifiedCredential> = {
     publicCode: 'SV-2026-DM-849201',
     recipientName: 'Elena Rostova',
     courseTitle: 'Digital Marketing Foundations',
-    issuer: 'StudentVerse [RankGood Tech]',
+    issuer: 'StudentVerse',
     status: 'ISSUED',
     issuedAt: '2026-11-05T12:00:00Z',
     competencies: [
@@ -32,7 +32,7 @@ const SAMPLE_CREDENTIALS: Record<string, VerifiedCredential> = {
     publicCode: 'SV-2026-AI-772910',
     recipientName: 'Marcus Chen',
     courseTitle: 'AI Workflow Automation with n8n & Make',
-    issuer: 'StudentVerse [RankGood Tech]',
+    issuer: 'StudentVerse',
     status: 'ISSUED',
     issuedAt: '2026-11-10T16:20:00Z',
     competencies: [
@@ -46,7 +46,7 @@ const SAMPLE_CREDENTIALS: Record<string, VerifiedCredential> = {
     publicCode: 'SV-2026-REV-000000',
     recipientName: 'Test Recipient (Revoked Sample)',
     courseTitle: 'HubSpot CRM & Marketing Automation',
-    issuer: 'StudentVerse [RankGood Tech]',
+    issuer: 'StudentVerse',
     status: 'REVOKED',
     issuedAt: '2026-09-01T08:00:00Z',
     revokedAt: '2026-09-15T11:00:00Z',

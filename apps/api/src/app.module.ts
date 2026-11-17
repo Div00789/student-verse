@@ -6,6 +6,7 @@ import { CoursesModule } from './modules/courses/courses.module';
 import { RecruitmentModule } from './modules/recruitment/recruitment.module';
 import { CredentialsModule } from './modules/credentials/credentials.module';
 import { TalentModule } from './modules/talent/talent.module';
+import { StorageModule } from './modules/storage/storage.module';
 
 @Module({
   imports: [
@@ -15,9 +16,9 @@ import { TalentModule } from './modules/talent/talent.module';
     RecruitmentModule,
     CredentialsModule,
     TalentModule,
+    StorageModule,
   ],
   providers: [PrismaService],
   exports: [PrismaService],
 })
 export class AppModule {}
-

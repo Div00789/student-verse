@@ -17,7 +17,7 @@ export default function PrivacyPolicyPage() {
               Privacy Policy
             </h1>
             <p className="text-xs text-slate-500 mt-2 font-mono">
-              Version 1.0 &bull; Effective Date: 16 November 2026 &bull; StudentVerse [RankGood Tech]
+              Version 1.0 &bull; Effective Date: 16 November 2026 &bull; StudentVerse
             </p>
           </div>
 
@@ -25,7 +25,7 @@ export default function PrivacyPolicyPage() {
             <section className="space-y-2">
               <h2 className="text-base font-bold text-slate-900">1. Data Controller &amp; Operating Entity</h2>
               <p>
-                This Privacy Policy governs the collection, processing, and disclosure of personal and educational data across the <strong>StudentVerse</strong> platform. The operating entity and data controller is <strong>StudentVerse [RankGood Tech]</strong> (&quot;StudentVerse&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;).
+                This Privacy Policy governs the collection, processing, and disclosure of personal and educational data across the <strong>StudentVerse</strong> platform. The operating entity and data controller is <strong>StudentVerse</strong> (&quot;StudentVerse&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;).
               </p>
               <p>
                 Inquiries regarding data protection, access requests, or revocation of consent may be submitted to our designated privacy officer at <strong>privacy@studentverse.com</strong>.
@@ -67,7 +67,7 @@ export default function PrivacyPolicyPage() {
             <section className="space-y-2">
               <h2 className="text-base font-bold text-slate-900">4. No Data Brokering or Scraping</h2>
               <p>
-                StudentVerse [RankGood Tech] strictly prohibits the automated scraping, bulk harvesting, or third-party resale of learner or candidate information. Employer accounts found attempting mass export or abusive scraping are immediately suspended under Rule AC-10.
+                StudentVerse strictly prohibits the automated scraping, bulk harvesting, or third-party resale of learner or candidate information. Employer accounts found attempting mass export or abusive scraping are immediately suspended under Rule AC-10.
               </p>
             </section>
 
@@ -80,7 +80,7 @@ export default function PrivacyPolicyPage() {
           </div>
 
           <div className="pt-6 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>&copy; 2026 StudentVerse [RankGood Tech]</span>
+            <span>&copy; 2026 StudentVerse</span>
             <Link href="/terms" className="text-indigo-600 hover:underline">
               View Terms of Service &rarr;
             </Link>

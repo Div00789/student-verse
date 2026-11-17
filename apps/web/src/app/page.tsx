@@ -124,7 +124,7 @@ export default function HomePage() {
                   <div className="p-3.5 rounded-xl bg-indigo-50/70 border border-indigo-100 flex items-center justify-between">
                     <div>
                       <div className="text-xs font-bold text-indigo-950">Credential ID: SV-2026-DM-849201</div>
-                      <div className="text-[11px] text-indigo-700">Issuer: StudentVerse [RankGood Tech]</div>
+                      <div className="text-[11px] text-indigo-700">Issuer: StudentVerse</div>
                     </div>
                     <Link
                       href="/certifications/verify/SV-2026-DM-849201"
@@ -517,7 +517,7 @@ export default function HomePage() {
                   <Award className="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" />
                   <div>
                     <strong className="text-slate-900 text-sm block">Verifiable Credential IDs:</strong>
-                    <span className="text-xs text-slate-600">Every completion certificate carries a permanent, cryptographic verification link issued by StudentVerse [RankGood Tech].</span>
+                    <span className="text-xs text-slate-600">Every completion certificate carries a permanent, cryptographic verification link issued by StudentVerse.</span>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -543,7 +543,7 @@ export default function HomePage() {
                   <span className="text-slate-500">ID:</span> <span className="text-white font-bold">SV-2026-DM-849201</span>
                 </div>
                 <div>
-                  <span className="text-slate-500">ISSUER:</span> <span className="text-indigo-300 font-semibold">StudentVerse [RankGood Tech]</span>
+                  <span className="text-slate-500">ISSUER:</span> <span className="text-indigo-300 font-semibold">StudentVerse</span>
                 </div>
                 <div>
                   <span className="text-slate-500">RECIPIENT:</span> <span className="text-slate-300">Elena Rostova</span>
@@ -599,7 +599,7 @@ export default function HomePage() {
               },
               {
                 q: "Who is the official operating entity behind StudentVerse?",
-                a: "StudentVerse is operated by StudentVerse [RankGood Tech], providing verified digital skill credentials and ethical recruitment workflows globally."
+                a: "StudentVerse is operated by StudentVerse, providing verified digital skill credentials and ethical recruitment workflows globally."
               },
               {
                 q: "How are employers vetted on the platform?",
@@ -645,7 +645,7 @@ export default function HomePage() {
             Ready to Build Real Digital Skills or Hire Assessed Talent?
           </h3>
           <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-            Join thousands of ambitious international learners and vetted global employers on StudentVerse [RankGood Tech].
+            Join thousands of ambitious international learners and vetted global employers on StudentVerse.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <Link

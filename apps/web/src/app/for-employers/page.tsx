@@ -92,7 +92,7 @@ export default function ForEmployersPage() {
               <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
               <h3 className="text-lg font-bold text-emerald-900">Verification Request Received</h3>
               <p className="text-xs text-emerald-800 leading-relaxed max-w-md mx-auto">
-                Thank you for applying. Our employer-success team at <strong>StudentVerse [RankGood Tech]</strong> will review your organization details ({companyName}) and follow up via {workEmail} within 1 business day.
+                Thank you for applying. Our employer-success team at <strong>StudentVerse</strong> will review your organization details ({companyName}) and follow up via {workEmail} within 1 business day.
               </p>
               <div className="pt-2">
                 <Link
@@ -164,7 +164,7 @@ export default function ForEmployersPage() {
                 <label className="flex items-start gap-2 text-[11px] text-slate-600 cursor-pointer">
                   <input type="checkbox" required className="mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
                   <span>
-                    I confirm that I represent a legitimate hiring organization and agree to StudentVerse [RankGood Tech] recruitment, fair-hiring, and anti-fraud terms.
+                    I confirm that I represent a legitimate hiring organization and agree to StudentVerse recruitment, fair-hiring, and anti-fraud terms.
                   </span>
                 </label>
               </div>

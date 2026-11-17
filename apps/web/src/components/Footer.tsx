@@ -20,34 +20,35 @@ export const Footer: React.FC = () => {
             </p>
             <div className="pt-2 text-xs text-slate-400 flex flex-col gap-1">
               <span className="flex items-center gap-1.5 font-medium text-slate-300">
-                <Globe className="w-3.5 h-3.5 text-indigo-400" /> Operating entity: StudentVerse [RankGood Tech]
+                <Globe className="w-3.5 h-3.5 text-indigo-400" /> StudentVerse Global Education &amp; Talent Platform
               </span>
               <span className="flex items-center gap-1.5">
-                <Mail className="w-3.5 h-3.5 text-slate-500" /> privacy@studentverse.com
+                <Mail className="w-3.5 h-3.5 text-slate-500" /> support@studentverse.com
               </span>
             </div>
           </div>
 
           {/* Learn Column */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">Learn</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">Live Programmes</h4>
             <ul className="space-y-2 text-xs">
-              <li><Link href="/courses" className="hover:text-white transition-colors">All Courses</Link></li>
-              <li><Link href="/courses?category=growth" className="hover:text-white transition-colors">Growth &amp; Marketing</Link></li>
-              <li><Link href="/courses?category=revops" className="hover:text-white transition-colors">Revenue Operations</Link></li>
-              <li><Link href="/courses?category=automation" className="hover:text-white transition-colors">AI &amp; Automation</Link></li>
-              <li><Link href="/courses" className="hover:text-white transition-colors">Learning Paths</Link></li>
+              <li><Link href="/courses" className="hover:text-white transition-colors">All Live Courses</Link></li>
+              <li><Link href="/courses?category=marketing" className="hover:text-white transition-colors">Digital Marketing</Link></li>
+              <li><Link href="/courses?category=seo" className="hover:text-white transition-colors">SEO &amp; AEO</Link></li>
+              <li><Link href="/courses?category=ads" className="hover:text-white transition-colors">Google &amp; Meta Ads</Link></li>
+              <li><Link href="/courses?category=analytics" className="hover:text-white transition-colors">GA4 &amp; Analytics</Link></li>
             </ul>
           </div>
 
           {/* Careers Column */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">Careers</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">Portals &amp; Hiring</h4>
             <ul className="space-y-2 text-xs">
-              <li><Link href="/jobs" className="hover:text-white transition-colors">Public Job Board</Link></li>
-              <li><Link href="/student" className="hover:text-white transition-colors">Talent Profile (Opt-In)</Link></li>
+              <li><Link href="/student/login" className="hover:text-white transition-colors">Student Login</Link></li>
+              <li><Link href="/employer/login" className="hover:text-white transition-colors">Employer Login</Link></li>
+              <li><Link href="/student" className="hover:text-white transition-colors">Student Dashboard</Link></li>
+              <li><Link href="/employer" className="hover:text-white transition-colors">Employer Portal</Link></li>
               <li><Link href="/certifications/verify" className="hover:text-white transition-colors">Verify Credential</Link></li>
-              <li><Link href="/jobs" className="hover:text-white transition-colors">Remote Roles</Link></li>
             </ul>
           </div>
 
@@ -80,13 +81,14 @@ export const Footer: React.FC = () => {
             <strong>Career Assistance Disclaimer:</strong> StudentVerse offers skill-building courses, assessed portfolios, resume feedback, and platform-mediated introductions to approved hiring partners. We do not guarantee employment, offer letters, immigration sponsorships, or specific compensation outcomes. Placement support is strictly an assistance layer.
           </p>
           <p>
-            <strong>Privacy &amp; Data Control Notice:</strong> In accordance with StudentVerse [RankGood Tech] data policies, all student career profiles remain strictly private by default. Candidates are discoverable in the employer talent pool only after explicit, revocable opt-in consent. Direct personal contacts (phone, email) are never sold or bulk-exported.
+            <strong>Privacy &amp; Data Control Notice:</strong> In accordance with StudentVerse data policies, all student career profiles remain strictly private by default. Candidates are discoverable in the employer talent pool only after explicit, revocable opt-in consent. Direct personal contacts (phone, email) are never sold or bulk-exported.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-between pt-4 text-slate-400">
-            <span>&copy; {new Date().getFullYear()} StudentVerse [RankGood Tech]. All rights reserved.</span>
+            <span>&copy; {new Date().getFullYear()} StudentVerse. All rights reserved.</span>
             <div className="flex items-center gap-4 mt-2 sm:mt-0">
               <span className="flex items-center gap-1"><Lock className="w-3 h-3 text-emerald-400" /> TLS Encrypted</span>
               <span className="flex items-center gap-1"><ShieldCheck className="w-3 h-3 text-indigo-400" /> Business Vetted Employers</span>
+              <Link href="/admin/login" className="text-[10px] text-slate-600 hover:text-slate-400">Admin</Link>
             </div>
           </div>
         </div>

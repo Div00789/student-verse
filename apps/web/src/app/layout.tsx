@@ -6,7 +6,7 @@ import { Footer } from '@/components/Footer';
 export const metadata: Metadata = {
   title: 'StudentVerse | Global Digital Skills Learning & Talent Hiring Platform',
   description:
-    'Learn job-relevant digital skills through structured courses, assessed capstone portfolios, and connect with verified global hiring partners. Operated by StudentVerse [RankGood Tech].',
+    'Learn job-relevant digital skills through structured courses, assessed capstone portfolios, and connect with verified global hiring partners. Operated by StudentVerse.',
 };
 
 export default function RootLayout({

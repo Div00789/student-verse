@@ -21,7 +21,7 @@ export const Navbar: React.FC = () => {
       {/* Top Banner Notice */}
       <div className="bg-slate-900 text-slate-300 text-xs py-1.5 px-4 text-center border-b border-slate-800">
         <span>
-          <strong className="text-white font-medium">StudentVerse [RankGood Tech]</strong> — Two-sided digital skills learning &amp; verified hiring platform. Career support without empty promises.
+          <strong className="text-white font-medium">StudentVerse</strong> — Global Digital Skills Learning &amp; Verified Hiring Platform. 100% Live Instructor-Led Cohorts.
         </span>
       </div>
 
@@ -94,7 +94,7 @@ export const Navbar: React.FC = () => {
             </Link>
             <div className="h-5 w-px bg-slate-200 mx-1" />
             <Link
-              href="/courses"
+              href="/get-started"
               className="text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg shadow-sm transition-colors"
             >
               Get Started
@@ -146,6 +146,13 @@ export const Navbar: React.FC = () => {
             Verify Credential
           </Link>
           <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
+            <Link
+              href="/get-started"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full text-center py-2 text-sm font-bold text-white bg-indigo-600 rounded-lg shadow-sm"
+            >
+              Get Started
+            </Link>
             <Link
               href="/student"
               onClick={() => setMobileMenuOpen(false)}

@@ -17,7 +17,7 @@ export default function TermsOfServicePage() {
               Terms of Service
             </h1>
             <p className="text-xs text-slate-500 mt-2 font-mono">
-              Version 1.0 &bull; Effective Date: 16 November 2026 &bull; StudentVerse [RankGood Tech]
+              Version 1.0 &bull; Effective Date: 16 November 2026 &bull; StudentVerse
             </p>
           </div>
 
@@ -25,7 +25,7 @@ export default function TermsOfServicePage() {
             <section className="space-y-2">
               <h2 className="text-base font-bold text-slate-900">1. Acceptance of Terms</h2>
               <p>
-                By accessing or using the StudentVerse platform, you agree to be bound by these Terms of Service entered into with <strong>StudentVerse [RankGood Tech]</strong>. If you do not agree, you must discontinue access immediately.
+                By accessing or using the StudentVerse platform, you agree to be bound by these Terms of Service entered into with <strong>StudentVerse</strong>. If you do not agree, you must discontinue access immediately.
               </p>
             </section>
 
@@ -42,14 +42,14 @@ export default function TermsOfServicePage() {
             <section className="space-y-2">
               <h2 className="text-base font-bold text-slate-900">3. Business Vetting of Hiring Partners (Rule AC-07)</h2>
               <p>
-                Organizations registering as hiring partners must complete business verification before accessing candidate searches or posting jobs. StudentVerse [RankGood Tech] reserves the absolute right to suspend or reject any employer account that fails verification or violates fair-hiring principles.
+                Organizations registering as hiring partners must complete business verification before accessing candidate searches or posting jobs. StudentVerse reserves the absolute right to suspend or reject any employer account that fails verification or violates fair-hiring principles.
               </p>
             </section>
 
             <section className="space-y-2">
               <h2 className="text-base font-bold text-slate-900">4. Certificates of Completion &amp; Authenticity</h2>
               <p>
-                Certificates of Completion are issued exclusively by <strong>StudentVerse [RankGood Tech]</strong> upon successful completion of required lessons and passing rubric scores on capstone submissions. Any attempt to forge, modify, or falsify credential identifiers constitutes a material violation resulting in permanent revocation under Rule AC-05.
+                Certificates of Completion are issued exclusively by <strong>StudentVerse</strong> upon successful completion of required lessons and passing rubric scores on capstone submissions. Any attempt to forge, modify, or falsify credential identifiers constitutes a material violation resulting in permanent revocation under Rule AC-05.
               </p>
             </section>
 
@@ -62,7 +62,7 @@ export default function TermsOfServicePage() {
           </div>
 
           <div className="pt-6 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>&copy; 2026 StudentVerse [RankGood Tech]</span>
+            <span>&copy; 2026 StudentVerse</span>
             <Link href="/privacy" className="text-indigo-600 hover:underline">
               View Privacy Policy &rarr;
             </Link>

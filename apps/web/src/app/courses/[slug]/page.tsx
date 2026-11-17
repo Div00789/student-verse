@@ -1,131 +1,235 @@
 import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { 
-  Clock, 
-  GraduationCap, 
-  CheckCircle2, 
-  Award, 
-  PlayCircle, 
-  FileText, 
-  Layers, 
-  ShieldCheck, 
-  ArrowLeft 
+import {
+  Clock,
+  GraduationCap,
+  CheckCircle2,
+  Award,
+  PlayCircle,
+  FileText,
+  Layers,
+  ShieldCheck,
+  ArrowLeft,
+  Video,
+  Calendar,
+  Users,
+  Check
 } from 'lucide-react';
 
 const COURSE_DATA: Record<string, any> = {
   'digital-marketing-foundations': {
     slug: 'digital-marketing-foundations',
-    title: 'Digital Marketing Foundations',
-    subtitle: 'Master omnichannel performance marketing, SEO, and multi-touch analytics',
-    category: 'Growth & Marketing',
+    title: 'Digital Marketing Fundamentals & Omnichannel Strategy',
+    subtitle: '100% Live Instructor-Led Cohort on Acquisition Funnels, Strategy & Multi-Touch Conversion',
+    category: 'Digital Marketing',
     level: 'BEGINNER',
-    format: 'SELF_PACED',
-    durationHours: 32,
-    price: 199,
-    description: 'A comprehensive, practice-first foundation in modern performance marketing. Build actual multi-channel campaigns, optimize search rankings, craft high-converting email sequences, and implement verified Google Analytics 4 dashboards.',
+    format: '100% LIVE INSTRUCTOR-LED',
+    durationHours: 36,
+    totalSessions: 12,
+    price: 299,
+    trainerName: 'Marcus Vance (Senior Performance Lead)',
+    batchCode: 'SV-DM-NOV26',
+    batchSchedule: 'Tue & Thu: 18:00 - 20:00 UTC (100% Live on Google Meet)',
+    description: 'Master practical digital marketing strategy through real-time instructor guidance. Build end-to-end customer acquisition funnels, plan multi-channel campaigns, execute content schedules, and measure performance metrics across modern channels.',
     prerequisites: ['Basic web literacy', 'Familiarity with spreadsheets'],
     learningOutcomes: [
-      'Architect full-funnel acquisition strategies from awareness to retention',
-      'Execute technical and content-led SEO audits with measurable ranking gains',
-      'Deploy and optimize Google Ads and Meta paid media budgets',
-      'Submit an evaluated real-world digital marketing campaign portfolio piece'
+      'Architect full-funnel acquisition strategies from initial brand awareness to retention',
+      'Execute multi-channel campaign architectures with real-world budget allocations',
+      'Deploy conversion rate optimization (CRO) principles on real landing pages',
+      'Deliver an evaluated capstone marketing plan reviewed by seasoned industry trainers'
     ],
     modules: [
       {
-        title: 'Module 1: Market Research & Audience Segmentation',
+        title: 'Module 1: Market Research, ICP & Value Propositions',
         lessons: [
-          { title: '1.1 Foundations of Digital Growth', type: 'VIDEO', duration: '18 min', freePreview: true },
-          { title: '1.2 Customer Persona & Competitor Mapping', type: 'READING', duration: '25 min', freePreview: true },
-          { title: '1.3 Practical Exercise: ICP Specification Sheet', type: 'PROJECT', duration: '60 min', freePreview: false }
+          { title: '1.1 Live Class: Foundations of Omnichannel Growth', type: 'LIVE_SESSION', duration: '90 min', freePreview: true },
+          { title: '1.2 Live Lab: Customer Persona & Competitor Benchmark Workshop', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '1.3 Practical Deliverable: ICP Specification Sheet', type: 'PROJECT', duration: '60 min', freePreview: false }
         ]
       },
       {
-        title: 'Module 2: Search Engine Optimization & Content Ops',
+        title: 'Module 2: Channel Architecture & Campaign Execution',
         lessons: [
-          { title: '2.1 Modern Search Algorithms & User Intent', type: 'VIDEO', duration: '24 min', freePreview: false },
-          { title: '2.2 Keyword Clustering & Search Console Walkthrough', type: 'VIDEO', duration: '30 min', freePreview: false },
-          { title: '2.3 Assessment Quiz: Technical SEO Factors', type: 'QUIZ', duration: '20 min', freePreview: false }
-        ]
-      },
-      {
-        title: 'Module 3: Paid Performance Media & Campaign Capstone',
-        lessons: [
-          { title: '3.1 Ad Creative Psychology & A/B Testing', type: 'VIDEO', duration: '22 min', freePreview: false },
-          { title: '3.2 Conversion API & Multi-Touch Attribution Models', type: 'VIDEO', duration: '35 min', freePreview: false },
-          { title: '3.3 Capstone Project: Live Multi-Channel Campaign Review', type: 'PROJECT', duration: '90 min', freePreview: false }
+          { title: '2.1 Live Class: Funnel Optimization & Landing Page CRO', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '2.2 Live Workshop: Paid vs Organic Resource Allocation', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '2.3 Capstone Submission: Live Multi-Channel Campaign Plan Review', type: 'PROJECT', duration: '90 min', freePreview: false }
         ]
       }
     ]
   },
-  'hubspot-crm-automation': {
-    slug: 'hubspot-crm-automation',
-    title: 'HubSpot CRM & Marketing Automation',
-    subtitle: 'Architect enterprise lead routing, lifecycle stages, and automated CRM workflows',
-    category: 'Revenue Operations',
+  'seo-and-ai-search-optimization': {
+    slug: 'seo-and-ai-search-optimization',
+    title: 'Search Engine Optimisation (SEO) & AI Search / AEO',
+    subtitle: '100% Live Masterclass in Technical Audits, Keyword Architecture & Answer Engine Optimisation',
+    category: 'Search Engine Optimisation',
     level: 'INTERMEDIATE',
-    format: 'SELF_PACED',
-    durationHours: 28,
-    price: 249,
-    description: 'Bridge marketing and sales through automated CRM systems. Learn deal pipelines, lead scoring rules, webhook triggers, custom property modeling, and automated nurture sequences tested by certified operations leads.',
-    prerequisites: ['Basic digital marketing understanding', 'Understanding of sales pipelines'],
+    format: '100% LIVE INSTRUCTOR-LED',
+    durationHours: 32,
+    totalSessions: 10,
+    price: 349,
+    trainerName: 'Elena Rostova (Technical SEO Architect)',
+    batchCode: 'SV-SEO-DEC26',
+    batchSchedule: 'Sat & Sun: 14:00 - 16:30 UTC (100% Live on Google Meet)',
+    description: 'Learn modern search mechanics beyond basic keywords. Conduct technical site audits, build topical clusters, optimize for Google Search Console, and master Answer Engine Optimisation (AEO) for AI search engines like ChatGPT Search and Google AI Overviews.',
+    prerequisites: ['Basic HTML and CMS understanding'],
     learningOutcomes: [
-      'Configure full lifecycle stages and automated SLA lead routing',
-      'Build multi-branch nurture and onboarding automated workflows',
-      'Design clean custom object architectures and data hygiene triggers',
-      'Complete an assessed portfolio-ready RevOps system blueprint'
+      'Perform end-to-end technical SEO audits identifying indexation and schema bottlenecks',
+      'Build semantic keyword clusters aligning search intent with content architecture',
+      'Master Google Search Console and log file analysis for crawl budget optimization',
+      'Implement AEO schema and entity optimizations for LLM citation engines'
     ],
     modules: [
       {
-        title: 'Module 1: CRM Architecture & Data Modeling',
+        title: 'Module 1: Technical SEO & Crawlability Audits',
         lessons: [
-          { title: '1.1 The RevOps Engine: Why Clean CRM Data Wins', type: 'VIDEO', duration: '16 min', freePreview: true },
-          { title: '1.2 Custom Properties & Object Association Rules', type: 'READING', duration: '25 min', freePreview: false },
-          { title: '1.3 Practical Lab: Setting Up a Clean Sales Pipeline', type: 'PROJECT', duration: '45 min', freePreview: false }
+          { title: '1.1 Live Class: Modern Search Algorithms & Crawl Budgets', type: 'LIVE_SESSION', duration: '90 min', freePreview: true },
+          { title: '1.2 Live Lab: Executing a Production Technical Audit', type: 'LIVE_SESSION', duration: '90 min', freePreview: false }
         ]
       },
       {
-        title: 'Module 2: Automation Workflows & Lead Scoring',
+        title: 'Module 2: AEO, Entity Graph & Topical Authority',
         lessons: [
-          { title: '2.1 If/Then Branches & Delay Logic in Workflows', type: 'VIDEO', duration: '28 min', freePreview: false },
-          { title: '2.2 Building Predictive & Behavioral Lead Scoring Models', type: 'VIDEO', duration: '32 min', freePreview: false },
-          { title: '2.3 Capstone: Automated Customer Lifecycle Workflow Plan', type: 'PROJECT', duration: '80 min', freePreview: false }
+          { title: '2.1 Live Class: Optimizing for AI Overviews and Entity Engines', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '2.2 Capstone Deliverable: Comprehensive Technical & AEO Audit Report', type: 'PROJECT', duration: '90 min', freePreview: false }
         ]
       }
     ]
   },
-  'ai-workflow-automation': {
-    slug: 'ai-workflow-automation',
-    title: 'AI Workflow Automation (n8n & Make)',
-    subtitle: 'Deploy enterprise-grade automated AI pipelines, LLM agents, and API integrations',
-    category: 'Automation & AI',
+  'paid-performance-google-meta-ads': {
+    slug: 'paid-performance-google-meta-ads',
+    title: 'Paid Performance Advertising (Google Ads & Meta Ads)',
+    subtitle: '100% Live Cohort on Bidding Strategies, Conversion APIs, Creative Strategy & ROI',
+    category: 'Paid Advertising',
     level: 'INTERMEDIATE',
-    format: 'SELF_PACED',
+    format: '100% LIVE INSTRUCTOR-LED',
     durationHours: 36,
-    price: 299,
-    description: 'Transform manual operations into resilient, automated AI workflows. Connect REST APIs, automate complex multi-app data transfers, implement self-healing error handlers, and integrate LLM agents into production enterprise processes.',
-    prerequisites: ['Basic understanding of webhooks and JSON data structures'],
+    totalSessions: 12,
+    price: 399,
+    trainerName: 'David Zhao (Paid Acquisition Director)',
+    batchCode: 'SV-ADS-DEC26',
+    batchSchedule: 'Mon & Wed: 17:00 - 19:00 UTC (100% Live on Google Meet)',
+    description: 'Master high-volume paid media buying. Set up Google Search and Performance Max campaigns, architect Meta Ads creative testing frameworks, configure Server-Side Conversion APIs, and optimize ad spend with rigorous ROAS attribution.',
+    prerequisites: ['Basic digital marketing experience'],
     learningOutcomes: [
-      'Master n8n and Make visual workflow engines with modular patterns',
-      'Integrate LLM APIs with structured outputs, validation, and error guards',
-      'Implement robust production monitoring, rate-limiting, and alerts',
-      'Submit an evaluated autonomous ops agent workflow to your portfolio'
+      'Structure Google Ads Search and PMax campaigns with negative keyword matrices',
+      'Execute creative diversification on Meta Ads with dynamic creative testing (DCT)',
+      'Deploy server-side Meta Conversions API (CAPI) and Google enhanced conversions',
+      'Conduct evaluated weekly performance reviews against real client scenarios'
     ],
     modules: [
       {
-        title: 'Module 1: Webhook Architecture & API Fundamentals',
+        title: 'Module 1: Google Ads Architecture & Smart Bidding',
         lessons: [
-          { title: '1.1 The Anatomy of an Enterprise Automated Workflow', type: 'VIDEO', duration: '20 min', freePreview: true },
-          { title: '1.2 Handling Webhooks, Authentication & JSON Arrays', type: 'VIDEO', duration: '30 min', freePreview: false },
-          { title: '1.3 Practical Lab: Two-Way Data Sync Engine', type: 'PROJECT', duration: '60 min', freePreview: false }
+          { title: '1.1 Live Class: Advanced Search Account Structuring', type: 'LIVE_SESSION', duration: '90 min', freePreview: true },
+          { title: '1.2 Live Lab: Performance Max Campaign Setup & Asset Groups', type: 'LIVE_SESSION', duration: '90 min', freePreview: false }
         ]
       },
       {
-        title: 'Module 2: LLM Pipelines, Error Retries & Deployment',
+        title: 'Module 2: Meta Ads & Conversion Tracking',
         lessons: [
-          { title: '2.1 Orchestrating LLMs Inside Automated Flows', type: 'VIDEO', duration: '26 min', freePreview: false },
-          { title: '2.2 Building Self-Healing Nodes & Fallback Alerts', type: 'VIDEO', duration: '34 min', freePreview: false },
-          { title: '2.3 Capstone Project: Production Autonomous Workflow Agent', type: 'PROJECT', duration: '90 min', freePreview: false }
+          { title: '2.1 Live Class: Meta Creative Testing Frameworks', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '2.2 Capstone: Live Paid Performance Media Plan & Budget Model', type: 'PROJECT', duration: '90 min', freePreview: false }
+        ]
+      }
+    ]
+  },
+  'analytics-ga4-google-tag-manager': {
+    slug: 'analytics-ga4-google-tag-manager',
+    title: 'Marketing Analytics, GA4 & Google Tag Manager',
+    subtitle: '100% Live Practical Workshop on Custom Events, DataLayers, UTMs & Looker Dashboards',
+    category: 'Analytics & Tracking',
+    level: 'INTERMEDIATE',
+    format: '100% LIVE INSTRUCTOR-LED',
+    durationHours: 30,
+    totalSessions: 10,
+    price: 299,
+    trainerName: 'Priya Sharma (Analytics & BI Lead)',
+    batchCode: 'SV-GA4-NOV26',
+    batchSchedule: 'Tue & Fri: 18:00 - 20:00 UTC (100% Live on Google Meet)',
+    description: 'Stop guessing which marketing channels work. Master Google Tag Manager dataLayers, configure custom GA4 conversion events, implement cross-domain tracking, and build interactive client-facing dashboards in Looker Studio.',
+    prerequisites: ['Basic spreadsheet and marketing understanding'],
+    learningOutcomes: [
+      'Build custom Google Tag Manager containers with triggers, variables, and dataLayer events',
+      'Configure custom dimensions, metrics, and funnel exploration reports in GA4',
+      'Implement bulletproof UTM taxonomy and conversion attribution pipelines',
+      'Build automated multi-channel reporting dashboards in Looker Studio'
+    ],
+    modules: [
+      {
+        title: 'Module 1: Google Tag Manager & Custom Events',
+        lessons: [
+          { title: '1.1 Live Class: GTM Container Setup & Architecture', type: 'LIVE_SESSION', duration: '90 min', freePreview: true },
+          { title: '1.2 Live Lab: DataLayer Push Implementation & Testing', type: 'LIVE_SESSION', duration: '90 min', freePreview: false }
+        ]
+      },
+      {
+        title: 'Module 2: GA4 Explorations & Looker Studio Dashboards',
+        lessons: [
+          { title: '2.1 Live Class: Funnel & Path Exploration in GA4', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '2.2 Capstone: Verified Looker Studio Executive Marketing Dashboard', type: 'PROJECT', duration: '90 min', freePreview: false }
+        ]
+      }
+    ]
+  },
+  'social-media-marketing-strategy': {
+    slug: 'social-media-marketing-strategy',
+    title: 'Social Media Marketing & Content Strategy',
+    subtitle: '100% Live Cohort on Organic Distribution, Content Calendars, Brand Voice & Community',
+    category: 'Social Media Marketing',
+    level: 'BEGINNER',
+    format: '100% LIVE INSTRUCTOR-LED',
+    durationHours: 28,
+    totalSessions: 10,
+    price: 249,
+    trainerName: 'Chloe Bennett (Brand & Social Director)',
+    batchCode: 'SV-SMM-DEC26',
+    batchSchedule: 'Tue & Thu: 16:00 - 18:00 UTC (100% Live on Google Meet)',
+    description: 'Build organic social media systems that drive revenue. Learn platform-specific distribution across LinkedIn, Instagram, and YouTube, engineer high-engagement content calendars, establish distinctive brand voice, and analyze community sentiment.',
+    prerequisites: ['Basic social media familiarity'],
+    learningOutcomes: [
+      'Design strategic editorial calendars mapped to marketing milestones',
+      'Write engaging copy and brief creative assets for multi-format social platforms',
+      'Establish community engagement and crisis management playbooks',
+      'Submit an evaluated comprehensive brand social media playbook'
+    ],
+    modules: [
+      {
+        title: 'Module 1: Content Pillar Architecture & Copywriting',
+        lessons: [
+          { title: '1.1 Live Class: Content Pillars & Narrative Design', type: 'LIVE_SESSION', duration: '90 min', freePreview: true },
+          { title: '1.2 Live Lab: Drafting High-Retention Short-Form Scripts', type: 'LIVE_SESSION', duration: '90 min', freePreview: false }
+        ]
+      }
+    ]
+  },
+  'ai-tools-for-digital-marketers': {
+    slug: 'ai-tools-for-digital-marketers',
+    title: 'AI Tools & Automation for Digital Marketers',
+    subtitle: '100% Live Training on Generative AI, Prompt Workflows, Content Automation & Productivity',
+    category: 'AI for Digital Marketing',
+    level: 'INTERMEDIATE',
+    format: '100% LIVE INSTRUCTOR-LED',
+    durationHours: 32,
+    totalSessions: 10,
+    price: 349,
+    trainerName: 'Dr. Aris Thorne (Marketing Automation Specialist)',
+    batchCode: 'SV-AI-NOV26',
+    batchSchedule: 'Thu & Sat: 17:30 - 19:30 UTC (100% Live on Google Meet)',
+    description: 'Transform modern marketing operations using production AI workflows. Build customized prompt chains for campaign research, automate multi-lingual content variations, integrate marketing automation triggers, and maintain responsible AI governance.',
+    prerequisites: ['Basic digital marketing experience'],
+    learningOutcomes: [
+      'Design reliable multi-step prompt workflows for market research and ad generation',
+      'Automate repetitive content and reporting tasks with verified AI tooling',
+      'Evaluate AI-generated assets for factual accuracy, brand alignment, and compliance',
+      'Submit an evaluated autonomous marketing workflow portfolio piece'
+    ],
+    modules: [
+      {
+        title: 'Module 1: Advanced Prompt Engineering & Research Workflows',
+        lessons: [
+          { title: '1.1 Live Class: Systematic Prompt Engineering for Marketing', type: 'LIVE_SESSION', duration: '90 min', freePreview: true },
+          { title: '1.2 Live Lab: Automated Competitive Intelligence Workflows', type: 'LIVE_SESSION', duration: '90 min', freePreview: false }
         ]
       }
     ]
@@ -134,6 +238,7 @@ const COURSE_DATA: Record<string, any> = {
 
 export default function CourseDetailPage({ params }: { params: { slug: string } }) {
   const course = COURSE_DATA[params.slug];
+
   if (!course) {
     notFound();
   }
@@ -141,145 +246,138 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
   return (
     <div className="py-12 bg-slate-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Back navigation */}
+
+        {/* Back Link */}
         <Link
           href="/courses"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 mb-6 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-indigo-600 mb-8 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Course Catalogue
+          Back to Live Programmes
         </Link>
 
-        {/* Hero Banner */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12">
-          <div className="lg:col-span-8 bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md uppercase tracking-wider">
+        {/* Hero Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-14">
+          <div className="lg:col-span-8 space-y-6">
+            <div className="flex flex-wrap gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1 rounded-full">
                 {course.category}
               </span>
-              <span className="text-xs font-medium text-slate-500">
-                &bull; Level: <strong>{course.level}</strong>
-              </span>
-              <span className="text-xs font-medium text-slate-500">
-                &bull; Mode: <strong>Self-Paced with Evaluated Capstone</strong>
+              <span className="text-xs font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full flex items-center gap-1">
+                <Video className="w-3.5 h-3.5" /> 100% Live Instructor-Led
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-950 tracking-tight leading-tight">
               {course.title}
             </h1>
 
-            <p className="text-base text-slate-600 leading-relaxed">
+            <p className="text-lg text-slate-600 leading-relaxed">
               {course.subtitle}
             </p>
 
-            <div className="pt-2 text-sm text-slate-700 leading-relaxed">
-              {course.description}
+            <div className="flex flex-wrap gap-6 text-xs text-slate-500 pt-2 border-y border-slate-200/80 py-4">
+              <span className="flex items-center gap-1.5 font-medium text-slate-700">
+                <Clock className="w-4 h-4 text-indigo-600" /> Duration: <strong>{course.durationHours} Hours</strong>
+              </span>
+              <span className="flex items-center gap-1.5 font-medium text-slate-700">
+                <Video className="w-4 h-4 text-indigo-600" /> Total Live Sessions: <strong>{course.totalSessions} Live Cohort Classes</strong>
+              </span>
+              <span className="flex items-center gap-1.5 font-medium text-slate-700">
+                <GraduationCap className="w-4 h-4 text-indigo-600" /> Level: <strong>{course.level}</strong>
+              </span>
+              <span className="flex items-center gap-1.5 font-medium text-slate-700">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" /> Certificate: <strong>StudentVerse Verifiable</strong>
+              </span>
+            </div>
+
+            {/* Overview text */}
+            <div className="space-y-4 pt-2">
+              <h2 className="text-xl font-bold text-slate-900">Programme Overview</h2>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                {course.description}
+              </p>
             </div>
 
             {/* Learning Outcomes */}
-            <div className="pt-4 border-t border-slate-100">
-              <h3 className="text-sm font-bold text-slate-900 mb-3">Key Competencies You Will Build</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {course.learningOutcomes.map((item: string, i: number) => (
-                  <div key={i} className="flex items-start gap-2 text-xs text-slate-600">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-                    <span>{item}</span>
+            <div className="space-y-4 pt-4">
+              <h2 className="text-xl font-bold text-slate-900">Key Learning Competencies</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {course.learningOutcomes.map((item: string, idx: number) => (
+                  <div key={idx} className="flex items-start gap-2.5 p-3 rounded-xl bg-white border border-slate-200">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-xs text-slate-700 font-medium leading-relaxed">{item}</span>
                   </div>
                 ))}
               </div>
             </div>
-
-            {/* Prerequisites */}
-            <div className="pt-4 border-t border-slate-100">
-              <h3 className="text-sm font-bold text-slate-900 mb-2">Prerequisites</h3>
-              <ul className="list-disc pl-5 text-xs text-slate-600 space-y-1">
-                {course.prerequisites.map((req: string, i: number) => (
-                  <li key={i}>{req}</li>
-                ))}
-              </ul>
-            </div>
           </div>
 
-          {/* Pricing & Checkout Sidebar */}
-          <div className="lg:col-span-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm sticky top-24 space-y-6">
-            <div className="pb-4 border-b border-slate-100">
-              <div className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Total Tuition</div>
-              <div className="text-3xl font-black text-slate-900 mt-1">
-                ${course.price} <span className="text-xs font-normal text-slate-500">USD</span>
+          {/* Right Sticky Enrolment Card */}
+          <div className="lg:col-span-4 sticky top-24">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-md space-y-6">
+              <div>
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Live Cohort Tuition</span>
+                <div className="flex items-baseline gap-2 mt-1">
+                  <span className="text-3xl font-black text-slate-900">${course.price}</span>
+                  <span className="text-xs font-semibold text-slate-500">USD (Complete Live Programme)</span>
+                </div>
               </div>
-              <p className="text-[11px] text-slate-400 mt-1">
-                One-time payment &bull; Full course access &bull; Rubric grading &bull; Credential included
-              </p>
-            </div>
 
-            <div className="space-y-3 text-xs text-slate-600">
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-indigo-600" />
-                <span>Duration: <strong>{course.durationHours} estimated learning hours</strong></span>
+              {/* Batch info box */}
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                <span className="font-bold text-slate-900 block">Upcoming Live Cohort:</span>
+                <div className="text-slate-600">
+                  <span>Batch: <strong className="text-indigo-700 font-mono">{course.batchCode}</strong></span><br />
+                  <span>Schedule: <strong>{course.batchSchedule}</strong></span><br />
+                  <span>Lead Trainer: <strong>{course.trainerName}</strong></span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Award className="w-4 h-4 text-indigo-600" />
-                <span>Certificate: <strong>StudentVerse [RankGood Tech]</strong></span>
-              </div>
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                <span>Refund Guarantee: <strong>14-day policy (terms apply)</strong></span>
-              </div>
-            </div>
 
-            <Link
-              href={`/student?enrol=${course.slug}`}
-              className="w-full inline-flex items-center justify-center py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow transition-colors text-center"
-            >
-              Enrol in Course
-            </Link>
+              <Link
+                href="/student/login"
+                className="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow transition-all flex items-center justify-center gap-2"
+              >
+                Enroll in Live Batch
+              </Link>
 
-            <div className="text-[11px] text-slate-400 text-center leading-snug">
-              Secure checkout &bull; Instant LMS access &bull; Server-enforced role access
+              <div className="space-y-2 text-[11px] text-slate-500 pt-2 border-t border-slate-100">
+                <div className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>100% Live Interactive Classes on Google Meet</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Assessed Practical Capstone Portfolios</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Verifiable Cryptographic Certificate</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Access to Vetted Employer Hiring Network</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Public Syllabus Section */}
-        <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-          <div className="mb-6">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-indigo-600 mb-1">Curriculum Transparency</h2>
-            <h3 className="text-2xl font-extrabold text-slate-900">Complete Public Syllabus</h3>
-            <p className="text-xs text-slate-500 mt-1">
-              Every lesson, exercise, quiz, and project deliverable is transparently published before purchase.
-            </p>
-          </div>
-
-          <div className="space-y-6">
-            {course.modules.map((mod: any, mIdx: number) => (
-              <div key={mIdx} className="border border-slate-200 rounded-xl overflow-hidden">
-                <div className="bg-slate-50 px-5 py-3.5 border-b border-slate-200 flex items-center justify-between">
-                  <span className="font-bold text-sm text-slate-800">{mod.title}</span>
-                  <span className="text-xs text-slate-500">{mod.lessons.length} Lessons</span>
-                </div>
+        {/* Detailed Syllabus Accordion */}
+        <div className="max-w-3xl space-y-6">
+          <h2 className="text-2xl font-black text-slate-900">Live Cohort Syllabus</h2>
+          <div className="space-y-4">
+            {course.modules.map((mod: any, idx: number) => (
+              <div key={idx} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+                <h3 className="text-base font-bold text-slate-900">{mod.title}</h3>
                 <div className="divide-y divide-slate-100">
                   {mod.lessons.map((lesson: any, lIdx: number) => (
-                    <div key={lIdx} className="px-5 py-3 flex items-center justify-between text-xs hover:bg-slate-50/60">
+                    <div key={lIdx} className="py-3 flex items-center justify-between text-xs">
                       <div className="flex items-center gap-3">
-                        {lesson.type === 'VIDEO' ? (
-                          <PlayCircle className="w-4 h-4 text-indigo-600 flex-shrink-0" />
-                        ) : lesson.type === 'PROJECT' ? (
-                          <Layers className="w-4 h-4 text-purple-600 flex-shrink-0" />
-                        ) : (
-                          <FileText className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                        )}
+                        <Video className="w-4 h-4 text-indigo-600 flex-shrink-0" />
                         <span className="font-medium text-slate-800">{lesson.title}</span>
                       </div>
-                      <div className="flex items-center gap-3">
-                        {lesson.freePreview && (
-                          <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded">
-                            Free Preview
-                          </span>
-                        )}
-                        <span className="text-slate-400">{lesson.duration}</span>
-                      </div>
+                      <span className="text-slate-400 font-medium">{lesson.duration}</span>
                     </div>
                   ))}
                 </div>
@@ -292,4 +390,3 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
     </div>
   );
 }
-

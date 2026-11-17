@@ -17,7 +17,7 @@ export interface ConsentUpdateDto {
 
 @Injectable()
 export class TalentService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   // In-memory state store for quick demonstration & seamless fallback
   private talentProfiles = new Map<string, any>([
@@ -37,7 +37,7 @@ export class TalentService {
           {
             timestamp: new Date().toISOString(),
             status: 'PRIVATE',
-            consentVersion: 'v1.0-RankGoodTech',
+            consentVersion: 'v1.0',
             notes: 'Initial account creation. Default visibility: PRIVATE',
           },
         ],
@@ -87,7 +87,7 @@ export class TalentService {
       timestamp: new Date().toISOString(),
       previousStatus: prev,
       newStatus: dto.visibility,
-      consentVersion: dto.termsVersion || 'v1.0-RankGoodTech',
+      consentVersion: dto.termsVersion || 'v1.0',
       consentConfirmed: dto.consentConfirmed,
     });
     this.talentProfiles.set(userId, profile);

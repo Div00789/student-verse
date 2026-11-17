@@ -27,7 +27,7 @@ export default function VerifySearchPage() {
             Certificate &amp; Credential Verification
           </h1>
           <p className="mt-3 text-sm text-slate-600 leading-relaxed max-w-xl mx-auto">
-            Validate the authenticity, issuer status, and evaluated competencies of any Certificate of Completion issued by <strong>StudentVerse [RankGood Tech]</strong>.
+            Validate the authenticity, issuer status, and evaluated competencies of any Certificate of Completion issued by <strong>StudentVerse</strong>.
           </p>
         </div>
 
