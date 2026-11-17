@@ -8,14 +8,3 @@ dist
 .env*.local
 .vercel/
 
-# Environment files
-.env
-.env.*
-**/.env
-**/.env.*
-!.env.example
-
-# Dependencies and build output
-node_modules/
-.next/
-dist/
