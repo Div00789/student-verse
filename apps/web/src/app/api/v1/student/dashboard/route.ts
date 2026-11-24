@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { supabaseServer, JWT_SECRET } from '@/lib/supabaseServer';
+import { calculateStudentCourseProgress } from '@/lib/progressService';
 
 export async function GET(req: NextRequest) {
   try {
@@ -62,41 +63,51 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    const enrollments = (enrollmentsData || []).map((e: any) => {
-      const courseObj = e.Course || coursesMap[e.courseId] || {};
-      const slug = courseObj.slug || 'ai-digital-marketing-course';
-      const title = courseObj.title || 'AI Digital Marketing Course';
-      const subtitle = courseObj.subtitle || 'Comprehensive 14-Module Professional Programme: SEO, PPC, GA4, Paid Media, Automation & Modern AI Tools';
-      const durationHours = courseObj.durationHours || 48;
-      const category = courseObj.category || 'Digital Marketing / Artificial Intelligence';
-      const thumbnailUrl = courseObj.thumbnailUrl || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80';
+    // 2. Synchronize each enrollment with the single authoritative progress calculation
+    const enrollments = await Promise.all(
+      (enrollmentsData || []).map(async (e: any) => {
+        const courseObj = e.Course || coursesMap[e.courseId] || {};
+        const slug = courseObj.slug || 'ai-digital-marketing-course';
+        const title = courseObj.title || 'AI Digital Marketing Course';
+        const subtitle = courseObj.subtitle || 'Comprehensive 14-Module Professional Programme: SEO, PPC, GA4, Paid Media, Automation & Modern AI Tools';
+        const durationHours = courseObj.durationHours || 48;
+        const category = courseObj.category || 'Digital Marketing / Artificial Intelligence';
+        const thumbnailUrl = courseObj.thumbnailUrl || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80';
 
-      return {
-        id: e.id,
-        courseId: e.courseId || courseObj.id,
-        slug,
-        title,
-        subtitle,
-        durationHours,
-        category,
-        thumbnailUrl,
-        progressPct: typeof e.progressPct === 'number' ? e.progressPct : 0,
-        isCompleted: Boolean(e.isCompleted),
-        enrolledAt: e.enrolledAt,
-        // Compatibility properties for different UI components
-        courseSlug: slug,
-        courseTitle: title,
-        course: {
-          id: e.courseId || courseObj.id,
+        // Calculate genuine progress directly from actual database LessonProgress rows
+        const progressResult = await calculateStudentCourseProgress(userId, slug);
+
+        return {
+          id: e.id,
+          enrollmentId: e.id,
+          courseId: e.courseId || courseObj.id,
           slug,
+          courseSlug: slug,
           title,
+          courseTitle: title,
           subtitle,
           durationHours,
           category,
           thumbnailUrl,
-        },
-      };
-    });
+          totalLessons: progressResult.totalLessons,
+          completedLessons: progressResult.completedCount,
+          completedCount: progressResult.completedCount,
+          progressPercentage: progressResult.progressPercentage,
+          progressPct: progressResult.progressPercentage,
+          isCompleted: progressResult.isCompleted,
+          enrolledAt: e.enrolledAt,
+          course: {
+            id: e.courseId || courseObj.id,
+            slug,
+            title,
+            subtitle,
+            durationHours,
+            category,
+            thumbnailUrl,
+          },
+        };
+      })
+    );
 
     // Query student learner profile for talent pool discovery consent
     const { data: learnerProfile } = await supabaseServer

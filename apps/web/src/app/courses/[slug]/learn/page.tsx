@@ -844,10 +844,13 @@ export default function CourseLearningPlayerPage() {
       if (localSaved) {
         const parsed = JSON.parse(localSaved);
         if (Array.isArray(parsed) && isMounted) {
-          setCompletedLessonIds(parsed);
-          setCompletedCount(parsed.length);
+          // Deduplicate and filter strictly to distinct valid lessons
+          const validUnique = Array.from(new Set(parsed)).filter((id: string) => id.startsWith('l-'));
+          const count = Math.min(validUnique.length, totalLessons);
+          setCompletedLessonIds(validUnique);
+          setCompletedCount(count);
           if (totalLessons > 0) {
-            setCourseProgressPct(Math.round((parsed.length / totalLessons) * 1000) / 10);
+            setCourseProgressPct(Math.min(100, Math.round((count / totalLessons) * 1000) / 10));
           }
         }
       }
@@ -860,13 +863,21 @@ export default function CourseLearningPlayerPage() {
         if (isMounted && res) {
           setIsEnrolled(res.isEnrolled ?? true);
           // Prioritize server completed lessons permanently from PostgreSQL
-          const serverCompleted = res.completedLessonIds || [];
+          const rawServer = res.completedLessonIds || [];
+          // Deduplicate to distinct valid canonical lessons
+          const serverCompleted = Array.from(new Set(rawServer)).filter((id: string) => id.startsWith('l-'));
+          const verifiedCount = typeof res.completedCount === 'number'
+            ? Math.min(res.completedCount, totalLessons)
+            : Math.min(serverCompleted.length, totalLessons);
+
+          const verifiedPct = totalLessons > 0
+            ? Math.min(100, Math.round((verifiedCount / totalLessons) * 1000) / 10)
+            : (res.progressPct || 0);
 
           setCompletedLessonIds(serverCompleted);
-          setCompletedCount(serverCompleted.length);
-          setCourseProgressPct(
-            totalLessons > 0 ? Math.round((serverCompleted.length / totalLessons) * 1000) / 10 : (res.progressPct || 0)
-          );
+          setCompletedCount(verifiedCount);
+          setCourseProgressPct(verifiedPct);
+
           if (storageKey) {
             try {
               localStorage.setItem(storageKey, JSON.stringify(serverCompleted));
@@ -943,11 +954,16 @@ export default function CourseLearningPlayerPage() {
       });
 
       if (res && res.success) {
-        const confirmedLessonIds = res.completedLessonIds || nextCompletedIds;
+        const rawConfirmed = res.completedLessonIds || nextCompletedIds;
+        const confirmedLessonIds = Array.from(new Set(rawConfirmed)).filter((id: string) => id.startsWith('l-'));
+        const verifiedCount = typeof res.completedCount === 'number'
+          ? Math.min(res.completedCount, totalLessons)
+          : Math.min(confirmedLessonIds.length, totalLessons);
+
         setCompletedLessonIds(confirmedLessonIds);
-        setCompletedCount(res.completedCount ?? confirmedLessonIds.length);
+        setCompletedCount(verifiedCount);
         if (totalLessons > 0) {
-          const confirmedPct = Math.round(((res.completedCount ?? confirmedLessonIds.length) / totalLessons) * 1000) / 10;
+          const confirmedPct = Math.min(100, Math.round((verifiedCount / totalLessons) * 1000) / 10);
           setCourseProgressPct(confirmedPct);
         }
         if (storageKey) {

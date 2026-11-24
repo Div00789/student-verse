@@ -448,7 +448,11 @@ export default function StudentPortalPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {enrollments.map((course: any) => {
                     const slug = course.slug || course.courseSlug || 'ai-digital-marketing-course';
-                    const progress = typeof course.progressPct === 'number' ? Math.round(course.progressPct) : 0;
+                    const progress = typeof course.progressPercentage === 'number'
+                      ? course.progressPercentage
+                      : (typeof course.progressPct === 'number' ? course.progressPct : 0);
+                    const completedLessons = course.completedLessons ?? course.completedCount ?? 0;
+                    const totalLessons = course.totalLessons || 41;
                     const duration = course.durationHours || 48;
                     const thumb = course.thumbnailUrl || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80';
 
@@ -491,8 +495,8 @@ export default function StudentPortalPage() {
                               />
                             </div>
                             <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+                              <span>{completedLessons} of {totalLessons} lessons completed</span>
                               <span>Curriculum: 14 Modules</span>
-                              <span>{duration} Hours</span>
                             </div>
                           </div>
 
@@ -666,7 +670,11 @@ export default function StudentPortalPage() {
               <div className="space-y-4">
                 {filteredEnrollments.map((course: any) => {
                   const slug = course.slug || course.courseSlug || 'ai-digital-marketing-course';
-                  const progress = typeof course.progressPct === 'number' ? Math.round(course.progressPct) : 0;
+                  const progress = typeof course.progressPercentage === 'number'
+                    ? course.progressPercentage
+                    : (typeof course.progressPct === 'number' ? course.progressPct : 0);
+                  const completedLessons = course.completedLessons ?? course.completedCount ?? 0;
+                  const totalLessons = course.totalLessons || 41;
                   const duration = course.durationHours || 48;
 
                   return (
@@ -683,7 +691,7 @@ export default function StudentPortalPage() {
                             {progress >= 100 ? 'Completed' : 'In Progress'}
                           </span>
                           <span className="text-xs text-slate-400">Duration: {duration} Hours</span>
-                          <span className="text-xs font-bold text-indigo-600">&bull; {progress}% Complete</span>
+                          <span className="text-xs font-bold text-indigo-600">&bull; {completedLessons} of {totalLessons} lessons completed ({progress}%)</span>
                         </div>
                         <h3 className="text-xl font-bold text-slate-900">{course.title}</h3>
                         <p className="text-xs text-slate-600 leading-relaxed">{course.subtitle}</p>

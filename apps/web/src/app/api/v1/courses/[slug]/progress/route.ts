@@ -2,17 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { supabaseServer, JWT_SECRET } from '@/lib/supabaseServer';
 import { resolveToDbLessonId, resolveToFrontendLessonCode } from '@/lib/lessonMapping';
-
-// Fallback total published required lessons per course
-const COURSE_TOTAL_LESSONS: Record<string, number> = {
-  'ai-digital-marketing-course': 41,
-  'digital-marketing-foundations': 8,
-  'seo-and-ai-search-optimization': 8,
-  'paid-performance-google-meta-ads': 8,
-  'analytics-ga4-google-tag-manager': 8,
-  'social-media-marketing-strategy': 6,
-  'ai-tools-for-digital-marketers': 8,
-};
+import { calculateStudentCourseProgress, COURSE_TOTAL_LESSONS } from '@/lib/progressService';
 
 export async function GET(
   req: NextRequest,
@@ -49,72 +39,21 @@ export async function GET(
     const userId = decoded.sub;
     const { slug } = params;
 
-    const { data: course } = await supabaseServer
-      .from('Course')
-      .select('id, slug')
-      .eq('slug', slug)
-      .maybeSingle();
-
-    if (!course) {
-      return NextResponse.json({
-        isEnrolled: false,
-        completedLessonIds: [],
-        progressPercentage: 0,
-        progressPct: 0,
-        completedCount: 0,
-        totalLessons: 41,
-      });
-    }
-
-    const { data: enrollment } = await supabaseServer
-      .from('Enrollment')
-      .select('id, progressPct, isCompleted')
-      .eq('userId', userId)
-      .eq('courseId', course.id)
-      .maybeSingle();
-
-    if (!enrollment) {
-      return NextResponse.json({
-        isEnrolled: false,
-        completedLessonIds: [],
-        progressPercentage: 0,
-        progressPct: 0,
-        completedCount: 0,
-        totalLessons: COURSE_TOTAL_LESSONS[slug] || 41,
-      });
-    }
-
-    // Query permanent LessonProgress from PostgreSQL
-    const { data: progressRecords } = await supabaseServer
-      .from('LessonProgress')
-      .select('lessonId, isCompleted')
-      .eq('enrollmentId', enrollment.id)
-      .eq('isCompleted', true);
-
-    const rawLessonIds = progressRecords ? progressRecords.map((p: any) => p.lessonId) : [];
-
-    // Return both canonical frontend codes and UUIDs so any matching logic succeeds
-    const frontendCodes = new Set<string>();
-    rawLessonIds.forEach((id: string) => {
-      const code = resolveToFrontendLessonCode(id);
-      frontendCodes.add(code);
-      frontendCodes.add(id);
-    });
-
-    const uniqueCompletedCount = rawLessonIds.length;
-    const totalLessons = COURSE_TOTAL_LESSONS[slug] || 41;
-    const computedPct = totalLessons > 0
-      ? Math.min(100, Math.round((uniqueCompletedCount / totalLessons) * 1000) / 10)
-      : (enrollment.progressPct || 0);
+    // Use centralized progress service
+    const progress = await calculateStudentCourseProgress(userId, slug);
 
     return NextResponse.json({
-      isEnrolled: true,
-      enrollmentId: enrollment.id,
-      completedLessonIds: Array.from(frontendCodes),
-      completedCount: uniqueCompletedCount,
-      totalLessons,
-      progressPercentage: computedPct,
-      progressPct: computedPct,
+      isEnrolled: progress.isEnrolled,
+      enrollmentId: progress.enrollmentId,
+      courseId: progress.courseId,
+      courseSlug: progress.courseSlug,
+      completedLessonIds: progress.completedLessonIds,
+      completedCount: progress.completedCount,
+      completedLessons: progress.completedCount,
+      totalLessons: progress.totalLessons,
+      progressPercentage: progress.progressPercentage,
+      progressPct: progress.progressPercentage,
+      isCompleted: progress.isCompleted,
     });
   } catch (err: any) {
     return NextResponse.json({
@@ -225,44 +164,19 @@ export async function POST(
       });
     }
 
-    // Query all completed records for this enrollment to compute accurate total
-    const { data: completedRecords } = await supabaseServer
-      .from('LessonProgress')
-      .select('lessonId')
-      .eq('enrollmentId', enrollment.id)
-      .eq('isCompleted', true);
-
-    const completedLessonIdsSet = new Set<string>();
-    (completedRecords || []).forEach((r: any) => {
-      const code = resolveToFrontendLessonCode(r.lessonId);
-      completedLessonIdsSet.add(code);
-      completedLessonIdsSet.add(r.lessonId);
-    });
-
-    const uniqueCompletedCount = completedRecords ? completedRecords.length : 0;
-    const total = clientTotal || COURSE_TOTAL_LESSONS[slug] || 41;
-    const progressPercentage = Math.min(100, Math.round((uniqueCompletedCount / total) * 1000) / 10);
-
-    // Update Enrollment table with verified progress
-    await supabaseServer
-      .from('Enrollment')
-      .update({
-        progressPct: progressPercentage,
-        isCompleted: progressPercentage >= 100,
-        updatedAt: now,
-      })
-      .eq('id', enrollment.id);
+    // Calculate updated progress using the single centralized progress service
+    const progressResult = await calculateStudentCourseProgress(userId, slug);
 
     return NextResponse.json({
       success: true,
       completed: markComplete,
-      completedLessonIds: Array.from(completedLessonIdsSet),
-      completedCount: uniqueCompletedCount,
-      completedLessons: uniqueCompletedCount,
-      totalLessons: total,
-      progressPercentage,
-      progressPct: progressPercentage,
-      courseProgress: progressPercentage,
+      completedLessonIds: progressResult.completedLessonIds,
+      completedCount: progressResult.completedCount,
+      completedLessons: progressResult.completedCount,
+      totalLessons: progressResult.totalLessons,
+      progressPercentage: progressResult.progressPercentage,
+      progressPct: progressResult.progressPercentage,
+      courseProgress: progressResult.progressPercentage,
     });
   } catch (err: any) {
     return NextResponse.json({ message: err.message || 'Failed to update progress' }, { status: 500 });
