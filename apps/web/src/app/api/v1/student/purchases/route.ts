@@ -19,21 +19,10 @@ export async function GET(req: NextRequest) {
 
     const userId = decoded.sub;
 
+    // 1. Query Order table directly without broken foreign-key relation
     const { data: ordersData, error } = await supabaseServer
       .from('Order')
-      .select(`
-        id,
-        courseId,
-        amountMinorUnits,
-        currency,
-        status,
-        createdAt,
-        course:Course (
-          id,
-          slug,
-          title
-        )
-      `)
+      .select('id, courseId, amountMinorUnits, currency, status, createdAt')
       .eq('userId', userId)
       .order('createdAt', { ascending: false });
 
@@ -41,17 +30,40 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
 
-    const purchases = (ordersData || []).map((o: any) => ({
-      id: o.id,
-      orderReference: `SV-ORD-${o.id.slice(0, 8).toUpperCase()}`,
-      courseId: o.courseId,
-      courseTitle: o.course?.title || 'AI Digital Marketing Course',
-      courseSlug: o.course?.slug || 'ai-digital-marketing-course',
-      amountPaid: (o.amountMinorUnits || 2999900) / 100,
-      currency: o.currency || 'INR',
-      status: o.status || 'COMPLETED',
-      createdAt: o.createdAt,
-    }));
+    // 2. Fetch Course details for each courseId safely
+    const courseIds = (ordersData || []).map((o: any) => o.courseId).filter(Boolean);
+    let coursesMap: Record<string, any> = {};
+    if (courseIds.length > 0) {
+      const { data: courses } = await supabaseServer
+        .from('Course')
+        .select('id, slug, title')
+        .in('id', courseIds);
+      if (courses) {
+        for (const c of courses) {
+          coursesMap[c.id] = c;
+        }
+      }
+    }
+
+    // 3. Map orders providing all expected property names
+    const purchases = (ordersData || []).map((o: any) => {
+      const course = coursesMap[o.courseId];
+      const amount = (o.amountMinorUnits || 2999900) / 100;
+      const date = o.createdAt || new Date().toISOString();
+      return {
+        id: o.id,
+        orderReference: `SV-ORD-${o.id.slice(0, 8).toUpperCase()}`,
+        courseId: o.courseId,
+        courseTitle: course?.title || 'AI Digital Marketing Course',
+        courseSlug: course?.slug || 'ai-digital-marketing-course',
+        amount,
+        amountPaid: amount,
+        currency: o.currency || 'INR',
+        status: o.status || 'COMPLETED',
+        purchaseDate: date,
+        createdAt: date,
+      };
+    });
 
     return NextResponse.json(purchases);
   } catch (err: any) {

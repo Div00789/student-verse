@@ -41,7 +41,12 @@ export async function GET(
       .maybeSingle();
 
     if (!enrollment) {
-      return NextResponse.json({ completedLessonIds: [], progressPercentage: 0 });
+      return NextResponse.json({
+        isEnrolled: false,
+        completedLessonIds: [],
+        progressPercentage: 0,
+        progressPct: 0,
+      });
     }
 
     const { data: progressRecords } = await supabaseServer
@@ -53,8 +58,10 @@ export async function GET(
     const completedLessonIds = progressRecords ? progressRecords.map((p: any) => p.lessonId) : [];
 
     return NextResponse.json({
+      isEnrolled: true,
       completedLessonIds,
       progressPercentage: enrollment.progressPct || 0,
+      progressPct: enrollment.progressPct || 0,
     });
   } catch {
     return NextResponse.json({ completedLessonIds: [], progressPercentage: 0 });

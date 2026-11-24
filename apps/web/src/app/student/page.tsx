@@ -207,7 +207,7 @@ export default function StudentPortalPage() {
       if (data) {
         setDashboardData(data);
         if (data.enrollments && Array.isArray(data.enrollments)) {
-          const slugs = data.enrollments.map((e: any) => e.slug).filter(Boolean);
+          const slugs = data.enrollments.map((e: any) => e.slug || e.courseSlug || e.course?.slug).filter(Boolean);
           setEnrolledCourseSlugs(slugs);
         } else {
           setEnrolledCourseSlugs([]);
@@ -717,13 +717,13 @@ export default function StudentPortalPage() {
                         </span>
                         <span className="text-xs text-slate-400">Duration: {e.durationHours || 48} Hours</span>
                       </div>
-                      <h3 className="text-xl font-bold text-slate-900">{e.title}</h3>
-                      <p className="text-xs text-slate-600 leading-relaxed">{e.subtitle}</p>
+                      <h3 className="text-xl font-bold text-slate-900">{e.title || e.courseTitle}</h3>
+                      <p className="text-xs text-slate-600 leading-relaxed">{e.subtitle || e.course?.subtitle}</p>
                     </div>
 
                     <div className="flex items-center gap-3">
                       <Link
-                        href={`/courses/${e.slug}/learn`}
+                        href={`/courses/${e.slug || e.courseSlug || e.course?.slug}/learn`}
                         className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow flex items-center gap-2"
                       >
                         <span>Launch Course Player</span>

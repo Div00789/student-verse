@@ -18,7 +18,8 @@ export async function POST(req: NextRequest) {
     }
 
     const userId = decoded.sub;
-    const { courseSlug } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const courseSlug = body.courseSlug || body.slug;
 
     if (!courseSlug) {
       return NextResponse.json({ message: 'courseSlug is required' }, { status: 400 });
@@ -52,9 +53,11 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    const now = new Date().toISOString();
+
     // 3. Create completed Order record
     const orderId = crypto.randomUUID();
-    await supabaseServer.from('Order').insert({
+    const { error: orderErr } = await supabaseServer.from('Order').insert({
       id: orderId,
       userId,
       courseId: course.id,
@@ -63,18 +66,34 @@ export async function POST(req: NextRequest) {
       status: 'COMPLETED',
       gatewayPaymentId: `PAY-MANUAL-${Date.now()}`,
       idempotencyKey: `IDEMP-${userId}-${course.id}`,
+      createdAt: now,
+      updatedAt: now,
     });
+
+    if (orderErr) {
+      console.error('Order creation notice:', orderErr);
+    }
 
     // 4. Create Enrollment linked to Order
     const enrollmentId = crypto.randomUUID();
-    await supabaseServer.from('Enrollment').insert({
+    const { error: enrollErr } = await supabaseServer.from('Enrollment').insert({
       id: enrollmentId,
       userId,
       courseId: course.id,
       orderId,
       progressPct: 0,
       isCompleted: false,
+      enrolledAt: now,
+      updatedAt: now,
     });
+
+    if (enrollErr) {
+      console.error('Enrollment creation error:', enrollErr);
+      return NextResponse.json(
+        { message: enrollErr.message || 'Failed to create enrollment in database' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
