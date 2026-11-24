@@ -70,7 +70,7 @@ export default function StudentRegisterPage() {
       }
     } catch (err: any) {
       if (err.message && (err.message.includes('fetch') || err.message.includes('Failed to fetch') || err.message.includes('NetworkError'))) {
-        setError('Unable to connect to registration server. Please ensure the backend is running on port 4000.');
+        setError('Unable to reach the server. Please check your network connection or verify that the backend API URL is configured.');
       } else {
         setError(err?.message || 'Registration failed. Please check your information and try again.');
       }

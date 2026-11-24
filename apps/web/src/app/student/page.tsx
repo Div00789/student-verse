@@ -48,8 +48,10 @@ const ALL_EXPLORE_COURSES = [
     totalSessions: 16,
     modulesCount: 14,
     level: 'Beginner to Advanced',
-    price: 49999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60',
+    originalPrice: 37499,
+    discountPercent: 20,
+    price: 29999,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
     description: 'Master digital marketing with artificial intelligence through hands-on training in SEO, Google Ads, GA4, Paid Social Media, Email Marketing, Content Marketing, Marketing Automation, Affiliate Marketing, and Freelancing.',
     trainerName: 'StudentVerse Expert Faculty'
   },
@@ -62,6 +64,8 @@ const ALL_EXPLORE_COURSES = [
     totalSessions: 12,
     modulesCount: 2,
     level: 'Beginner',
+    originalPrice: 29999,
+    discountPercent: 15,
     price: 24999,
     thumbnailUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60',
     description: 'Master practical digital marketing strategy through real-time instructor guidance. Build end-to-end customer acquisition funnels, plan multi-channel campaigns, execute content schedules, and measure performance metrics.',
@@ -76,6 +80,8 @@ const ALL_EXPLORE_COURSES = [
     totalSessions: 10,
     modulesCount: 2,
     level: 'Intermediate',
+    originalPrice: 39999,
+    discountPercent: 25,
     price: 29999,
     thumbnailUrl: 'https://images.unsplash.com/photo-1571786256017-aee7a0c009b6?w=800&auto=format&fit=crop&q=60',
     description: 'Learn modern search mechanics beyond basic keywords. Conduct technical site audits, build topical clusters, optimize for Google Search Console, and master Answer Engine Optimisation (AEO).',
@@ -90,7 +96,9 @@ const ALL_EXPLORE_COURSES = [
     totalSessions: 12,
     modulesCount: 2,
     level: 'Intermediate',
-    price: 34999,
+    originalPrice: 44999,
+    discountPercent: 20,
+    price: 35999,
     thumbnailUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=60',
     description: 'Master high-volume paid media buying. Set up Google Search and Performance Max campaigns, architect Meta Ads creative testing frameworks, configure Server-Side Conversion APIs, and optimize ad spend.',
     trainerName: 'David Zhao'
@@ -104,6 +112,8 @@ const ALL_EXPLORE_COURSES = [
     totalSessions: 10,
     modulesCount: 2,
     level: 'Intermediate',
+    originalPrice: 32999,
+    discountPercent: 25,
     price: 24999,
     thumbnailUrl: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&auto=format&fit=crop&q=60',
     description: 'Stop guessing which marketing channels work. Master Google Tag Manager dataLayers, configure custom GA4 conversion events, implement cross-domain tracking, and build interactive client-facing dashboards.',
@@ -118,6 +128,8 @@ const ALL_EXPLORE_COURSES = [
     totalSessions: 10,
     modulesCount: 1,
     level: 'Beginner',
+    originalPrice: 24999,
+    discountPercent: 20,
     price: 19999,
     thumbnailUrl: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800&auto=format&fit=crop&q=60',
     description: 'Build organic social media systems that drive revenue. Learn platform-specific distribution across LinkedIn, Instagram, and YouTube, engineer high-engagement content calendars, and establish distinctive brand voice.',
@@ -132,6 +144,8 @@ const ALL_EXPLORE_COURSES = [
     totalSessions: 10,
     modulesCount: 1,
     level: 'Intermediate',
+    originalPrice: 39999,
+    discountPercent: 25,
     price: 29999,
     thumbnailUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=60',
     description: 'Transform modern marketing operations using production AI workflows. Build customized prompt chains for campaign research, automate multi-lingual content variations, and integrate marketing automation triggers.',
@@ -853,8 +867,22 @@ export default function StudentPortalPage() {
 
                     <div className="p-5 pt-0 border-t border-slate-100 flex items-center justify-between mt-auto">
                       <div>
-                        <span className="text-[10px] text-slate-400 block font-bold">Tuition (INR)</span>
-                        <span className="text-lg font-black text-slate-900">{formatINR(course.price)}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] text-slate-400 block font-bold">Tuition (INR)</span>
+                          {course.discountPercent && (
+                            <span className="text-[9px] font-black bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded">
+                              {course.discountPercent}% OFF
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="text-lg font-black text-slate-900">{formatINR(course.price)}</span>
+                          {course.originalPrice && (
+                            <span className="text-[11px] font-semibold text-slate-400 line-through">
+                              {formatINR(course.originalPrice)}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       {isEnrolled ? (

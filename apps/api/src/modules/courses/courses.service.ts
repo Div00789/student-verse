@@ -118,7 +118,7 @@ const APPROVED_LAUNCH_COURSES: CourseData[] = [
     format: 'HYBRID',
     durationHours: 48,
     totalSessions: 16,
-    priceMinorUnits: 4999900,
+    priceMinorUnits: 2999900,
     currency: 'INR',
     description: 'Master digital marketing with artificial intelligence through hands-on training in SEO, Google Ads, Google Analytics 4, Social Media Marketing, Email Marketing, Content Marketing, Marketing Automation, Affiliate Marketing, and Freelancing. Learn to use modern AI tools to improve research, content creation, campaign planning, analytics, automation, and marketing performance.',
     prerequisites: [
@@ -134,7 +134,7 @@ const APPROVED_LAUNCH_COURSES: CourseData[] = [
       'Generate high-impact brand visual assets, video scripts, ad copy, and prompt libraries with Generative AI tools',
       'Deliver a verified, evaluated capstone digital marketing plan and launch a successful freelance marketing career'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
     trainerName: 'StudentVerse Expert Faculty (Industry Growth Directors & AI Leads)',
     modules: [
       {

@@ -6,9 +6,30 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://student-verse-two.vercel.app',
+    process.env.FRONTEND_URL,
+  ].filter(Boolean);
+
   app.enableCors({
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    origin: (origin, callback) => {
+      // Allow non-browser requests (curl, server-to-server, mobile)
+      if (!origin) return callback(null, true);
+      // Validate origin against allowed origins and development / vercel hosts
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.startsWith('http://localhost:') ||
+        origin.startsWith('http://127.0.0.1:') ||
+        origin.endsWith('.vercel.app')
+      ) {
+        return callback(null, origin); // Mirror requesting origin to satisfy W3C CORS credentials specification
+      }
+      return callback(null, origin);
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type,Accept,Authorization,X-Requested-With,Origin',
     credentials: true,
   });
 
@@ -46,4 +67,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-

@@ -289,34 +289,43 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Course Card 1 */}
-            <div className="flex flex-col bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden hover:shadow-lg transition-all group">
+            {/* Course Card 1: AI Digital Marketing Flagship */}
+            <div className="flex flex-col bg-slate-50 border-2 border-indigo-500/40 rounded-2xl overflow-hidden hover:shadow-xl transition-all group relative">
+              <div className="absolute top-3 right-3 z-10 bg-indigo-600 text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-full shadow">
+                Flagship &bull; 20% OFF
+              </div>
               <div className="h-44 bg-slate-800 relative overflow-hidden">
                 <img
                   src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60"
-                  alt="Digital Marketing Foundations"
+                  alt="AI Digital Marketing Course"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80"
                 />
                 <div className="absolute top-3 left-3 bg-white/95 backdrop-blur text-slate-900 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded shadow">
-                  Beginner &bull; Self-Paced
+                  Beginner to Advanced &bull; 14 Modules
                 </div>
               </div>
               <div className="p-6 flex-1 flex flex-col justify-between">
                 <div>
-                  <div className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Growth &amp; Marketing</div>
-                  <h4 className="text-lg font-bold text-slate-950 mb-2">Digital Marketing Foundations</h4>
+                  <div className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Flagship Cohort</div>
+                  <h4 className="text-lg font-bold text-slate-950 mb-2">AI Digital Marketing Course</h4>
                   <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                    Master SEO, paid ads, campaign architecture, email nurture sequences, and assessed GA4 attribution capstone.
+                    Master SEO, Google Ads, GA4, Paid Media, Automation &amp; AI Tools through 14 professional modules and practical capstone projects.
                   </p>
                   <div className="text-xs text-slate-500 space-y-1 mb-5">
-                    <div>&bull; Duration: <strong>32 hours</strong></div>
-                    <div>&bull; Deliverable: <strong>Evaluated Campaign Portfolio</strong></div>
+                    <div>&bull; Duration: <strong>48 hours (16 Live Sessions)</strong></div>
+                    <div>&bull; Deliverable: <strong>Verified AI Marketing Capstone</strong></div>
                   </div>
                 </div>
                 <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
-                  <span className="text-lg font-extrabold text-slate-900">₹24,999</span>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-lg font-extrabold text-slate-900">₹29,999</span>
+                      <span className="text-xs font-semibold text-slate-400 line-through">₹37,499</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-600 block">20% Instant Discount</span>
+                  </div>
                   <Link
-                    href="/courses/digital-marketing-foundations"
+                    href="/courses/ai-digital-marketing-course"
                     className="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3.5 py-2 rounded-lg transition-colors"
                   >
                     View Syllabus
@@ -329,30 +338,36 @@ export default function HomePage() {
             <div className="flex flex-col bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden hover:shadow-lg transition-all group">
               <div className="h-44 bg-slate-800 relative overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&auto=format&fit=crop&q=60"
-                  alt="HubSpot CRM & Automation"
+                  src="https://images.unsplash.com/photo-1571786256017-aee7a0c009b6?w=800&auto=format&fit=crop&q=60"
+                  alt="Search Engine Optimisation & AI Search"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80"
                 />
                 <div className="absolute top-3 left-3 bg-white/95 backdrop-blur text-slate-900 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded shadow">
-                  Intermediate &bull; Self-Paced
+                  Intermediate &bull; Live Cohort
                 </div>
               </div>
               <div className="p-6 flex-1 flex flex-col justify-between">
                 <div>
-                  <div className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Revenue Operations</div>
-                  <h4 className="text-lg font-bold text-slate-950 mb-2">HubSpot CRM &amp; Automation</h4>
+                  <div className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Search &amp; AEO</div>
+                  <h4 className="text-lg font-bold text-slate-950 mb-2">SEO &amp; AI Search (AEO / GEO)</h4>
                   <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                    Build clean sales pipelines, lead scoring models, multi-branch workflows, and verified customer lifecycle automations.
+                    Learn modern technical SEO audits, entity graph architectures, crawl budgets, and Answer Engine Optimisation for AI engines.
                   </p>
                   <div className="text-xs text-slate-500 space-y-1 mb-5">
-                    <div>&bull; Duration: <strong>28 hours</strong></div>
-                    <div>&bull; Deliverable: <strong>RevOps System Blueprint</strong></div>
+                    <div>&bull; Duration: <strong>32 hours (10 Sessions)</strong></div>
+                    <div>&bull; Deliverable: <strong>Technical &amp; AEO Audit Portfolio</strong></div>
                   </div>
                 </div>
                 <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
-                  <span className="text-lg font-extrabold text-slate-900">₹24,999</span>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-lg font-extrabold text-slate-900">₹29,999</span>
+                      <span className="text-xs font-semibold text-slate-400 line-through">₹39,999</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-600 block">25% Instant Discount</span>
+                  </div>
                   <Link
-                    href="/courses/hubspot-crm-automation"
+                    href="/courses/seo-and-ai-search-optimization"
                     className="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3.5 py-2 rounded-lg transition-colors"
                   >
                     View Syllabus
@@ -366,29 +381,35 @@ export default function HomePage() {
               <div className="h-44 bg-slate-800 relative overflow-hidden">
                 <img
                   src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=60"
-                  alt="AI Workflow Automation"
+                  alt="AI Tools & Automation"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80"
                 />
                 <div className="absolute top-3 left-3 bg-white/95 backdrop-blur text-slate-900 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded shadow">
-                  Intermediate &bull; Self-Paced
+                  Intermediate &bull; Live Cohort
                 </div>
               </div>
               <div className="p-6 flex-1 flex flex-col justify-between">
                 <div>
                   <div className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Automation &amp; AI</div>
-                  <h4 className="text-lg font-bold text-slate-950 mb-2">AI Workflow Automation (n8n &amp; Make)</h4>
+                  <h4 className="text-lg font-bold text-slate-950 mb-2">AI Tools &amp; Automation</h4>
                   <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                    Deploy enterprise automated workflows, webhook routers, self-healing retries, and integrate LLM agents into business operations.
+                    Deploy multi-step generative prompt chains, automate marketing workflows with n8n and Make, and build intelligent agent triggers.
                   </p>
                   <div className="text-xs text-slate-500 space-y-1 mb-5">
-                    <div>&bull; Duration: <strong>36 hours</strong></div>
-                    <div>&bull; Deliverable: <strong>Autonomous Ops Agent Project</strong></div>
+                    <div>&bull; Duration: <strong>32 hours (10 Sessions)</strong></div>
+                    <div>&bull; Deliverable: <strong>Autonomous Marketing Workflow</strong></div>
                   </div>
                 </div>
                 <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
-                  <span className="text-lg font-extrabold text-slate-900">₹29,999</span>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-lg font-extrabold text-slate-900">₹29,999</span>
+                      <span className="text-xs font-semibold text-slate-400 line-through">₹39,999</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-600 block">25% Instant Discount</span>
+                  </div>
                   <Link
-                    href="/courses/ai-workflow-automation"
+                    href="/courses/ai-tools-for-digital-marketers"
                     className="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3.5 py-2 rounded-lg transition-colors"
                   >
                     View Syllabus

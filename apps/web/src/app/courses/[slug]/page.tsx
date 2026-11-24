@@ -29,7 +29,10 @@ const COURSE_DATA: Record<string, any> = {
     format: 'LIVE CLASSES + RECORDED LECTURES + PRACTICAL PROJECTS',
     durationHours: 48,
     totalSessions: 16,
-    price: 49999,
+    originalPrice: 37499,
+    discountPercent: 20,
+    price: 29999,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
     trainerName: 'StudentVerse Expert Faculty (Industry Growth Directors & AI Leads)',
     batchCode: 'SV-AIDM-COHORT1',
     batchSchedule: 'Mon & Wed: 18:00 - 20:00 UTC (100% Live Sessions + 24/7 Practical Labs)',
@@ -184,6 +187,8 @@ const COURSE_DATA: Record<string, any> = {
     format: '100% LIVE INSTRUCTOR-LED',
     durationHours: 36,
     totalSessions: 12,
+    originalPrice: 29999,
+    discountPercent: 15,
     price: 24999,
     trainerName: 'Marcus Vance (Senior Performance Lead)',
     batchCode: 'SV-DM-NOV26',
@@ -224,7 +229,10 @@ const COURSE_DATA: Record<string, any> = {
     format: '100% LIVE INSTRUCTOR-LED',
     durationHours: 32,
     totalSessions: 10,
+    originalPrice: 39999,
+    discountPercent: 25,
     price: 29999,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
     trainerName: 'Elena Rostova (Technical SEO Architect)',
     batchCode: 'SV-SEO-DEC26',
     batchSchedule: 'Sat & Sun: 14:00 - 16:30 UTC (100% Live on Google Meet)',
@@ -262,7 +270,9 @@ const COURSE_DATA: Record<string, any> = {
     format: '100% LIVE INSTRUCTOR-LED',
     durationHours: 36,
     totalSessions: 12,
-    price: 34999,
+    originalPrice: 44999,
+    discountPercent: 20,
+    price: 35999,
     trainerName: 'David Zhao (Paid Acquisition Director)',
     batchCode: 'SV-ADS-DEC26',
     batchSchedule: 'Mon & Wed: 17:00 - 19:00 UTC (100% Live on Google Meet)',
@@ -300,6 +310,8 @@ const COURSE_DATA: Record<string, any> = {
     format: '100% LIVE INSTRUCTOR-LED',
     durationHours: 30,
     totalSessions: 10,
+    originalPrice: 32999,
+    discountPercent: 25,
     price: 24999,
     trainerName: 'Priya Sharma (Analytics & BI Lead)',
     batchCode: 'SV-GA4-NOV26',
@@ -338,6 +350,8 @@ const COURSE_DATA: Record<string, any> = {
     format: '100% LIVE INSTRUCTOR-LED',
     durationHours: 28,
     totalSessions: 10,
+    originalPrice: 24999,
+    discountPercent: 20,
     price: 19999,
     trainerName: 'Chloe Bennett (Brand & Social Director)',
     batchCode: 'SV-SMM-DEC26',
@@ -369,7 +383,10 @@ const COURSE_DATA: Record<string, any> = {
     format: '100% LIVE INSTRUCTOR-LED',
     durationHours: 32,
     totalSessions: 10,
+    originalPrice: 39999,
+    discountPercent: 25,
     price: 29999,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
     trainerName: 'Dr. Aris Thorne (Marketing Automation Specialist)',
     batchCode: 'SV-AI-NOV26',
     batchSchedule: 'Thu & Sat: 17:30 - 19:30 UTC (100% Live on Google Meet)',
@@ -474,11 +491,28 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
           <div className="lg:col-span-4 sticky top-24">
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-md space-y-6">
               <div>
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Live Cohort Tuition</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Live Cohort Tuition</span>
+                  {course.discountPercent && (
+                    <span className="px-2 py-0.5 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
+                      {course.discountPercent}% OFF
+                    </span>
+                  )}
+                </div>
                 <div className="flex items-baseline gap-2 mt-1">
                   <span className="text-3xl font-black text-slate-900">{formatINR(course.price)}</span>
-                  <span className="text-xs font-semibold text-slate-500">INR (Complete Live Programme)</span>
+                  {course.originalPrice && (
+                    <span className="text-base font-semibold text-slate-400 line-through">
+                      {formatINR(course.originalPrice)}
+                    </span>
+                  )}
+                  <span className="text-xs font-semibold text-slate-500">INR</span>
                 </div>
+                {course.originalPrice && (
+                  <span className="text-xs text-emerald-600 font-bold block mt-1">
+                    Save {formatINR(course.originalPrice - course.price)} ({course.discountPercent}% Instant Discount)
+                  </span>
+                )}
               </div>
 
               {/* Batch info box */}
