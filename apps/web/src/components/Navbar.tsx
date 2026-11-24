@@ -1,20 +1,61 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { 
-  BookOpen, 
-  Briefcase, 
-  Building2, 
-  Award, 
-  Menu, 
-  X, 
-  ShieldCheck, 
-  UserCheck 
+import { usePathname, useRouter } from 'next/navigation';
+import {
+  BookOpen,
+  Briefcase,
+  Building2,
+  Award,
+  Menu,
+  X,
+  ShieldCheck,
+  UserCheck,
+  LogOut,
+  User as UserIcon,
+  LogIn
 } from 'lucide-react';
+import { getAuthUser, clearAuthSession, AuthUser, formatStudentName } from '../lib/auth';
 
 export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const pathname = usePathname() || '';
+  const router = useRouter();
+
+  // Dynamic active portal detection based on current route
+  const isStudentActive = pathname.startsWith('/student') || pathname.includes('/learn');
+  const isEmployerActive = pathname.startsWith('/employer');
+
+  useEffect(() => {
+    // Initial fetch of authenticated user
+    setUser(getAuthUser());
+
+    // Listen to reactive auth changes
+    const handleAuthChange = () => {
+      setUser(getAuthUser());
+    };
+
+    window.addEventListener('sv_auth_changed', handleAuthChange);
+    return () => {
+      window.removeEventListener('sv_auth_changed', handleAuthChange);
+    };
+  }, []);
+
+  const handleSignOut = () => {
+    clearAuthSession();
+    setUser(null);
+    setMobileMenuOpen(false);
+    router.push('/');
+  };
+
+  const getUserInitials = (name?: string): string => {
+    if (!name) return 'SV';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200">
@@ -76,29 +117,79 @@ export const Navbar: React.FC = () => {
             </nav>
           </div>
 
-          {/* Role Portals & Action Buttons */}
+          {/* Role Portals & Dynamic Action Buttons */}
           <div className="hidden lg:flex items-center gap-3">
+            {/* Student Portal Link - Highlighted ONLY when on /student route */}
             <Link
               href="/student"
-              className="text-xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors flex items-center gap-1"
+              className={`text-xs px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${isStudentActive
+                ? 'bg-indigo-600 text-white font-bold shadow-sm'
+                : 'text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 font-semibold'
+                }`}
             >
               <UserCheck className="w-3.5 h-3.5" />
-              Student Portal
+              <span>Student Portal</span>
             </Link>
+
+            {/* Employer Portal Link - Highlighted ONLY when on /employer route */}
             <Link
               href="/employer"
-              className="text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-1"
+              className={`text-xs px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${isEmployerActive
+                ? 'bg-indigo-600 text-white font-bold shadow-sm'
+                : 'text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 font-semibold'
+                }`}
             >
               <ShieldCheck className="w-3.5 h-3.5" />
-              Employer Portal
+              <span>Employer Portal</span>
             </Link>
+
             <div className="h-5 w-px bg-slate-200 mx-1" />
-            <Link
-              href="/get-started"
-              className="text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg shadow-sm transition-colors"
-            >
-              Get Started
-            </Link>
+
+            {/* Authenticated User or Sign In / Get Started */}
+            {user ? (
+              <div className="flex items-center gap-2.5">
+                <Link
+                  href={user.roles.includes('EMPLOYER') ? '/employer' : '/student'}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white text-[11px] font-black flex items-center justify-center shadow-sm">
+                    {getUserInitials(formatStudentName(user.fullName))}
+                  </div>
+                  <div className="text-left">
+                    <span className="text-xs font-bold text-slate-900 block leading-tight max-w-[110px] truncate">
+                      {formatStudentName(user.fullName || user.email.split('@')[0])}
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-medium capitalize block -mt-0.5">
+                      {user.roles.includes('EMPLOYER') ? 'Employer' : 'Student'}
+                    </span>
+                  </div>
+                </Link>
+
+                <button
+                  onClick={handleSignOut}
+                  title="Sign Out"
+                  className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-200"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/get-started"
+                  className="text-xs font-bold text-slate-700 hover:text-indigo-600 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-1"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Sign In</span>
+                </Link>
+                <Link
+                  href="/get-started"
+                  className="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg shadow-sm transition-colors"
+                >
+                  Get Started
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -145,32 +236,70 @@ export const Navbar: React.FC = () => {
           >
             Verify Credential
           </Link>
+
           <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
-            <Link
-              href="/get-started"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-2 text-sm font-bold text-white bg-indigo-600 rounded-lg shadow-sm"
-            >
-              Get Started
-            </Link>
+            {/* Student Portal Mobile Button */}
             <Link
               href="/student"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-2 text-sm font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg"
+              className={`w-full text-center py-2 text-sm rounded-lg transition-all flex items-center justify-center gap-1.5 ${isStudentActive
+                ? 'bg-indigo-600 text-white font-bold shadow-sm'
+                : 'text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 font-semibold'
+                }`}
             >
-              Student Portal
+              <UserCheck className="w-4 h-4" />
+              <span>Student Portal</span>
             </Link>
+
+            {/* Employer Portal Mobile Button */}
             <Link
               href="/employer"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-2 text-sm font-medium text-slate-700 bg-slate-100 border border-slate-200 rounded-lg"
+              className={`w-full text-center py-2 text-sm rounded-lg transition-all flex items-center justify-center gap-1.5 ${isEmployerActive
+                ? 'bg-indigo-600 text-white font-bold shadow-sm'
+                : 'text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 font-semibold'
+                }`}
             >
-              Employer Portal
+              <ShieldCheck className="w-4 h-4" />
+              <span>Employer Portal</span>
             </Link>
+
+            {user ? (
+              <div className="pt-2 border-t border-slate-100 space-y-2">
+                <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white text-xs font-black flex items-center justify-center">
+                    {getUserInitials(user.fullName)}
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-slate-900 block">
+                      {user.fullName || user.email}
+                    </span>
+                    <span className="text-[10px] text-slate-500 capitalize">{user.roles.includes('EMPLOYER') ? 'Employer' : 'Student'}</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleSignOut}
+                  className="w-full text-center py-2 text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100 transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            ) : (
+              <div className="pt-2 border-t border-slate-100 space-y-2">
+                <Link
+                  href="/get-started"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center py-2 text-sm font-bold text-white bg-indigo-600 rounded-lg shadow-sm block"
+                >
+                  Get Started / Sign In
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}
     </header>
   );
 };
-

@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { GraduationCap, Lock, Mail, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { setAuthSession } from '../../../lib/auth';
+import { api } from '../../../lib/api';
 
 export default function StudentLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('student@studentverse.com');
-  const [password, setPassword] = useState('Student@123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -19,18 +20,31 @@ export default function StudentLoginPage() {
     setError('');
 
     try {
-      // Direct mock session provisioning for seamless client testing
-      const user = {
-        id: 'usr-student-demo-1',
-        email,
-        fullName: 'Alex Morgan',
-        roles: ['STUDENT', 'LEARNER'],
-        country: 'United Kingdom',
-      };
-      setAuthSession(`sv-jwt-token-${Date.now()}`, user);
-      router.push('/student');
+      const emailNorm = email.toLowerCase().trim();
+      const res = await api.auth.login(emailNorm, password);
+
+      if (res && res.accessToken && res.user) {
+        setAuthSession(res.accessToken, {
+          id: res.user.id,
+          email: res.user.email,
+          fullName: res.user.fullName || emailNorm.split('@')[0],
+          roles: res.user.roles || ['STUDENT'],
+          country: res.user.country || 'India',
+          createdAt: res.user.createdAt,
+          headline: res.user.headline,
+          profilePicture: res.user.avatarUrl,
+        });
+        const redirectUrl = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('redirect') : null;
+        router.push(redirectUrl || '/student');
+      } else {
+        throw new Error('Invalid response received from server.');
+      }
     } catch (err: any) {
-      setError(err?.message || 'Login failed. Please check your credentials.');
+      if (err.message && (err.message.includes('fetch') || err.message.includes('Failed to fetch') || err.message.includes('NetworkError'))) {
+        setError('Unable to connect to authentication server. Please ensure the backend is running on port 4000.');
+      } else {
+        setError(err?.message || 'Invalid email address or password.');
+      }
     } finally {
       setLoading(false);
     }
@@ -54,7 +68,7 @@ export default function StudentLoginPage() {
         <div className="bg-white py-8 px-6 shadow-sm border border-slate-200 rounded-2xl sm:px-10">
           {error && (
             <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-rose-600" />
+              <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
@@ -72,7 +86,7 @@ export default function StudentLoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-9 pr-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white"
-                  placeholder="student@studentverse.com"
+                  placeholder="your.email@example.com"
                 />
               </div>
             </div>
@@ -94,7 +108,7 @@ export default function StudentLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-9 pr-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white"
-                  placeholder="••••••••"
+                  placeholder="••••••••••••"
                 />
               </div>
             </div>
@@ -102,25 +116,26 @@ export default function StudentLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md transition-all disabled:opacity-50"
             >
-              {loading ? 'Authenticating...' : 'Sign In to Student Portal'}
-              <ArrowRight className="w-4 h-4" />
+              {loading ? (
+                <span>Authenticating...</span>
+              ) : (
+                <>
+                  <span>Sign In to Learning Portal</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
             </button>
           </form>
 
-          {/* Demo Helper Box */}
-          <div className="mt-6 p-3.5 bg-indigo-50/70 border border-indigo-100 rounded-xl text-xs text-indigo-900">
-            <span className="font-bold block mb-1">Test Demo Account:</span>
-            <span>Email: <code>student@studentverse.com</code></span><br />
-            <span>Password: <code>Student@123</code></span>
-          </div>
-
-          <div className="mt-6 pt-6 border-t border-slate-100 text-center text-xs text-slate-600">
-            Don&apos;t have an account?{' '}
-            <Link href="/student/register" className="font-bold text-indigo-600 hover:underline">
-              Register as a Student
-            </Link>
+          <div className="mt-6 pt-6 border-t border-slate-100 text-center">
+            <p className="text-xs text-slate-600">
+              Don&apos;t have an account?{' '}
+              <Link href="/student/register" className="font-bold text-indigo-600 hover:underline">
+                Create Student Account
+              </Link>
+            </p>
           </div>
         </div>
       </div>

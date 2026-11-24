@@ -314,7 +314,7 @@ export default function HomePage() {
                   </div>
                 </div>
                 <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
-                  <span className="text-lg font-extrabold text-slate-900">$199 USD</span>
+                  <span className="text-lg font-extrabold text-slate-900">₹24,999</span>
                   <Link
                     href="/courses/digital-marketing-foundations"
                     className="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3.5 py-2 rounded-lg transition-colors"
@@ -350,7 +350,7 @@ export default function HomePage() {
                   </div>
                 </div>
                 <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
-                  <span className="text-lg font-extrabold text-slate-900">$249 USD</span>
+                  <span className="text-lg font-extrabold text-slate-900">₹24,999</span>
                   <Link
                     href="/courses/hubspot-crm-automation"
                     className="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3.5 py-2 rounded-lg transition-colors"
@@ -386,7 +386,7 @@ export default function HomePage() {
                   </div>
                 </div>
                 <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
-                  <span className="text-lg font-extrabold text-slate-900">$299 USD</span>
+                  <span className="text-lg font-extrabold text-slate-900">₹29,999</span>
                   <Link
                     href="/courses/ai-workflow-automation"
                     className="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3.5 py-2 rounded-lg transition-colors"

@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Body, UseGuards, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { IdentityService, RegisterDto, LoginDto } from './identity.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -29,6 +29,18 @@ export class IdentityController {
   @ApiResponse({ status: 200, description: 'Profile returned' })
   async getMe(@Req() req: any) {
     return this.identityService.getProfile(req.user.id);
+  }
+
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update authenticated user profile information' })
+  @ApiResponse({ status: 200, description: 'Profile updated' })
+  async updateProfile(
+    @Req() req: any,
+    @Body() body: { fullName?: string; headline?: string; country?: string; visibility?: 'PRIVATE' | 'SEARCHABLE' }
+  ) {
+    return this.identityService.updateProfile(req.user.id, body);
   }
 
   @Post('forgot-password')

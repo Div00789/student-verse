@@ -1,5 +1,6 @@
 import { PrismaClient, Role, CourseLevel, CourseFormat, CoursePublishStatus, WorkplaceType, EmployerVerificationStatus, TalentVisibility } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
+import { seedAiDigitalMarketingCourse } from './seed-ai-course';
 
 const prisma = new PrismaClient();
 
@@ -34,7 +35,7 @@ async function main() {
       industry: 'Omnichannel Advertising Agency',
       website: 'https://vanguardmedia.example.com',
       location: 'New York, Toronto & Remote',
-      description: 'Full-service digital media agency managing $30M+ annual paid advertising budgets across Google, Meta, and emerging channels.',
+      description: 'Full-service digital media agency managing ₹250 Cr+ annual paid advertising budgets across Google, Meta, and emerging channels.',
       isVerified: true,
       activeHiringTracks: ['Media Buying', 'Social Media Strategy', 'Campaign Analytics']
     }
@@ -81,8 +82,8 @@ async function main() {
       status: CoursePublishStatus.PUBLISHED,
       durationHours: 36,
       totalSessions: 12,
-      priceMinorUnits: 29900,
-      currency: 'USD',
+      priceMinorUnits: 2499900,
+      currency: 'INR',
       description: 'Master practical digital marketing strategy through real-time instructor guidance. Build end-to-end customer acquisition funnels, plan multi-channel campaigns, execute content schedules, and measure performance metrics across modern channels.',
       prerequisites: ['Basic web literacy', 'Familiarity with spreadsheets'],
       learningOutcomes: [
@@ -103,8 +104,8 @@ async function main() {
       status: CoursePublishStatus.PUBLISHED,
       durationHours: 32,
       totalSessions: 10,
-      priceMinorUnits: 34900,
-      currency: 'USD',
+      priceMinorUnits: 2999900,
+      currency: 'INR',
       description: 'Learn modern search mechanics beyond basic keywords. Conduct technical site audits, build topical clusters, optimize for Google Search Console, and master Answer Engine Optimisation (AEO) for AI search engines like ChatGPT Search and Google AI Overviews.',
       prerequisites: ['Basic HTML and CMS understanding'],
       learningOutcomes: [
@@ -125,8 +126,8 @@ async function main() {
       status: CoursePublishStatus.PUBLISHED,
       durationHours: 36,
       totalSessions: 12,
-      priceMinorUnits: 39900,
-      currency: 'USD',
+      priceMinorUnits: 3499900,
+      currency: 'INR',
       description: 'Master high-volume paid media buying. Set up Google Search and Performance Max campaigns, architect Meta Ads creative testing frameworks, configure Server-Side Conversion APIs, and optimize ad spend with rigorous ROAS attribution.',
       prerequisites: ['Basic digital marketing experience'],
       learningOutcomes: [
@@ -147,8 +148,8 @@ async function main() {
       status: CoursePublishStatus.PUBLISHED,
       durationHours: 30,
       totalSessions: 10,
-      priceMinorUnits: 29900,
-      currency: 'USD',
+      priceMinorUnits: 2499900,
+      currency: 'INR',
       description: 'Stop guessing which marketing channels work. Master Google Tag Manager dataLayers, configure custom GA4 conversion events, implement cross-domain tracking, and build interactive client-facing dashboards in Looker Studio.',
       prerequisites: ['Basic spreadsheet and marketing understanding'],
       learningOutcomes: [
@@ -169,8 +170,8 @@ async function main() {
       status: CoursePublishStatus.PUBLISHED,
       durationHours: 28,
       totalSessions: 10,
-      priceMinorUnits: 24900,
-      currency: 'USD',
+      priceMinorUnits: 1999900,
+      currency: 'INR',
       description: 'Build organic social media systems that drive revenue. Learn platform-specific distribution across LinkedIn, Instagram, and YouTube, engineer high-engagement content calendars, establish distinctive brand voice, and analyze community sentiment.',
       prerequisites: ['Basic social media familiarity'],
       learningOutcomes: [
@@ -191,8 +192,8 @@ async function main() {
       status: CoursePublishStatus.PUBLISHED,
       durationHours: 32,
       totalSessions: 10,
-      priceMinorUnits: 34900,
-      currency: 'USD',
+      priceMinorUnits: 2999900,
+      currency: 'INR',
       description: 'Transform modern marketing operations using production AI workflows. Build customized prompt chains for campaign research, automate multi-lingual content variations, integrate marketing automation triggers, and maintain responsible AI governance.',
       prerequisites: ['Basic digital marketing experience'],
       learningOutcomes: [
@@ -294,6 +295,10 @@ async function main() {
   });
 
   console.log('✓ Test user accounts seeded (student, employer, admin).');
+
+  // 5. Seed Flagship AI Digital Marketing Course and all 14 Modules
+  await seedAiDigitalMarketingCourse(prisma);
+
   console.log('All StudentVerse database entities successfully seeded to Supabase PostgreSQL!');
 }
 

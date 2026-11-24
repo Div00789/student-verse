@@ -5,30 +5,48 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Building2, Lock, Mail, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
 import { setAuthSession } from '../../../lib/auth';
+import { api } from '../../../lib/api';
 
 export default function EmployerLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('employer@studentverse.com');
-  const [password, setPassword] = useState('Employer@123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
 
-    const user = {
-      id: 'usr-employer-demo-1',
-      email,
-      fullName: 'Apex Growth Labs (Hiring Lead)',
-      roles: ['EMPLOYER', 'EMPLOYER_OWNER'],
-      country: 'Global',
-      companyName: 'Apex Growth Labs',
-      isEmployerVerified: true,
-    };
+    try {
+      const emailNorm = email.toLowerCase().trim();
+      const res = await api.auth.login(emailNorm, password);
 
-    setAuthSession(`sv-jwt-token-${Date.now()}`, user);
-    router.push('/employer');
+      if (res && res.accessToken && res.user) {
+        setAuthSession(res.accessToken, {
+          id: res.user.id,
+          email: res.user.email,
+          fullName: res.user.fullName || 'Hiring Partner',
+          roles: res.user.roles || ['EMPLOYER'],
+          country: res.user.country || 'India',
+          companyName: res.user.companyName || 'Organisation',
+          isEmployerVerified: res.user.isEmployerVerified ?? true,
+          createdAt: res.user.createdAt,
+        });
+        router.push('/employer');
+      } else {
+        throw new Error('Invalid response received from authentication service.');
+      }
+    } catch (err: any) {
+      if (err.message && (err.message.includes('fetch') || err.message.includes('Failed to fetch') || err.message.includes('NetworkError'))) {
+        setError('Unable to connect to authentication server. Please ensure the backend is running on port 4000.');
+      } else {
+        setError(err?.message || 'Invalid email address or password.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,6 +69,13 @@ export default function EmployerLoginPage() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-6 shadow-sm border border-slate-200 rounded-2xl sm:px-10">
+          {error && (
+            <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
@@ -86,7 +111,7 @@ export default function EmployerLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-9 pr-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white"
-                  placeholder="••••••••"
+                  placeholder="••••••••••••"
                 />
               </div>
             </div>
@@ -94,25 +119,26 @@ export default function EmployerLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 shadow-md transition-all disabled:opacity-50"
             >
-              {loading ? 'Verifying...' : 'Sign In as Hiring Partner'}
-              <ArrowRight className="w-4 h-4" />
+              {loading ? (
+                <span>Authenticating...</span>
+              ) : (
+                <>
+                  <span>Sign In as Employer</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
             </button>
           </form>
 
-          {/* Test credentials box */}
-          <div className="mt-6 p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700">
-            <span className="font-bold block mb-1">Test Employer Account:</span>
-            <span>Email: <code>employer@studentverse.com</code></span><br />
-            <span>Password: <code>Employer@123</code></span>
-          </div>
-
-          <div className="mt-6 pt-6 border-t border-slate-100 text-center text-xs text-slate-600">
-            Need to register your organisation?{' '}
-            <Link href="/employer/register" className="font-bold text-indigo-600 hover:underline">
-              Submit Employer Verification
-            </Link>
+          <div className="mt-6 pt-6 border-t border-slate-100 text-center">
+            <p className="text-xs text-slate-600">
+              Are you a student looking for courses?{' '}
+              <Link href="/student/login" className="font-bold text-indigo-600 hover:underline">
+                Student Sign In
+              </Link>
+            </p>
           </div>
         </div>
       </div>

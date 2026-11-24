@@ -7,11 +7,13 @@ import { RecruitmentModule } from './modules/recruitment/recruitment.module';
 import { CredentialsModule } from './modules/credentials/credentials.module';
 import { TalentModule } from './modules/talent/talent.module';
 import { StorageModule } from './modules/storage/storage.module';
+import { StudentModule } from './modules/student/student.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     IdentityModule,
+    StudentModule,
     CoursesModule,
     RecruitmentModule,
     CredentialsModule,

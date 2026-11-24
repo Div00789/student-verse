@@ -3,29 +3,54 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ShieldAlert, Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
+import { ShieldAlert, Lock, Mail, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
 import { setAuthSession } from '../../../lib/auth';
+import { api } from '../../../lib/api';
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('admin@studentverse.com');
   const [password, setPassword] = useState('Admin@123');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
 
-    const user = {
-      id: 'usr-admin-demo-1',
-      email,
-      fullName: 'Nitesh (Platform Admin)',
-      roles: ['ADMIN', 'PLATFORM_ADMIN', 'SUPER_ADMIN'],
-      country: 'Global',
-    };
+    try {
+      const emailNorm = email.toLowerCase().trim();
+      const res = await api.auth.login(emailNorm, password);
 
-    setAuthSession(`sv-jwt-token-${Date.now()}`, user);
-    router.push('/admin');
+      if (res && res.accessToken && res.user) {
+        const roles = res.user.roles || [];
+        const isAdmin = roles.some((r: string) => ['ADMIN', 'SUPER_ADMIN', 'PLATFORM_ADMIN'].includes(r));
+        if (!isAdmin) {
+          throw new Error('Access denied. Administrator privileges are required to access this portal.');
+        }
+
+        setAuthSession(res.accessToken, {
+          id: res.user.id,
+          email: res.user.email,
+          fullName: res.user.fullName || 'Platform Admin',
+          roles: res.user.roles,
+          country: res.user.country || 'Global',
+          createdAt: res.user.createdAt,
+        });
+        router.push('/admin');
+      } else {
+        throw new Error('Invalid response received from authentication server.');
+      }
+    } catch (err: any) {
+      if (err.message && (err.message.includes('fetch') || err.message.includes('Failed to fetch') || err.message.includes('NetworkError'))) {
+        setError('Unable to connect to authentication server. Please ensure the backend is running on port 4000.');
+      } else {
+        setError(err?.message || 'Invalid administrator credentials.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -48,6 +73,12 @@ export default function AdminLoginPage() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-slate-900 py-8 px-6 border border-slate-800 rounded-2xl sm:px-10 shadow-2xl">
+          {error && (
+            <div className="mb-4 p-3 rounded-xl bg-rose-950/60 border border-rose-500/60 text-rose-300 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">

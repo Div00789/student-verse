@@ -60,7 +60,7 @@ export default function AdminDashboardPage() {
       candidateName: 'Elena Rostova',
       companyName: 'Apex Growth Labs',
       jobTitle: 'Senior Performance & SEO Lead',
-      salaryRange: '$65,000 - $80,000 USD',
+      salaryRange: '₹12,00,000 - ₹18,00,000 / year',
       status: 'STUDENT_CONTACTED',
       internalNotes: 'Contacted Elena on Nov 14. Confirmed interest. Coordinating intro call with Sarah Jenkins.'
     },
@@ -69,7 +69,7 @@ export default function AdminDashboardPage() {
       candidateName: 'Alex Morgan',
       companyName: 'Nexis Digital Global',
       jobTitle: 'Growth & Omnichannel Specialist',
-      salaryRange: '$55,000 - $70,000 USD',
+      salaryRange: '₹8,00,000 - ₹14,00,000 / year',
       status: 'UNDER_REVIEW',
       internalNotes: 'Reviewing job description alignment with Alex Morgan’s completed capstones.'
     }
@@ -344,6 +344,266 @@ export default function AdminDashboardPage() {
                     </tr>
                   </tbody>
                 </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* -------------------------------------------------------------
+            TAB: COURSE & CURRICULUM MANAGEMENT
+        ------------------------------------------------------------- */}
+        {activeTab === 'courses' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-black text-white">Course &amp; Curriculum Management</h2>
+                <p className="text-xs text-slate-400">
+                  Create, edit modules, adjust pricing, publish cohorts, and configure certification criteria
+                </p>
+              </div>
+              <button className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-2 self-start sm:self-auto">
+                <Plus className="w-4 h-4" />
+                <span>Create New Course</span>
+              </button>
+            </div>
+
+            {/* AI Digital Marketing Course Detailed Card */}
+            <div className="bg-slate-950 p-6 rounded-2xl border border-indigo-500/40 shadow-xl space-y-5">
+              <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 border-b border-slate-800 pb-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded">
+                      PUBLISHED &bull; 14 MODULES
+                    </span>
+                    <span className="text-[10px] font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded">
+                      HYBRID (LIVE + RECORDED)
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-black text-white">AI Digital Marketing Course</h3>
+                  <p className="text-xs text-slate-400">
+                    Slug: <code className="text-indigo-300">ai-digital-marketing-course</code> &bull; Tuition: <strong>₹49,999</strong> &bull; Total Hours: <strong>48 Hours (16 Live Sessions)</strong>
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Link
+                    href="/courses/ai-digital-marketing-course"
+                    className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>View Public Page</span>
+                  </Link>
+                  <Link
+                    href="/courses/ai-digital-marketing-course/learn"
+                    className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5"
+                  >
+                    <span>Open Player</span>
+                  </Link>
+                </div>
+              </div>
+
+              {/* 14 Modules Curriculum Quick Overview */}
+              <div>
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-3">
+                  Configured 14 Modules &amp; Verified Syllabus Topics:
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
+                  {[
+                    '1. SEO Foundations, Crawling, Technical & AEO (72 Topics)',
+                    '2. PPC & Google Ads (Search, PMax, Bidding) (56 Topics)',
+                    '3. GA4, GTM DataLayers & Looker Studio (45 Topics)',
+                    '4. Paid Social Media (Meta, LinkedIn, YouTube) (28 Topics)',
+                    '5. SMO & Organic Content Automation (24 Topics)',
+                    '6. Email Marketing & Infrastructure (SPF/DKIM) (40 Topics)',
+                    '7. Black Hat SEO & Search Engine Guidelines (16 Topics)',
+                    '8. Affiliate Marketing & Google AdSense (20 Topics)',
+                    '9. Content Marketing & Topic Clusters (22 Topics)',
+                    '10. Freelancing, Upwork & Client Proposals (23 Topics)',
+                    '11. AI Fundamentals, LLMs & Prompting (16 Topics)',
+                    '12. AI Content Creation & Video Marketing (17 Topics)',
+                    '13. Marketing Automation, CRM & AI Agents (24 Topics)',
+                    '14. Full-Funnel Capstone Project & Defense (16 Topics)'
+                  ].map((item, idx) => (
+                    <div key={idx} className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 flex items-center gap-2">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                      <span className="truncate">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Other Launch Courses */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-2">
+                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
+                  PUBLISHED &bull; 100% LIVE
+                </span>
+                <h4 className="text-sm font-bold text-white">Digital Marketing Fundamentals &amp; Omnichannel Strategy</h4>
+                <p className="text-xs text-slate-400">36 Hours &bull; ₹24,999 &bull; Batch: SV-DM-NOV26 &bull; Trainer: Marcus Vance</p>
+              </div>
+
+              <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-2">
+                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
+                  PUBLISHED &bull; 100% LIVE
+                </span>
+                <h4 className="text-sm font-bold text-white">Search Engine Optimisation (SEO) &amp; AI Search / AEO</h4>
+                <p className="text-xs text-slate-400">32 Hours &bull; ₹29,999 &bull; Batch: SV-SEO-DEC26 &bull; Trainer: Elena Rostova</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* -------------------------------------------------------------
+            TAB: BATCHES & LIVE CLASS SCHEDULER
+        ------------------------------------------------------------- */}
+        {activeTab === 'batches' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-black text-white">Live Cohorts &amp; Class Scheduling</h2>
+                <p className="text-xs text-slate-400">
+                  Manage active student cohorts, assign trainers, set Google Meet links, and verify attendance records
+                </p>
+              </div>
+              <button className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-2 self-start sm:self-auto">
+                <Plus className="w-4 h-4" />
+                <span>Schedule New Batch</span>
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="bg-slate-950 p-6 rounded-2xl border border-indigo-500/30 shadow space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                  <div>
+                    <span className="text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
+                      UPCOMING COHORT &bull; 35 SEATS
+                    </span>
+                    <h3 className="text-base font-bold text-white mt-1">
+                      SV-AIDM-COHORT1 &bull; AI Digital Marketing Master Cohort
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      Schedule: Mon &amp; Wed: 18:00 - 20:00 UTC &bull; Starts Dec 01, 2026 &bull; Google Meet Studio
+                    </p>
+                  </div>
+                  <span className="text-xs font-bold text-indigo-400">18 Enrolled Students</span>
+                </div>
+                <div className="text-xs text-slate-300">
+                  Next Live Class: <strong>Live Masterclass: AI SEO, Entity Graph &amp; AEO (Dec 01, 18:00 UTC)</strong>
+                </div>
+              </div>
+
+              <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800 shadow space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                  <div>
+                    <span className="text-[10px] font-black uppercase text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded">
+                      ACTIVE COHORT &bull; 25 SEATS
+                    </span>
+                    <h3 className="text-base font-bold text-white mt-1">
+                      SV-DM-NOV26 &bull; Digital Marketing Fundamentals Cohort
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      Schedule: Tue &amp; Thu: 18:00 - 20:00 UTC &bull; Trainer: Marcus Vance &bull; Attendance: 92%
+                    </p>
+                  </div>
+                  <span className="text-xs font-bold text-indigo-400">22 Enrolled Students</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* -------------------------------------------------------------
+            TAB: ASSIGNMENT REVIEWS & RUBRIC GRADING
+        ------------------------------------------------------------- */}
+        {activeTab === 'assignments' && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-black text-white">Practical Project Evaluations &amp; Rubrics</h2>
+              <p className="text-xs text-slate-400">
+                Grade student submissions strictly against the weighted 40/30/20/10 rubric and update verified skill ratings
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800 shadow space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                  <div>
+                    <span className="text-[10px] font-black uppercase text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
+                      PENDING EVALUATION
+                    </span>
+                    <h3 className="text-base font-bold text-white mt-1">
+                      Technical SEO Crawl Audit &amp; Schema JSON-LD Graph
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      Student: <strong>Alex Morgan</strong> &bull; Submitted: Nov 22, 2026 &bull; URL: <a href="https://github.com/alexmorgan-growth/portfolio" target="_blank" rel="noopener noreferrer" className="text-indigo-400 underline">https://github.com/alexmorgan-growth/portfolio</a>
+                    </p>
+                  </div>
+                  <span className="text-xs font-bold text-slate-400">Max Score: 100</span>
+                </div>
+
+                {/* Rubric Evaluator Input Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                  <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                    <label className="text-slate-400 block mb-1">Accuracy (Max 40)</label>
+                    <input type="number" defaultValue={38} max={40} className="w-full p-2 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs font-bold" />
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                    <label className="text-slate-400 block mb-1">Execution (Max 30)</label>
+                    <input type="number" defaultValue={28} max={30} className="w-full p-2 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs font-bold" />
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                    <label className="text-slate-400 block mb-1">Problem Solving (Max 20)</label>
+                    <input type="number" defaultValue={18} max={20} className="w-full p-2 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs font-bold" />
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                    <label className="text-slate-400 block mb-1">Quality (Max 10)</label>
+                    <input type="number" defaultValue={9} max={10} className="w-full p-2 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs font-bold" />
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-2">
+                  <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow">
+                    Submit Rubric Evaluation &amp; Update Student Rating
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* -------------------------------------------------------------
+            TAB: STUDENTS & ENROLLMENTS
+        ------------------------------------------------------------- */}
+        {activeTab === 'students' && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-black text-white">Student Enrollment &amp; Academic Progress</h2>
+              <p className="text-xs text-slate-400">
+                Monitor student attendance, quiz scores, project evaluations, and certificate eligibility
+              </p>
+            </div>
+
+            <div className="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden shadow">
+              <div className="p-4 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400 font-bold">
+                <span>Student Details</span>
+                <span>Active Track &bull; Progress &bull; Skill Index</span>
+              </div>
+              <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/60">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white font-black flex items-center justify-center text-sm shadow">
+                    AM
+                  </div>
+                  <div>
+                    <span className="font-bold text-sm text-white block">Alex Morgan</span>
+                    <span className="text-xs text-slate-400">student@studentverse.com &bull; United Kingdom</span>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <span className="text-xs font-bold text-emerald-400 block">AI Digital Marketing Course (15% Progress)</span>
+                  <span className="text-[11px] text-indigo-300">Overall Skill Score: 91/100 (High Confidence)</span>
+                </div>
               </div>
             </div>
           </div>

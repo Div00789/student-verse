@@ -16,8 +16,165 @@ import {
   Users,
   Check
 } from 'lucide-react';
+import { formatINR } from '../../../lib/currency';
+import EnrollmentActionButton from '../../../components/EnrollmentActionButton';
 
 const COURSE_DATA: Record<string, any> = {
+  'ai-digital-marketing-course': {
+    slug: 'ai-digital-marketing-course',
+    title: 'AI Digital Marketing Course',
+    subtitle: 'Comprehensive 14-Module Professional Programme: SEO, PPC, GA4, Paid Media, Automation & Modern AI Tools',
+    category: 'Digital Marketing / Artificial Intelligence / Career Development',
+    level: 'BEGINNER TO ADVANCED',
+    format: 'LIVE CLASSES + RECORDED LECTURES + PRACTICAL PROJECTS',
+    durationHours: 48,
+    totalSessions: 16,
+    price: 49999,
+    trainerName: 'StudentVerse Expert Faculty (Industry Growth Directors & AI Leads)',
+    batchCode: 'SV-AIDM-COHORT1',
+    batchSchedule: 'Mon & Wed: 18:00 - 20:00 UTC (100% Live Sessions + 24/7 Practical Labs)',
+    description: 'Master digital marketing with artificial intelligence through hands-on training in SEO, Google Ads, Google Analytics 4, Social Media Marketing, Email Marketing, Content Marketing, Marketing Automation, Affiliate Marketing, and Freelancing. Learn to use modern AI tools to improve research, content creation, campaign planning, analytics, automation, and marketing performance.',
+    prerequisites: [
+      'Basic web literacy and computer familiarity',
+      'Curiosity to master modern AI marketing tools and agentic workflows',
+      'No prior coding or technical marketing experience required'
+    ],
+    learningOutcomes: [
+      'Master full-funnel search engine optimisation: Technical SEO, On-Page, Off-Page, AEO & Generative Engine Optimisation (GEO)',
+      'Build, manage, and scale high-converting Google Ads campaigns and paid social ads across Meta, LinkedIn, and YouTube',
+      'Deploy Google Analytics 4, Tag Manager dataLayers, UTM pipelines, and executive Looker Studio performance dashboards',
+      'Automate email marketing, lead capture, CRM pipelines, and AI agent workflows using Zapier, Make, and n8n',
+      'Generate high-impact brand visual assets, video scripts, ad copy, and prompt libraries with Generative AI tools',
+      'Deliver a verified, evaluated capstone digital marketing plan and launch a successful freelance marketing career'
+    ],
+    modules: [
+      {
+        title: 'Module 1: Search Engine Optimisation (SEO)',
+        lessons: [
+          { title: '1.1 Search Foundations, Indexation & Keyword Intelligence (Topics 1-12)', type: 'LIVE_SESSION', duration: '90 min', freePreview: true },
+          { title: '1.2 On-Page SEO, Header Hierarchy & Semantic Content Architecture (Topics 13-27)', type: 'RECORDED_VIDEO', duration: '75 min', freePreview: false },
+          { title: '1.3 Technical SEO, Core Web Vitals & Crawlability Audits (Topics 28-43)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '1.4 Off-Page SEO, Digital PR & Ethical Link Building (Topics 44-51)', type: 'RECORDED_VIDEO', duration: '60 min', freePreview: false },
+          { title: '1.5 Industry SEO Toolstack Mastery & Analytics Setup (Topics 52-60)', type: 'RECORDED_VIDEO', duration: '60 min', freePreview: false },
+          { title: '1.6 AI SEO, Answer Engine Optimisation (AEO) & GEO (Topics 61-72)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: 'Practical Deliverable: Complete SEO Audit & Keyword Architecture Report', type: 'PROJECT', duration: 'Lab Task', freePreview: false }
+        ]
+      },
+      {
+        title: 'Module 2: Pay-Per-Click Advertising (Google Ads)',
+        lessons: [
+          { title: '2.1 Google Ads Architecture & Campaign Types (Topics 1-17)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '2.2 Bidding Strategies, Performance Metrics & ROAS Optimization (Topics 18-34)', type: 'RECORDED_VIDEO', duration: '75 min', freePreview: false },
+          { title: '2.3 Campaign Management, Conversion Tracking & Landing Page CRO (Topics 35-49)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '2.4 AI for Google Ads: Keyword Clustering & Performance Automation (Topics 50-56)', type: 'RECORDED_VIDEO', duration: '60 min', freePreview: false },
+          { title: 'Practical Deliverable: Complete Google Search & PMax Campaign Build', type: 'PROJECT', duration: 'Lab Task', freePreview: false }
+        ]
+      },
+      {
+        title: 'Module 3: Google Analytics 4 (GA4)',
+        lessons: [
+          { title: '3.1 GA4 Architecture, Tag Installation & Metric Fundamentals (Topics 1-17)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '3.2 Traffic Acquisition, UTM Governance & Attribution Modeling (Topics 18-26)', type: 'RECORDED_VIDEO', duration: '60 min', freePreview: false },
+          { title: '3.3 Conversions, Key Events & Executive Looker Studio Dashboards (Topics 27-40)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '3.4 AI Analytics, Automated Insights & Anomaly Detection (Topics 41-45)', type: 'RECORDED_VIDEO', duration: '60 min', freePreview: false },
+          { title: 'Practical Deliverable: GA4 Event Tracking & Looker Studio BI Dashboard', type: 'PROJECT', duration: 'Lab Task', freePreview: false }
+        ]
+      },
+      {
+        title: 'Module 4: Social Media Marketing (Paid Advertising)',
+        lessons: [
+          { title: '4.1 Paid Social Media Architecture & Audience Targeting (Topics 1-14)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '4.2 Creative Diversification, Ad Copywriting & Conversion APIs (Topics 15-23)', type: 'RECORDED_VIDEO', duration: '75 min', freePreview: false },
+          { title: '4.3 AI-Driven Creative Testing & Lead Gen Campaign Optimization (Topics 24-28)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: 'Practical Deliverable: Meta Ads & LinkedIn B2B Acquisition Campaign Plan', type: 'PROJECT', duration: 'Lab Task', freePreview: false }
+        ]
+      },
+      {
+        title: 'Module 5: Social Media Optimisation (SMO)',
+        lessons: [
+          { title: '5.1 Audience Personas, Editorial Planning & Organic Distribution (Topics 1-10)', type: 'RECORDED_VIDEO', duration: '60 min', freePreview: false },
+          { title: '5.2 Community Management, Social Listening & Process Automation (Topics 11-17)', type: 'RECORDED_VIDEO', duration: '60 min', freePreview: false },
+          { title: '5.3 AI Content Ideas, AI Video & Sentiment Analysis Workflows (Topics 18-24)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: 'Practical Deliverable: 30-Day Social Content Calendar & Automation Playbook', type: 'PROJECT', duration: 'Lab Task', freePreview: false }
+        ]
+      },
+      {
+        title: 'Module 6: Email Marketing',
+        lessons: [
+          { title: '6.1 Permission List Building, Interactive Design & Sequence Strategy (Topics 1-12)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '6.2 Email Infrastructure, Authentication (SPF/DKIM/DMARC) & High-Volume Compliance (Topics 13-24)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '6.3 Email Metrics, Attribution & AI Copywriting Workflows (Topics 25-40)', type: 'RECORDED_VIDEO', duration: '75 min', freePreview: false },
+          { title: 'Practical Deliverable: 5-Part Lead Nurture Sequence with DNS Authentication Specs', type: 'PROJECT', duration: 'Lab Task', freePreview: false }
+        ]
+      },
+      {
+        title: 'Module 7: Black Hat SEO and Search Engine Guidelines',
+        lessons: [
+          { title: '7.1 Deceptive SEO Tactics, Spam Policies & Algorithmic Filters (Topics 1-10)', type: 'RECORDED_VIDEO', duration: '60 min', freePreview: false },
+          { title: '7.2 Penalty Remediation, Recovery Protocols & Ethical Alternatives (Topics 11-16)', type: 'RECORDED_VIDEO', duration: '60 min', freePreview: false },
+          { title: 'Practical Deliverable: Search Engine Risk Audit & Ethical Remediation Plan', type: 'PROJECT', duration: 'Lab Task', freePreview: false }
+        ]
+      },
+      {
+        title: 'Module 8: Affiliate Marketing',
+        lessons: [
+          { title: '8.1 Affiliate Architecture, Networks, Niche Selection & Disclosures (Topics 1-13)', type: 'RECORDED_VIDEO', duration: '60 min', freePreview: false },
+          { title: '8.2 Google AdSense Integration & AI-Powered Affiliate Strategy (Topics 14-20)', type: 'RECORDED_VIDEO', duration: '60 min', freePreview: false },
+          { title: 'Practical Deliverable: High-Intent Affiliate Strategy & Revenue Model', type: 'PROJECT', duration: 'Lab Task', freePreview: false }
+        ]
+      },
+      {
+        title: 'Module 9: Content Marketing',
+        lessons: [
+          { title: '9.1 Content Strategy, Topic Clusters & Multi-Platform Distribution (Topics 1-15)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '9.2 Generative AI Content Pipelines, Editorial Fact-Checking & AEO Optimization (Topics 16-22)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: 'Practical Deliverable: Pillar-Cluster Content Campaign & Distribution Plan', type: 'PROJECT', duration: 'Lab Task', freePreview: false }
+        ]
+      },
+      {
+        title: 'Module 10: Freelancing and Client Acquisition',
+        lessons: [
+          { title: '10.1 Freelance Marketplaces, Niche Specialisation & Profile Architecture (Topics 1-12)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '10.2 Project Pricing, Scope of Work (SOW), Client Retention & AI Proposals (Topics 13-23)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: 'Practical Deliverable: Client Acquisition Proposal & Service Scope of Work (SOW)', type: 'PROJECT', duration: 'Lab Task', freePreview: false }
+        ]
+      },
+      {
+        title: 'Module 11: Artificial Intelligence Fundamentals for Marketers',
+        lessons: [
+          { title: '11.1 Generative AI Foundations, LLMs & Advanced Prompt Engineering (Topics 1-10)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '11.2 AI Research, Brand Voice Architecture & Responsible AI Governance (Topics 11-16)', type: 'RECORDED_VIDEO', duration: '75 min', freePreview: false },
+          { title: 'Practical Deliverable: Enterprise AI Marketing Prompt Library & Workflow Suite', type: 'PROJECT', duration: 'Lab Task', freePreview: false }
+        ]
+      },
+      {
+        title: 'Module 12: AI Content Creation and Video Marketing',
+        lessons: [
+          { title: '12.1 AI Visual Creative Strategy, Image Generation & Canva AI (Topics 1-5)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '12.2 AI Video Generation, Avatars, Short-Form Storytelling & Platform Rules (Topics 6-17)', type: 'RECORDED_VIDEO', duration: '75 min', freePreview: false },
+          { title: 'Practical Deliverable: AI Multi-Format Creative & Video Asset Package', type: 'PROJECT', duration: 'Lab Task', freePreview: false }
+        ]
+      },
+      {
+        title: 'Module 13: Marketing Automation, CRM and AI Agents',
+        lessons: [
+          { title: '13.1 CRM Architecture, Contact Lifecycles & Lead Pipeline Management (Topics 1-11)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '13.2 Multi-Step Integration with Zapier, Make, n8n & Webhooks (Topics 12-15)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '13.3 Autonomous AI Agents, Chatbots & WhatsApp Automation (Topics 16-24)', type: 'RECORDED_VIDEO', duration: '75 min', freePreview: false },
+          { title: 'Practical Deliverable: Multi-Step Lead Routing & AI CRM Qualification Workflow', type: 'PROJECT', duration: 'Lab Task', freePreview: false }
+        ]
+      },
+      {
+        title: 'Module 14: Digital Marketing Strategy, Reporting and Capstone Project',
+        lessons: [
+          { title: '14.1 Full-Funnel Strategic Architecture, Budgets & Customer Journey Mapping (Topics 1-8)', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '14.2 Conversion Rate Optimisation (CRO), Attribution & Executive Reporting (Topics 9-16)', type: 'RECORDED_VIDEO', duration: '75 min', freePreview: false },
+          { title: '14.3 Capstone Project Submission & Evaluator Defence Briefing', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: 'Final Capstone Project: Comprehensive AI-Powered Digital Marketing Strategy', type: 'PROJECT', duration: 'Capstone', freePreview: false }
+        ]
+      }
+    ]
+  },
   'digital-marketing-foundations': {
     slug: 'digital-marketing-foundations',
     title: 'Digital Marketing Fundamentals & Omnichannel Strategy',
@@ -27,7 +184,7 @@ const COURSE_DATA: Record<string, any> = {
     format: '100% LIVE INSTRUCTOR-LED',
     durationHours: 36,
     totalSessions: 12,
-    price: 299,
+    price: 24999,
     trainerName: 'Marcus Vance (Senior Performance Lead)',
     batchCode: 'SV-DM-NOV26',
     batchSchedule: 'Tue & Thu: 18:00 - 20:00 UTC (100% Live on Google Meet)',
@@ -67,7 +224,7 @@ const COURSE_DATA: Record<string, any> = {
     format: '100% LIVE INSTRUCTOR-LED',
     durationHours: 32,
     totalSessions: 10,
-    price: 349,
+    price: 29999,
     trainerName: 'Elena Rostova (Technical SEO Architect)',
     batchCode: 'SV-SEO-DEC26',
     batchSchedule: 'Sat & Sun: 14:00 - 16:30 UTC (100% Live on Google Meet)',
@@ -105,7 +262,7 @@ const COURSE_DATA: Record<string, any> = {
     format: '100% LIVE INSTRUCTOR-LED',
     durationHours: 36,
     totalSessions: 12,
-    price: 399,
+    price: 34999,
     trainerName: 'David Zhao (Paid Acquisition Director)',
     batchCode: 'SV-ADS-DEC26',
     batchSchedule: 'Mon & Wed: 17:00 - 19:00 UTC (100% Live on Google Meet)',
@@ -143,7 +300,7 @@ const COURSE_DATA: Record<string, any> = {
     format: '100% LIVE INSTRUCTOR-LED',
     durationHours: 30,
     totalSessions: 10,
-    price: 299,
+    price: 24999,
     trainerName: 'Priya Sharma (Analytics & BI Lead)',
     batchCode: 'SV-GA4-NOV26',
     batchSchedule: 'Tue & Fri: 18:00 - 20:00 UTC (100% Live on Google Meet)',
@@ -181,7 +338,7 @@ const COURSE_DATA: Record<string, any> = {
     format: '100% LIVE INSTRUCTOR-LED',
     durationHours: 28,
     totalSessions: 10,
-    price: 249,
+    price: 19999,
     trainerName: 'Chloe Bennett (Brand & Social Director)',
     batchCode: 'SV-SMM-DEC26',
     batchSchedule: 'Tue & Thu: 16:00 - 18:00 UTC (100% Live on Google Meet)',
@@ -212,7 +369,7 @@ const COURSE_DATA: Record<string, any> = {
     format: '100% LIVE INSTRUCTOR-LED',
     durationHours: 32,
     totalSessions: 10,
-    price: 349,
+    price: 29999,
     trainerName: 'Dr. Aris Thorne (Marketing Automation Specialist)',
     batchCode: 'SV-AI-NOV26',
     batchSchedule: 'Thu & Sat: 17:30 - 19:30 UTC (100% Live on Google Meet)',
@@ -319,8 +476,8 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
               <div>
                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Live Cohort Tuition</span>
                 <div className="flex items-baseline gap-2 mt-1">
-                  <span className="text-3xl font-black text-slate-900">${course.price}</span>
-                  <span className="text-xs font-semibold text-slate-500">USD (Complete Live Programme)</span>
+                  <span className="text-3xl font-black text-slate-900">{formatINR(course.price)}</span>
+                  <span className="text-xs font-semibold text-slate-500">INR (Complete Live Programme)</span>
                 </div>
               </div>
 
@@ -334,12 +491,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
                 </div>
               </div>
 
-              <Link
-                href="/student/login"
-                className="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow transition-all flex items-center justify-center gap-2"
-              >
-                Enroll in Live Batch
-              </Link>
+              <EnrollmentActionButton slug={course.slug} courseTitle={course.title} />
 
               <div className="space-y-2 text-[11px] text-slate-500 pt-2 border-t border-slate-100">
                 <div className="flex items-center gap-2">

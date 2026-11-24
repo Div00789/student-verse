@@ -97,7 +97,7 @@ const INITIAL_JOBS: JobListing[] = [
     location: 'Global (Remote)',
     workplaceType: 'REMOTE',
     jobType: 'FULL_TIME',
-    salaryRange: '$50,000 - $68,000 USD / year',
+    salaryRange: '₹10,00,000 - ₹15,00,000 / year',
     description: 'We are seeking a proactive Digital Marketing Specialist to execute paid acquisition campaigns, optimize SEO traffic, configure GA4 tracking, and build automated email nurture flows.',
     requiredSkills: ['Digital Marketing', 'Google Analytics 4', 'Google Ads', 'Meta Ads', 'SEO'],
     screeningQuestions: [
@@ -116,7 +116,7 @@ const INITIAL_JOBS: JobListing[] = [
     location: 'Remote (EMEA / APAC friendly)',
     workplaceType: 'REMOTE',
     jobType: 'FULL_TIME',
-    salaryRange: '$48,000 - $62,000 USD / year',
+    salaryRange: '₹8,00,000 - ₹12,00,000 / year',
     description: 'Nexis is looking for an SEO Associate proficient in technical crawl audits, schema entity graphs, keyword clustering, and Answer Engine Optimisation (AEO) for AI search engines.',
     requiredSkills: ['Technical SEO', 'Schema Markup', 'Keyword Clustering', 'Google Search Console', 'AEO'],
     screeningQuestions: [
@@ -216,7 +216,7 @@ const INITIAL_PLACEMENT_PARTNERS: PlacementPartner[] = [
     industry: 'Omnichannel Advertising Agency',
     website: 'https://vanguardmedia.example.com',
     location: 'New York, Toronto & Remote',
-    description: 'Full-service digital media agency managing $30M+ annual paid advertising budgets across Google, Meta, and emerging channels.',
+    description: 'Full-service digital media agency managing ₹250 Cr+ annual paid advertising budgets across Google, Meta, and emerging channels.',
     isVerified: true,
     activeHiringTracks: ['Media Buying', 'Social Media Strategy', 'Campaign Analytics']
   }
@@ -224,31 +224,9 @@ const INITIAL_PLACEMENT_PARTNERS: PlacementPartner[] = [
 
 @Injectable()
 export class RecruitmentService {
-  private hiringRequestsStore = new Map<string, HiringRequestRecord>([
-    [
-      'hr-demo-1',
-      {
-        id: 'hr-demo-1',
-        candidateId: 'cand-1',
-        candidateName: 'Elena Rostova',
-        companyName: 'Apex Growth Labs',
-        contactPerson: 'Sarah Jenkins (Head of Talent)',
-        businessEmail: 'sarah.jenkins@apexgrowth.example.com',
-        jobTitle: 'Senior Performance & SEO Lead',
-        jobDescription: 'Leading organic search expansion and technical site audit optimization across 5 portfolio brands.',
-        requiredSkills: ['Technical SEO', 'GA4 Analytics', 'Meta Ads'],
-        employmentType: 'Full-Time',
-        preferredLocation: 'Remote',
-        salaryRange: '$65,000 - $80,000 USD',
-        status: 'STUDENT_CONTACTED',
-        internalAdminNotes: 'Student contacted by StudentVerse Placement Team on Nov 14. Elena confirmed strong interest. Scheduling intro call.',
-        createdAt: '2026-11-13T10:00:00Z',
-        updatedAt: '2026-11-14T15:00:00Z'
-      }
-    ]
-  ]);
-
   constructor(private prisma: PrismaService) {}
+
+  private hiringRequestsStore = new Map<string, HiringRequestRecord>();
 
   async getPublicJobs() {
     return INITIAL_JOBS;
@@ -372,5 +350,62 @@ export class RecruitmentService {
       submittedAt: new Date().toISOString(),
       message: 'Application successfully received by the hiring partner.'
     };
+  }
+
+  async getEmployerDashboard(userId: string) {
+    try {
+      const membership = await this.prisma.organisationMember.findFirst({
+        where: { userId },
+        include: {
+          organisation: {
+            include: {
+              jobPosts: true,
+              shortlists: true,
+              hiringRequests: true,
+            },
+          },
+        },
+      });
+
+      if (!membership || !membership.organisation) {
+        return {
+          companyName: 'New Hiring Partner',
+          verificationStatus: 'PENDING',
+          jobsCount: 0,
+          candidateShortlistCount: 0,
+          pendingInterviewsCount: 0,
+          jobs: [],
+          shortlists: [],
+          hiringRequests: [],
+        };
+      }
+
+      const org = membership.organisation;
+      return {
+        companyName: org.name,
+        verificationStatus: org.verificationStatus,
+        website: org.website,
+        country: org.country,
+        jobsCount: org.jobPosts ? org.jobPosts.length : 0,
+        candidateShortlistCount: org.shortlists ? org.shortlists.length : 0,
+        pendingInterviewsCount: org.hiringRequests
+          ? org.hiringRequests.filter((h: any) => h.status === 'STUDENT_CONTACTED' || h.status === 'INTERVIEW_SCHEDULED').length
+          : 0,
+        jobs: org.jobPosts || [],
+        shortlists: org.shortlists || [],
+        hiringRequests: org.hiringRequests || [],
+      };
+    } catch {
+      return {
+        companyName: 'New Hiring Partner',
+        verificationStatus: 'PENDING',
+        jobsCount: 0,
+        candidateShortlistCount: 0,
+        pendingInterviewsCount: 0,
+        jobs: [],
+        shortlists: [],
+        hiringRequests: [],
+      };
+    }
   }
 }

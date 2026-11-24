@@ -1,11 +1,20 @@
-import { Controller, Get, Post, Patch, Param, Query, Body, Headers } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Patch, Param, Query, Body, Headers, UseGuards, Req } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { RecruitmentService, HiringRequestPayload, HiringRequestRecord } from './recruitment.service';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 
 @ApiTags('Recruitment & Jobs')
 @Controller('recruitment')
 export class RecruitmentController {
   constructor(private readonly recruitmentService: RecruitmentService) {}
+
+  @Get('employer/dashboard')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Retrieve authenticated employer workspace overview, posted jobs & candidate pipelines' })
+  async getEmployerDashboard(@Req() req: any) {
+    return this.recruitmentService.getEmployerDashboard(req.user.id);
+  }
 
   @Get('jobs')
   @ApiOperation({ summary: 'List public approved jobs' })
@@ -43,6 +52,13 @@ export class RecruitmentController {
   @ApiOperation({ summary: 'Employer submits a Request to Hire for an assessed candidate' })
   @ApiResponse({ status: 201, description: 'Hiring enquiry submitted to StudentVerse admin' })
   async submitHireRequest(@Body() payload: HiringRequestPayload) {
+    return this.recruitmentService.submitHiringRequest(payload);
+  }
+
+  @Post('hiring-requests')
+  @ApiOperation({ summary: 'Employer submits a Request to Hire for an assessed candidate (alias)' })
+  @ApiResponse({ status: 201, description: 'Hiring enquiry submitted to StudentVerse admin' })
+  async submitHiringRequest(@Body() payload: HiringRequestPayload) {
     return this.recruitmentService.submitHiringRequest(payload);
   }
 

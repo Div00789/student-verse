@@ -109,6 +109,206 @@ export interface StudentSkillScore {
 
 const APPROVED_LAUNCH_COURSES: CourseData[] = [
   {
+    id: 'c-aidm-100',
+    slug: 'ai-digital-marketing-course',
+    title: 'AI Digital Marketing Course',
+    subtitle: 'Comprehensive 14-Module Professional Programme: SEO, PPC, GA4, Paid Media, Automation & Modern AI Tools',
+    category: 'Digital Marketing / Artificial Intelligence / Career Development',
+    level: 'BEGINNER',
+    format: 'HYBRID',
+    durationHours: 48,
+    totalSessions: 16,
+    priceMinorUnits: 4999900,
+    currency: 'INR',
+    description: 'Master digital marketing with artificial intelligence through hands-on training in SEO, Google Ads, Google Analytics 4, Social Media Marketing, Email Marketing, Content Marketing, Marketing Automation, Affiliate Marketing, and Freelancing. Learn to use modern AI tools to improve research, content creation, campaign planning, analytics, automation, and marketing performance.',
+    prerequisites: [
+      'Basic web literacy and computer familiarity',
+      'Curiosity to master modern AI marketing tools and agentic workflows',
+      'No prior coding or technical marketing experience required'
+    ],
+    learningOutcomes: [
+      'Master full-funnel search engine optimisation: Technical SEO, On-Page, Off-Page, AEO & Generative Engine Optimisation (GEO)',
+      'Build, manage, and scale high-converting Google Ads campaigns and paid social ads across Meta, LinkedIn, and YouTube',
+      'Deploy Google Analytics 4, Tag Manager dataLayers, UTM pipelines, and executive Looker Studio performance dashboards',
+      'Automate email marketing, lead capture, CRM pipelines, and AI agent workflows using Zapier, Make, and n8n',
+      'Generate high-impact brand visual assets, video scripts, ad copy, and prompt libraries with Generative AI tools',
+      'Deliver a verified, evaluated capstone digital marketing plan and launch a successful freelance marketing career'
+    ],
+    thumbnailUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60',
+    trainerName: 'StudentVerse Expert Faculty (Industry Growth Directors & AI Leads)',
+    modules: [
+      {
+        id: 'm-aidm-1',
+        title: 'Module 1 — Search Engine Optimisation (SEO)',
+        orderIndex: 1,
+        description: 'Foundations of crawling, indexing, keyword research, on-page SEO, technical audits, Core Web Vitals, link building, modern SEO tools, and AI/AEO/GEO optimization.',
+        lessons: [
+          { id: 'l-aidm-1-1', title: '1.1 Search Foundations, Indexation & Keyword Intelligence', orderIndex: 1, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: true, recordedUrl: 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ' },
+          { id: 'l-aidm-1-2', title: '1.2 On-Page SEO, Header Hierarchy & Semantic Content Architecture', orderIndex: 2, contentType: 'RECORDED_VIDEO', durationMinutes: 75, isFreePreview: false, recordedUrl: 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ' },
+          { id: 'l-aidm-1-3', title: '1.3 Technical SEO, Core Web Vitals & Crawlability Audits', orderIndex: 3, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false },
+          { id: 'l-aidm-1-4', title: '1.4 Off-Page SEO, Digital PR & Ethical Link Building', orderIndex: 4, contentType: 'RECORDED_VIDEO', durationMinutes: 60, isFreePreview: false },
+          { id: 'l-aidm-1-5', title: '1.5 Industry SEO Toolstack Mastery & Analytics Setup', orderIndex: 5, contentType: 'RECORDED_VIDEO', durationMinutes: 60, isFreePreview: false },
+          { id: 'l-aidm-1-6', title: '1.6 AI SEO, Answer Engine Optimisation (AEO) & GEO', orderIndex: 6, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false }
+        ]
+      },
+      {
+        id: 'm-aidm-2',
+        title: 'Module 2 — Pay-Per-Click Advertising (Google Ads)',
+        orderIndex: 2,
+        description: 'PPC advertising fundamentals, Search ads, Display, Shopping, Performance Max, smart bidding strategies, conversion tracking, and AI ad copywriting.',
+        lessons: [
+          { id: 'l-aidm-2-1', title: '2.1 Google Ads Architecture & Campaign Types', orderIndex: 1, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false },
+          { id: 'l-aidm-2-2', title: '2.2 Bidding Strategies, Performance Metrics & ROAS Optimization', orderIndex: 2, contentType: 'RECORDED_VIDEO', durationMinutes: 75, isFreePreview: false },
+          { id: 'l-aidm-2-3', title: '2.3 Campaign Management, Conversion Tracking & Landing Page CRO', orderIndex: 3, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false },
+          { id: 'l-aidm-2-4', title: '2.4 AI for Google Ads: Keyword Clustering & Performance Automation', orderIndex: 4, contentType: 'RECORDED_VIDEO', durationMinutes: 60, isFreePreview: false }
+        ]
+      },
+      {
+        id: 'm-aidm-3',
+        title: 'Module 3 — Google Analytics 4 (GA4)',
+        orderIndex: 3,
+        description: 'Analytics fundamentals, GA4 account setup, event tracking, custom events, UTM parameters, Looker Studio dashboards, and AI predictive analytics.',
+        lessons: [
+          { id: 'l-aidm-3-1', title: '3.1 GA4 Architecture, Tag Installation & Metric Fundamentals', orderIndex: 1, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false },
+          { id: 'l-aidm-3-2', title: '3.2 Traffic Acquisition, UTM Governance & Attribution Modeling', orderIndex: 2, contentType: 'RECORDED_VIDEO', durationMinutes: 60, isFreePreview: false },
+          { id: 'l-aidm-3-3', title: '3.3 Conversions, Key Events & Executive Looker Studio Dashboards', orderIndex: 3, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false },
+          { id: 'l-aidm-3-4', title: '3.4 AI Analytics, Automated Insights & Anomaly Detection', orderIndex: 4, contentType: 'RECORDED_VIDEO', durationMinutes: 60, isFreePreview: false }
+        ]
+      },
+      {
+        id: 'm-aidm-4',
+        title: 'Module 4 — Social Media Marketing (Paid Advertising)',
+        orderIndex: 4,
+        description: 'Facebook Ads, Instagram, LinkedIn Ads, custom audiences, lookalikes, creative testing, and AI-assisted campaigns.',
+        lessons: [
+          { id: 'l-aidm-4-1', title: '4.1 Paid Social Media Architecture & Audience Targeting', orderIndex: 1, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false },
+          { id: 'l-aidm-4-2', title: '4.2 Creative Diversification, Ad Copywriting & Conversion APIs', orderIndex: 2, contentType: 'RECORDED_VIDEO', durationMinutes: 75, isFreePreview: false },
+          { id: 'l-aidm-4-3', title: '4.3 AI-Driven Creative Testing & Lead Gen Campaign Optimization', orderIndex: 3, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false }
+        ]
+      },
+      {
+        id: 'm-aidm-5',
+        title: 'Module 5 — Social Media Optimisation (SMO)',
+        orderIndex: 5,
+        description: 'Audience personas, 30-day content calendars, organic social growth, ORM, community engagement, and AI video/caption automation.',
+        lessons: [
+          { id: 'l-aidm-5-1', title: '5.1 Audience Personas, Editorial Planning & Organic Distribution', orderIndex: 1, contentType: 'RECORDED_VIDEO', durationMinutes: 60, isFreePreview: false },
+          { id: 'l-aidm-5-2', title: '5.2 Community Management, Social Listening & Process Automation', orderIndex: 2, contentType: 'RECORDED_VIDEO', durationMinutes: 60, isFreePreview: false },
+          { id: 'l-aidm-5-3', title: '5.3 AI Content Ideas, AI Video & Sentiment Analysis Workflows', orderIndex: 3, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false }
+        ]
+      },
+      {
+        id: 'm-aidm-6',
+        title: 'Module 6 — Email Marketing',
+        orderIndex: 6,
+        description: 'Permission-based list building, SMTP infrastructure, SPF/DKIM/DMARC authentication, deliverability, high-volume sending compliance, and AI nurture sequences.',
+        lessons: [
+          { id: 'l-aidm-6-1', title: '6.1 Permission List Building, Interactive Design & Sequence Strategy', orderIndex: 1, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false },
+          { id: 'l-aidm-6-2', title: '6.2 Email Infrastructure, Authentication (SPF/DKIM/DMARC) & High-Volume Compliance', orderIndex: 2, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false },
+          { id: 'l-aidm-6-3', title: '6.3 Email Metrics, Attribution & AI Copywriting Workflows', orderIndex: 3, contentType: 'RECORDED_VIDEO', durationMinutes: 75, isFreePreview: false }
+        ]
+      },
+      {
+        id: 'm-aidm-7',
+        title: 'Module 7 — Black Hat SEO and Search Engine Guidelines',
+        orderIndex: 7,
+        description: 'Educational risk-awareness module: identifying cloaking, content spinning, doorway pages, manual actions, algorithmic penalties, and ethical recovery.',
+        lessons: [
+          { id: 'l-aidm-7-1', title: '7.1 Deceptive SEO Tactics, Spam Policies & Algorithmic Filters', orderIndex: 1, contentType: 'RECORDED_VIDEO', durationMinutes: 60, isFreePreview: false },
+          { id: 'l-aidm-7-2', title: '7.2 Penalty Remediation, Recovery Protocols & Ethical Alternatives', orderIndex: 2, contentType: 'RECORDED_VIDEO', durationMinutes: 60, isFreePreview: false }
+        ]
+      },
+      {
+        id: 'm-aidm-8',
+        title: 'Module 8 — Affiliate Marketing',
+        orderIndex: 8,
+        description: 'Affiliate networks, niche selection, comparison content, commission models, disclosure rules, Google AdSense vs affiliate, and AI content development.',
+        lessons: [
+          { id: 'l-aidm-8-1', title: '8.1 Affiliate Architecture, Networks, Niche Selection & Disclosures', orderIndex: 1, contentType: 'RECORDED_VIDEO', durationMinutes: 60, isFreePreview: false },
+          { id: 'l-aidm-8-2', title: '8.2 Google AdSense Integration & AI-Powered Affiliate Strategy', orderIndex: 2, contentType: 'RECORDED_VIDEO', durationMinutes: 60, isFreePreview: false }
+        ]
+      },
+      {
+        id: 'm-aidm-9',
+        title: 'Module 9 — Content Marketing',
+        orderIndex: 9,
+        description: 'Strategy, blog writing, topic clusters, pillar pages, Quora & third-party distribution, storytelling, and AEO/GEO content optimization.',
+        lessons: [
+          { id: 'l-aidm-9-1', title: '9.1 Content Strategy, Topic Clusters & Multi-Platform Distribution', orderIndex: 1, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false },
+          { id: 'l-aidm-9-2', title: '9.2 Generative AI Content Pipelines, Editorial Fact-Checking & AEO Optimization', orderIndex: 2, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false }
+        ]
+      },
+      {
+        id: 'm-aidm-10',
+        title: 'Module 10 — Freelancing and Client Acquisition',
+        orderIndex: 10,
+        description: 'Starting a freelancing career, specialisation, Upwork, Freelancer, Guru, PPH, writing winning proposals, pricing models, SOW, and client retention.',
+        lessons: [
+          { id: 'l-aidm-10-1', title: '10.1 Freelance Marketplaces, Niche Specialisation & Profile Architecture', orderIndex: 1, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false },
+          { id: 'l-aidm-10-2', title: '10.2 Project Pricing, Scope of Work (SOW), Client Retention & AI Proposals', orderIndex: 2, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false }
+        ]
+      },
+      {
+        id: 'm-aidm-11',
+        title: 'Module 11 — Artificial Intelligence Fundamentals for Marketers',
+        orderIndex: 11,
+        description: 'Generative AI, Large Language Models (ChatGPT, Claude, Gemini), prompt engineering, prompt templates, hallucinations, brand voice, and responsible AI.',
+        lessons: [
+          { id: 'l-aidm-11-1', title: '11.1 Generative AI Foundations, LLMs & Advanced Prompt Engineering', orderIndex: 1, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false },
+          { id: 'l-aidm-11-2', title: '11.2 AI Research, Brand Voice Architecture & Responsible AI Governance', orderIndex: 2, contentType: 'RECORDED_VIDEO', durationMinutes: 75, isFreePreview: false }
+        ]
+      },
+      {
+        id: 'm-aidm-12',
+        title: 'Module 12 — AI Content Creation and Video Marketing',
+        orderIndex: 12,
+        description: 'AI visual creative strategy, image generation, Canva AI, short-form video creation, AI avatars, YouTube SEO, Instagram Reels, and copyright licensing.',
+        lessons: [
+          { id: 'l-aidm-12-1', title: '12.1 AI Visual Creative Strategy, Image Generation & Canva AI', orderIndex: 1, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false },
+          { id: 'l-aidm-12-2', title: '12.2 AI Video Generation, Avatars, Short-Form Storytelling & Platform Rules', orderIndex: 2, contentType: 'RECORDED_VIDEO', durationMinutes: 75, isFreePreview: false }
+        ]
+      },
+      {
+        id: 'm-aidm-13',
+        title: 'Module 13 — Marketing Automation, CRM and AI Agents',
+        orderIndex: 13,
+        description: 'HubSpot, GoHighLevel, Zapier, Make, n8n, webhooks, lead scoring, AI lead qualification, WhatsApp automation, and AI voice/sales agents.',
+        lessons: [
+          { id: 'l-aidm-13-1', title: '13.1 CRM Architecture, Contact Lifecycles & Lead Pipeline Management', orderIndex: 1, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false },
+          { id: 'l-aidm-13-2', title: '13.2 Multi-Step Integration with Zapier, Make, n8n & Webhooks', orderIndex: 2, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false },
+          { id: 'l-aidm-13-3', title: '13.3 Autonomous AI Agents, Chatbots & WhatsApp Automation', orderIndex: 3, contentType: 'RECORDED_VIDEO', durationMinutes: 75, isFreePreview: false }
+        ]
+      },
+      {
+        id: 'm-aidm-14',
+        title: 'Module 14 — Digital Marketing Strategy, Reporting and Capstone Project',
+        orderIndex: 14,
+        description: 'Full-funnel digital marketing strategy, channel selection, KPI forecasting, Looker dashboards, presentation skills, and the Final Capstone Project.',
+        lessons: [
+          { id: 'l-aidm-14-1', title: '14.1 Full-Funnel Strategic Architecture, Budgets & Customer Journey Mapping', orderIndex: 1, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false },
+          { id: 'l-aidm-14-2', title: '14.2 Conversion Rate Optimisation (CRO), Attribution & Executive Reporting', orderIndex: 2, contentType: 'RECORDED_VIDEO', durationMinutes: 75, isFreePreview: false },
+          { id: 'l-aidm-14-3', title: '14.3 Capstone Project Submission & Evaluator Defence Briefing', orderIndex: 3, contentType: 'LIVE_SESSION', durationMinutes: 90, isFreePreview: false }
+        ]
+      }
+    ],
+    upcomingBatches: [
+      {
+        id: 'batch-aidm-2026-01',
+        courseSlug: 'ai-digital-marketing-course',
+        batchCode: 'SV-AIDM-COHORT1',
+        title: 'AI Digital Marketing Master Cohort (Global Live + Hybrid)',
+        startDate: '2026-12-01T18:00:00Z',
+        endDate: '2027-02-15T20:00:00Z',
+        scheduleTimezone: 'UTC',
+        scheduleDescription: 'Mon & Wed: 18:00 - 20:00 UTC (Live Classes + 24/7 Practical Labs)',
+        trainerName: 'StudentVerse Expert Faculty',
+        maxSeats: 35,
+        enrolledCount: 18,
+        status: 'UPCOMING'
+      }
+    ]
+  },
+  {
     id: 'c-dm-101',
     slug: 'digital-marketing-foundations',
     title: 'Digital Marketing Fundamentals & Omnichannel Strategy',
@@ -118,8 +318,8 @@ const APPROVED_LAUNCH_COURSES: CourseData[] = [
     format: 'LIVE_ONLINE',
     durationHours: 36,
     totalSessions: 12,
-    priceMinorUnits: 29900, // $299.00
-    currency: 'USD',
+    priceMinorUnits: 2499900,
+    currency: 'INR',
     description: 'Master practical digital marketing strategy through real-time instructor guidance. Build end-to-end customer acquisition funnels, plan multi-channel campaigns, execute content schedules, and measure performance metrics across modern channels.',
     prerequisites: ['Basic web literacy', 'Familiarity with spreadsheets'],
     learningOutcomes: [
@@ -181,8 +381,8 @@ const APPROVED_LAUNCH_COURSES: CourseData[] = [
     format: 'LIVE_ONLINE',
     durationHours: 32,
     totalSessions: 10,
-    priceMinorUnits: 34900,
-    currency: 'USD',
+    priceMinorUnits: 2999900,
+    currency: 'INR',
     description: 'Learn modern search mechanics beyond basic keywords. Conduct technical site audits, build topical clusters, optimize for Google Search Console, and master Answer Engine Optimisation (AEO) for AI search engines like ChatGPT Search and Google AI Overviews.',
     prerequisites: ['Basic HTML and CMS understanding'],
     learningOutcomes: [
@@ -242,8 +442,8 @@ const APPROVED_LAUNCH_COURSES: CourseData[] = [
     format: 'LIVE_ONLINE',
     durationHours: 36,
     totalSessions: 12,
-    priceMinorUnits: 39900,
-    currency: 'USD',
+    priceMinorUnits: 3499900,
+    currency: 'INR',
     description: 'Master high-volume paid media buying. Set up Google Search and Performance Max campaigns, architect Meta Ads creative testing frameworks, configure Server-Side Conversion APIs, and optimize ad spend with rigorous ROAS attribution.',
     prerequisites: ['Basic digital marketing experience'],
     learningOutcomes: [
@@ -303,8 +503,8 @@ const APPROVED_LAUNCH_COURSES: CourseData[] = [
     format: 'LIVE_ONLINE',
     durationHours: 30,
     totalSessions: 10,
-    priceMinorUnits: 29900,
-    currency: 'USD',
+    priceMinorUnits: 2499900,
+    currency: 'INR',
     description: 'Stop guessing which marketing channels work. Master Google Tag Manager dataLayers, configure custom GA4 conversion events, implement cross-domain tracking, and build interactive client-facing dashboards in Looker Studio.',
     prerequisites: ['Basic spreadsheet and marketing understanding'],
     learningOutcomes: [
@@ -364,8 +564,8 @@ const APPROVED_LAUNCH_COURSES: CourseData[] = [
     format: 'LIVE_ONLINE',
     durationHours: 28,
     totalSessions: 10,
-    priceMinorUnits: 24900,
-    currency: 'USD',
+    priceMinorUnits: 1999900,
+    currency: 'INR',
     description: 'Build organic social media systems that drive revenue. Learn platform-specific distribution across LinkedIn, Instagram, and YouTube, engineer high-engagement content calendars, establish distinctive brand voice, and analyze community sentiment.',
     prerequisites: ['Basic social media familiarity'],
     learningOutcomes: [
@@ -415,8 +615,8 @@ const APPROVED_LAUNCH_COURSES: CourseData[] = [
     format: 'LIVE_ONLINE',
     durationHours: 32,
     totalSessions: 10,
-    priceMinorUnits: 34900,
-    currency: 'USD',
+    priceMinorUnits: 2999900,
+    currency: 'INR',
     description: 'Transform modern marketing operations using production AI workflows. Build customized prompt chains for campaign research, automate multi-lingual content variations, integrate marketing automation triggers, and maintain responsible AI governance.',
     prerequisites: ['Basic digital marketing experience'],
     learningOutcomes: [
@@ -469,7 +669,7 @@ const INITIAL_ASSIGNMENTS: AssignmentItem[] = [
     instructions: 'Prepare an end-to-end customer acquisition strategy for a direct-to-consumer digital product. Detail ICP definition, channel budget distribution across Google and Meta, funnel step metrics, and conversion rate assumptions.',
     deliverables: [
       'Target ICP specification sheet and competitor positioning matrix',
-      'Channel budget distribution spreadsheet ($20,000 monthly spend)',
+      'Channel budget distribution spreadsheet (₹15,00,000 monthly spend)',
       'Landing page wireframe and CRO recommendations',
       'Projected CPA, CAC, and LTV performance model'
     ],
@@ -525,7 +725,7 @@ export class CoursesService {
         userId: 'usr-student-demo-1',
         studentName: 'Alex Morgan',
         status: 'EVALUATED',
-        responseText: 'Detailed omnichannel campaign plan submitted with $20,000 monthly allocation model.',
+        responseText: 'Detailed omnichannel campaign plan submitted with ₹15,00,000 monthly allocation model.',
         projectUrl: 'https://github.com/alexmorgan-growth/campaign-capstone',
         submittedAt: '2026-11-10T14:30:00Z',
         evaluation: {
@@ -542,9 +742,7 @@ export class CoursesService {
     ]
   ]);
 
-  private studentEnrollmentsStore = new Map<string, string[]>([
-    ['usr-student-demo-1', ['digital-marketing-foundations', 'seo-and-ai-search-optimization']]
-  ]);
+  private studentEnrollmentsStore = new Map<string, string[]>();
 
   constructor(private prisma: PrismaService) { }
 
@@ -597,11 +795,31 @@ export class CoursesService {
   }
 
   async getStudentLearning(userId: string) {
-    const enrolledSlugs = this.studentEnrollmentsStore.get(userId) || ['digital-marketing-foundations'];
+    const enrolledSlugs = this.studentEnrollmentsStore.get(userId) || [];
     const enrolledCourses = APPROVED_LAUNCH_COURSES.filter((c) => enrolledSlugs.includes(c.slug));
+
+    if (enrolledCourses.length === 0) {
+      return {
+        enrolledCourses: [],
+        upcomingLiveClasses: [],
+        recordedLectures: [],
+        attendanceRate: null,
+      };
+    }
 
     // Next scheduled live classes
     const upcomingLiveClasses: LiveClassSession[] = [
+      {
+        id: 'cls-aidm-1',
+        batchId: 'batch-aidm-2026-01',
+        title: 'Live Masterclass: AI SEO, Entity Graph & Answer Engine Optimisation (AEO)',
+        scheduledStart: '2026-12-01T18:00:00Z',
+        scheduledEnd: '2026-12-01T20:00:00Z',
+        timezone: 'UTC',
+        meetingLink: 'https://meet.google.com/stv-aidm-live1',
+        trainerName: 'StudentVerse Expert Faculty',
+        isCompleted: false
+      },
       {
         id: 'cls-101',
         batchId: 'batch-dm-2026-01',
@@ -745,6 +963,33 @@ export class CoursesService {
 
   // Verified Skill Ratings & Leaderboard
   async getStudentSkillRatings(userId: string): Promise<StudentSkillScore[]> {
+    if (!userId || userId === 'new-student' || userId === 'guest') {
+      return [];
+    }
+
+    try {
+      const skills = await this.prisma.studentSkill.findMany({
+        where: { userId },
+        include: { skill: true },
+      });
+
+      if (skills && skills.length > 0) {
+        return skills.map((ss) => ({
+          skillName: ss.skill.name,
+          category: ss.skill.category,
+          score: Math.round(ss.ratingScore),
+          confidence: (ss.confidenceLevel as any) || 'MODERATE',
+          verifiedTasksCount: ss.verifiedTasksCount || 1,
+          lastAssessedAt: ss.updatedAt.toISOString(),
+        }));
+      }
+    } catch (e) {}
+
+    // Clean zero-state for new students who have not yet been evaluated
+    if (userId !== 'usr-student-demo-1') {
+      return [];
+    }
+
     return [
       {
         skillName: 'Omnichannel Strategy',

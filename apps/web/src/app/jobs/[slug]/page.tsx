@@ -20,7 +20,7 @@ const JOBS_DICT: Record<string, any> = {
     company: 'Apex Growth Labs',
     isCompanyVerified: true,
     location: 'Global (Remote)',
-    compensation: '$48,000 - $65,000 USD / yr',
+    compensation: '₹8,00,000 - ₹12,00,000 / yr',
     jobType: 'Full-Time (Remote)',
     description: `Apex Growth Labs is a performance growth agency servicing B2B SaaS and high-velocity digital brands. We are seeking a proactive Marketing Operations Associate to oversee campaign execution, tracking taxonomy, email workflow automation, and attribution reporting.
 
@@ -47,7 +47,7 @@ Requirements:
     company: 'Nexis Digital Services',
     isCompanyVerified: true,
     location: 'Remote (EMEA / APAC friendly)',
-    compensation: '$52,000 - $70,000 USD / yr',
+    compensation: '₹10,00,000 - ₹15,00,000 / yr',
     jobType: 'Full-Time (Remote)',
     description: `Nexis Digital Services specializes in automated enterprise operations. We are looking for an Automation Engineer proficient in webhook architecture, low-code iPaaS platforms (n8n, Make), and REST API integrations.
 

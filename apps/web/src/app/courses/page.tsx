@@ -3,8 +3,24 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Search, Filter, Clock, BookOpen, CheckCircle, ArrowRight, Video, Sparkles } from 'lucide-react';
+import { formatINR } from '../../lib/currency';
 
 const ALL_COURSES = [
+  {
+    id: 'c-aidm-100',
+    slug: 'ai-digital-marketing-course',
+    title: 'AI Digital Marketing Course',
+    subtitle: 'Comprehensive 14-Module Professional Programme: SEO, PPC, GA4, Paid Media, Automation & Modern AI Tools',
+    category: 'Digital Marketing',
+    level: 'BEGINNER TO ADVANCED',
+    durationHours: 48,
+    totalSessions: 16,
+    price: 49999,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60',
+    description: 'Master digital marketing with artificial intelligence through hands-on training in SEO, Google Ads, GA4, Social Media Marketing, Email Marketing, Content Marketing, Marketing Automation, Affiliate Marketing, and Freelancing.',
+    skills: ['AI-Driven Technical SEO', 'Google Ads & PMax', 'GA4 & GTM DataLayers', 'CRM & Agent Automation', 'GenAI Creative Studio', 'Full-Funnel Capstone'],
+    nextBatch: '01 Dec 2026 (Live + Hybrid)'
+  },
   {
     id: 'c-dm-101',
     slug: 'digital-marketing-foundations',
@@ -14,7 +30,7 @@ const ALL_COURSES = [
     level: 'BEGINNER',
     durationHours: 36,
     totalSessions: 12,
-    price: 299,
+    price: 24999,
     thumbnailUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60',
     description: 'Master practical digital marketing strategy through real-time instructor guidance. Build end-to-end customer acquisition funnels, plan multi-channel campaigns, execute content schedules, and measure performance metrics across modern channels.',
     skills: ['Funnel Architecture', 'Omnichannel Strategy', 'Paid Media Pacing', 'CRO & Landing Pages'],
@@ -29,7 +45,7 @@ const ALL_COURSES = [
     level: 'INTERMEDIATE',
     durationHours: 32,
     totalSessions: 10,
-    price: 349,
+    price: 29999,
     thumbnailUrl: 'https://images.unsplash.com/photo-1571786256017-aee7a0c009b6?w=800&auto=format&fit=crop&q=60',
     description: 'Learn modern search mechanics beyond basic keywords. Conduct technical site audits, build topical clusters, optimize for Google Search Console, and master Answer Engine Optimisation (AEO) for AI search engines.',
     skills: ['Technical Crawl Audits', 'AEO Entity Schema', 'Topical Authority', 'Search Console'],
@@ -44,7 +60,7 @@ const ALL_COURSES = [
     level: 'INTERMEDIATE',
     durationHours: 36,
     totalSessions: 12,
-    price: 399,
+    price: 34999,
     thumbnailUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=60',
     description: 'Master high-volume paid media buying. Set up Google Search and Performance Max campaigns, architect Meta Ads creative testing frameworks, configure Server-Side Conversion APIs, and optimize ad spend with rigorous ROAS attribution.',
     skills: ['Google Search & PMax', 'Meta Creative Testing', 'Conversion API (CAPI)', 'ROAS Attribution'],
@@ -59,7 +75,7 @@ const ALL_COURSES = [
     level: 'INTERMEDIATE',
     durationHours: 30,
     totalSessions: 10,
-    price: 299,
+    price: 24999,
     thumbnailUrl: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&auto=format&fit=crop&q=60',
     description: 'Stop guessing which marketing channels work. Master Google Tag Manager dataLayers, configure custom GA4 conversion events, implement cross-domain tracking, and build interactive client-facing dashboards in Looker Studio.',
     skills: ['GTM DataLayers', 'GA4 Custom Events', 'Looker Studio BI', 'Attribution Modeling'],
@@ -74,7 +90,7 @@ const ALL_COURSES = [
     level: 'BEGINNER',
     durationHours: 28,
     totalSessions: 10,
-    price: 249,
+    price: 19999,
     thumbnailUrl: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800&auto=format&fit=crop&q=60',
     description: 'Build organic social media systems that drive revenue. Learn platform-specific distribution across LinkedIn, Instagram, and YouTube, engineer high-engagement content calendars, establish distinctive brand voice, and analyze community sentiment.',
     skills: ['Content Architecture', 'Short-Form Scripts', 'Community Governance', 'Editorial Calendars'],
@@ -89,7 +105,7 @@ const ALL_COURSES = [
     level: 'INTERMEDIATE',
     durationHours: 32,
     totalSessions: 10,
-    price: 349,
+    price: 29999,
     thumbnailUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=60',
     description: 'Transform modern marketing operations using production AI workflows. Build customized prompt chains for campaign research, automate multi-lingual content variations, integrate marketing automation triggers, and maintain responsible AI governance.',
     skills: ['Systematic Prompt Chains', 'Competitive Intelligence AI', 'Content Automation', 'AI Ethics & Review'],
@@ -226,7 +242,7 @@ export default function CoursesPage() {
                     <Clock className="w-3.5 h-3.5 text-indigo-500" /> {course.durationHours} Hours ({course.totalSessions} Live Sessions)
                   </span>
                   <span className="font-black text-base text-slate-900">
-                    ${course.price} USD
+                    {formatINR(course.price)}
                   </span>
                 </div>
 
