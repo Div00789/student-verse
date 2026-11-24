@@ -6,10 +6,37 @@
 
 import { getAuthToken } from './auth';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+function getApiUrl(endpoint: string): string {
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const envUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
+
+  // If an external API URL is explicitly configured (and not localhost:4000)
+  if (envUrl && !envUrl.includes('localhost:4000')) {
+    const base = envUrl.replace(/\/$/, '');
+    if (base.endsWith('/api/v1')) {
+      return `${base}${cleanEndpoint.replace(/^\/api\/v1/, '')}`;
+    }
+    const path = cleanEndpoint.startsWith('/api/v1') ? cleanEndpoint : `/api/v1${cleanEndpoint}`;
+    return `${base}${path}`;
+  }
+
+  // Client-side browser execution (Vercel or local Next.js): relative path to Next.js route handlers
+  const apiPath = cleanEndpoint.startsWith('/api/v1') ? cleanEndpoint : `/api/v1${cleanEndpoint}`;
+  if (typeof window !== 'undefined') {
+    return apiPath;
+  }
+
+  // Server-side Next.js execution
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}${apiPath}`;
+  }
+
+  const port = process.env.PORT || 3000;
+  return `http://localhost:${port}${apiPath}`;
+}
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  const url = getApiUrl(endpoint);
   const token = getAuthToken();
 
   const headers: Record<string, string> = {

@@ -44,7 +44,7 @@ export default function AdminLoginPage() {
       }
     } catch (err: any) {
       if (err.message && (err.message.includes('fetch') || err.message.includes('Failed to fetch') || err.message.includes('NetworkError'))) {
-        setError('Unable to connect to authentication server. Please ensure the backend is running on port 4000.');
+        setError('Unable to connect to authentication server. Please check your network connection.');
       } else {
         setError(err?.message || 'Invalid administrator credentials.');
       }
