@@ -197,6 +197,7 @@ export const api = {
       data: {
         status?: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
         isCompleted?: boolean;
+        totalLessons?: number;
         watchedSeconds?: number;
         watchedPct?: number;
         lastPositionSeconds?: number;

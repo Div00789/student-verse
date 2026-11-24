@@ -858,27 +858,19 @@ export default function CourseLearningPlayerPage() {
         const res = await api.student.getCourseProgress(slug);
         if (isMounted && res) {
           setIsEnrolled(res.isEnrolled ?? true);
+          // Prioritize server completed lessons permanently from PostgreSQL
           const serverCompleted = res.completedLessonIds || [];
 
-          let merged = serverCompleted;
-          try {
-            const localSaved = localStorage.getItem(storageKey);
-            if (localSaved) {
-              const parsed = JSON.parse(localSaved);
-              if (Array.isArray(parsed)) {
-                merged = Array.from(new Set([...serverCompleted, ...parsed]));
-              }
-            }
-          } catch (_) {}
-
-          setCompletedLessonIds(merged);
-          setCompletedCount(merged.length);
+          setCompletedLessonIds(serverCompleted);
+          setCompletedCount(serverCompleted.length);
           setCourseProgressPct(
-            totalLessons > 0 ? Math.round((merged.length / totalLessons) * 1000) / 10 : res.progressPct || 0
+            totalLessons > 0 ? Math.round((serverCompleted.length / totalLessons) * 1000) / 10 : (res.progressPct || 0)
           );
-          try {
-            localStorage.setItem(storageKey, JSON.stringify(merged));
-          } catch (_) {}
+          if (storageKey) {
+            try {
+              localStorage.setItem(storageKey, JSON.stringify(serverCompleted));
+            } catch (_) {}
+          }
         }
       } catch (err: any) {
         // Backend offline or quiet fallback - keep local state intact
@@ -943,30 +935,30 @@ export default function CourseLearningPlayerPage() {
     );
     setTimeout(() => setActionNotice(null), 2500);
 
-    // Sync with backend API in the background (fire-and-sync)
+    // Sync with backend API (permanent database persistence)
     setIsSavingLesson(lessonId);
     try {
       const res = await api.student.updateLessonProgress(slug, lessonId, {
         isCompleted: markCompleted,
         status: markCompleted ? 'COMPLETED' : 'NOT_STARTED',
+        totalLessons,
         completionMethod: 'MANUAL_VERIFIED',
       });
 
       if (res && res.success && res.completedLessonIds) {
-        const merged = Array.from(new Set([...nextCompletedIds, ...res.completedLessonIds]));
-        setCompletedLessonIds(merged);
-        setCompletedCount(merged.length);
+        setCompletedLessonIds(res.completedLessonIds);
+        setCompletedCount(res.completedLessonIds.length);
         if (totalLessons > 0) {
-          setCourseProgressPct(Math.round((merged.length / totalLessons) * 1000) / 10);
+          setCourseProgressPct(Math.round((res.completedLessonIds.length / totalLessons) * 1000) / 10);
         }
         if (storageKey) {
           try {
-            localStorage.setItem(storageKey, JSON.stringify(merged));
+            localStorage.setItem(storageKey, JSON.stringify(res.completedLessonIds));
           } catch (_) {}
         }
       }
     } catch (err: any) {
-      // Backend offline - local progress is safely preserved
+      // Quiet fallback - optimistic state remains intact
     } finally {
       setIsSavingLesson(null);
     }
