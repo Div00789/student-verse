@@ -5,7 +5,7 @@ import { supabaseServer, JWT_SECRET } from '@/lib/supabaseServer';
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, fullName, country, role, companyName } = await req.json();
+    const { email, password, fullName, country, role, companyName, website, industry, designation } = await req.json();
 
     if (!email || !password || !fullName) {
       return NextResponse.json(
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
 
     const emailNorm = email.toLowerCase().trim();
 
-    // 1. Check if user already exists
+    // 1. Check if user already exists in PostgreSQL
     const { data: existingUser } = await supabaseServer
       .from('User')
       .select('id')
@@ -30,15 +30,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 2. Hash password
+    // 2. Hash password securely
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
     const userId = crypto.randomUUID();
     const isEmployer = role === 'EMPLOYER';
-    const assignedRoles = isEmployer ? ['EMPLOYER', 'EMPLOYER_OWNER'] : ['STUDENT', 'LEARNER'];
+    // Strictly isolate roles: students only receive STUDENT; employers only receive EMPLOYER
+    const assignedRoles = isEmployer ? ['EMPLOYER'] : ['STUDENT'];
 
-    // 3. Create User record
+    // 3. Create permanent User record
     const { error: userErr } = await supabaseServer.from('User').insert({
       id: userId,
       email: emailNorm,
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 4. Assign roles
+    // 4. Assign role in UserRoleAssignment
     const roleInserts = assignedRoles.map((r) => ({
       id: crypto.randomUUID(),
       userId,
@@ -68,12 +69,13 @@ export async function POST(req: NextRequest) {
     let orgName = '';
     if (isEmployer) {
       const orgId = crypto.randomUUID();
-      orgName = companyName || 'Hiring Partner';
+      orgName = companyName || `${fullName}'s Organization`;
+      const cleanSlug = `${orgName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now().toString().slice(-4)}`;
       await supabaseServer.from('Organisation').insert({
         id: orgId,
         name: orgName,
-        slug: `${orgName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now().toString().slice(-4)}`,
-        website: 'https://studentverse.com',
+        slug: cleanSlug,
+        website: website || 'https://company.com',
         country: country || 'India',
         verificationStatus: 'PENDING',
       });
@@ -87,7 +89,7 @@ export async function POST(req: NextRequest) {
       await supabaseServer.from('LearnerProfile').insert({
         id: crypto.randomUUID(),
         userId,
-        headline: 'Digital Skills Learner',
+        headline: designation || 'Digital Skills Learner',
         visibility: 'PRIVATE',
         skills: [],
       });
@@ -99,12 +101,13 @@ export async function POST(req: NextRequest) {
       fullName: fullName.trim(),
       roles: assignedRoles,
       country: country || 'India',
-      headline: isEmployer ? 'Hiring Partner' : 'Digital Skills Learner',
+      headline: designation || (isEmployer ? 'Hiring Partner' : 'Digital Skills Learner'),
       companyName: orgName || undefined,
-      isEmployerVerified: false,
+      isEmployerVerified: isEmployer ? false : undefined,
       createdAt: new Date().toISOString(),
     };
 
+    // 6. Generate verified JWT session token
     const accessToken = jwt.sign(
       {
         sub: userId,
@@ -116,16 +119,12 @@ export async function POST(req: NextRequest) {
     );
 
     return NextResponse.json({
-      success: true,
       accessToken,
       user: userData,
-      message: isEmployer
-        ? 'Company account registered successfully. Verification request submitted for review.'
-        : 'Welcome to StudentVerse! Your student account is now active.',
     });
   } catch (err: any) {
     return NextResponse.json(
-      { message: err.message || 'Registration failed.' },
+      { message: err.message || 'Internal server error during registration.' },
       { status: 500 }
     );
   }

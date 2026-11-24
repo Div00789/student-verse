@@ -92,7 +92,7 @@ export default function GetStartedPage() {
               <div className="space-y-2.5 pt-2 border-t border-slate-100 text-xs text-slate-700">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>100% Live Cohorts with Google Meet links</span>
+                  <span>100% Live Instructor-Led Cohorts</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />

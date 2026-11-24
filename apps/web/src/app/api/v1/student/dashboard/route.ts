@@ -98,6 +98,15 @@ export async function GET(req: NextRequest) {
       };
     });
 
+    // Query student learner profile for talent pool discovery consent
+    const { data: learnerProfile } = await supabaseServer
+      .from('LearnerProfile')
+      .select('visibility')
+      .eq('userId', userId)
+      .maybeSingle();
+
+    const talentPoolOptIn = learnerProfile?.visibility === 'SEARCHABLE';
+
     return NextResponse.json({
       enrolledCourseCount: enrollments.length,
       activeCohortCount: enrollments.length > 0 ? 1 : 0,
@@ -115,7 +124,7 @@ export async function GET(req: NextRequest) {
       assignments: [],
       certificates: [],
       skillRatings: [],
-      talentPoolOptIn: false,
+      talentPoolOptIn,
     });
   } catch (err: any) {
     return NextResponse.json({ message: err.message || 'Failed' }, { status: 500 });

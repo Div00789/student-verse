@@ -79,6 +79,9 @@ export const api = {
       country?: string;
       role?: string;
       companyName?: string;
+      website?: string;
+      industry?: string;
+      designation?: string;
     }) => {
       return request<{ accessToken: string; user: any }>('/auth/register', {
         method: 'POST',

@@ -34,7 +34,7 @@ import {
   CreditCard,
   Loader2
 } from 'lucide-react';
-import { getAuthUser, updateAuthUser, clearAuthSession, AuthUser, formatStudentName } from '../../lib/auth';
+import { getAuthUser, updateAuthUser, clearAuthSession, AuthUser, formatStudentName, isStudent, isEmployer } from '../../lib/auth';
 import { formatINR } from '../../lib/currency';
 import { api } from '../../lib/api';
 
@@ -232,6 +232,13 @@ export default function StudentPortalPage() {
       router.replace('/student/login?redirect=/student');
       return;
     }
+
+    // Role-based protection: Employers cannot access Student Portal
+    if (isEmployer(authUser) && !isStudent(authUser)) {
+      router.replace('/employer');
+      return;
+    }
+
     setUser(authUser);
     setEditName(authUser.fullName || '');
     setEditHeadline(authUser.headline || 'Student Learner');
@@ -606,17 +613,12 @@ export default function StudentPortalPage() {
                     Lead Faculty: <strong>{dashboardData.nextLiveClass.trainerName}</strong> &bull; Scheduled Start: {new Date(dashboardData.nextLiveClass.scheduledStart).toLocaleString()}
                   </p>
                 </div>
-                {dashboardData.nextLiveClass.meetingLink && (
-                  <a
-                    href={dashboardData.nextLiveClass.meetingLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all flex items-center gap-2 self-start sm:self-auto"
-                  >
-                    <Video className="w-4 h-4" />
-                    <span>Join Class</span>
-                  </a>
-                )}
+                <div className="flex items-center gap-3">
+                  <span className="px-4 py-2 bg-indigo-500/20 text-indigo-200 border border-indigo-400/30 text-xs font-bold rounded-xl flex items-center gap-1.5">
+                    <CalendarIcon className="w-3.5 h-3.5" />
+                    <span>Cohort Schedule Synchronized</span>
+                  </span>
+                </div>
               </div>
             ) : null}
 
@@ -1004,7 +1006,7 @@ export default function StudentPortalPage() {
             <Video className="w-10 h-10 text-indigo-600 mx-auto" />
             <h3 className="text-base font-bold text-slate-900">Live Cohort Classes</h3>
             <p className="text-xs text-slate-500 max-w-md mx-auto">
-              Your live cohort schedule is coordinated with Senior Faculty leads. All Google Meet session links are active 15 minutes before scheduled start time.
+              Your live cohort schedule is coordinated with Senior Faculty leads. Cohort dates and curriculum milestones are scheduled directly with your batch.
             </p>
           </div>
         )}
