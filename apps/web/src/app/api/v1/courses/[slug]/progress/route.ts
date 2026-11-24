@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { supabaseServer, JWT_SECRET } from '@/lib/supabaseServer';
+import { resolveToDbLessonId, resolveToFrontendLessonCode } from '@/lib/lessonMapping';
 
-// Universal fallback total lessons per course slug if not dynamically counted
+// Fallback total published required lessons per course
 const COURSE_TOTAL_LESSONS: Record<string, number> = {
   'ai-digital-marketing-course': 41,
   'digital-marketing-foundations': 8,
@@ -83,22 +84,34 @@ export async function GET(
       });
     }
 
-    // Query permanent LessonProgress from database
+    // Query permanent LessonProgress from PostgreSQL
     const { data: progressRecords } = await supabaseServer
       .from('LessonProgress')
-      .select('lessonId')
+      .select('lessonId, isCompleted')
       .eq('enrollmentId', enrollment.id)
       .eq('isCompleted', true);
 
-    const completedLessonIds = progressRecords ? progressRecords.map((p: any) => p.lessonId) : [];
+    const rawLessonIds = progressRecords ? progressRecords.map((p: any) => p.lessonId) : [];
+
+    // Return both canonical frontend codes and UUIDs so any matching logic succeeds
+    const frontendCodes = new Set<string>();
+    rawLessonIds.forEach((id: string) => {
+      const code = resolveToFrontendLessonCode(id);
+      frontendCodes.add(code);
+      frontendCodes.add(id);
+    });
+
+    const uniqueCompletedCount = rawLessonIds.length;
     const totalLessons = COURSE_TOTAL_LESSONS[slug] || 41;
-    const computedPct = totalLessons > 0 ? Math.min(100, Math.round((completedLessonIds.length / totalLessons) * 100)) : (enrollment.progressPct || 0);
+    const computedPct = totalLessons > 0
+      ? Math.min(100, Math.round((uniqueCompletedCount / totalLessons) * 1000) / 10)
+      : (enrollment.progressPct || 0);
 
     return NextResponse.json({
       isEnrolled: true,
       enrollmentId: enrollment.id,
-      completedLessonIds,
-      completedCount: completedLessonIds.length,
+      completedLessonIds: Array.from(frontendCodes),
+      completedCount: uniqueCompletedCount,
       totalLessons,
       progressPercentage: computedPct,
       progressPct: computedPct,
@@ -153,7 +166,7 @@ export async function POST(
       return NextResponse.json({ message: 'Course not found' }, { status: 404 });
     }
 
-    // Get or create enrollment
+    // Get or create permanent enrollment
     let { data: enrollment } = await supabaseServer
       .from('Enrollment')
       .select('id')
@@ -173,22 +186,28 @@ export async function POST(
       enrollment = { id: newEnrollmentId };
     }
 
-    // Upsert lesson progress directly in Supabase LessonProgress table
+    // Canonicalize lessonId to match foreign key / UUID in Lesson table
+    const targetDbLessonId = resolveToDbLessonId(lessonId);
+    const targetFrontendCode = resolveToFrontendLessonCode(targetDbLessonId);
+
+    // Check if progress row already exists under either targetDbLessonId or targetFrontendCode
     const { data: existingProgress } = await supabaseServer
       .from('LessonProgress')
-      .select('id')
+      .select('id, lessonId')
       .eq('enrollmentId', enrollment.id)
-      .eq('lessonId', lessonId)
+      .or(`lessonId.eq.${targetDbLessonId},lessonId.eq.${targetFrontendCode}`)
       .maybeSingle();
 
     const now = new Date().toISOString();
+    const markComplete = Boolean(isCompleted);
+
     if (existingProgress) {
       await supabaseServer
         .from('LessonProgress')
         .update({
-          isCompleted: Boolean(isCompleted),
-          status: isCompleted ? 'COMPLETED' : 'IN_PROGRESS',
-          completedAt: isCompleted ? now : null,
+          isCompleted: markComplete,
+          status: markComplete ? 'COMPLETED' : 'NOT_STARTED',
+          completedAt: markComplete ? now : null,
           updatedAt: now,
         })
         .eq('id', existingProgress.id);
@@ -196,28 +215,35 @@ export async function POST(
       await supabaseServer.from('LessonProgress').insert({
         id: crypto.randomUUID(),
         enrollmentId: enrollment.id,
-        lessonId,
-        isCompleted: Boolean(isCompleted),
-        status: isCompleted ? 'COMPLETED' : 'IN_PROGRESS',
-        completedAt: isCompleted ? now : null,
+        lessonId: targetDbLessonId,
+        isCompleted: markComplete,
+        status: markComplete ? 'COMPLETED' : 'NOT_STARTED',
+        completedAt: markComplete ? now : null,
+        startedAt: now,
         createdAt: now,
         updatedAt: now,
       });
     }
 
-    // Recalculate permanent progress across all completed lessons in this enrollment
+    // Query all completed records for this enrollment to compute accurate total
     const { data: completedRecords } = await supabaseServer
       .from('LessonProgress')
       .select('lessonId')
       .eq('enrollmentId', enrollment.id)
       .eq('isCompleted', true);
 
-    const completedLessonIds = completedRecords ? completedRecords.map((r: any) => r.lessonId) : [];
-    const count = completedLessonIds.length;
-    const total = clientTotal || COURSE_TOTAL_LESSONS[slug] || 41;
-    const progressPercentage = Math.min(100, Math.round((count / total) * 100));
+    const completedLessonIdsSet = new Set<string>();
+    (completedRecords || []).forEach((r: any) => {
+      const code = resolveToFrontendLessonCode(r.lessonId);
+      completedLessonIdsSet.add(code);
+      completedLessonIdsSet.add(r.lessonId);
+    });
 
-    // Update Enrollment table with accurate progress
+    const uniqueCompletedCount = completedRecords ? completedRecords.length : 0;
+    const total = clientTotal || COURSE_TOTAL_LESSONS[slug] || 41;
+    const progressPercentage = Math.min(100, Math.round((uniqueCompletedCount / total) * 1000) / 10);
+
+    // Update Enrollment table with verified progress
     await supabaseServer
       .from('Enrollment')
       .update({
@@ -229,11 +255,14 @@ export async function POST(
 
     return NextResponse.json({
       success: true,
-      completedLessonIds,
-      completedCount: count,
+      completed: markComplete,
+      completedLessonIds: Array.from(completedLessonIdsSet),
+      completedCount: uniqueCompletedCount,
+      completedLessons: uniqueCompletedCount,
       totalLessons: total,
       progressPercentage,
       progressPct: progressPercentage,
+      courseProgress: progressPercentage,
     });
   } catch (err: any) {
     return NextResponse.json({ message: err.message || 'Failed to update progress' }, { status: 500 });

@@ -796,6 +796,7 @@ export default function CourseLearningPlayerPage() {
   const [isEnrolled, setIsEnrolled] = useState<boolean>(true);
   const [isLoadingProgress, setIsLoadingProgress] = useState<boolean>(true);
   const [isSavingLesson, setIsSavingLesson] = useState<string | null>(null);
+  const [saveStatus, setSaveStatus] = useState<'IDLE' | 'SAVING' | 'SAVED' | 'ERROR'>('IDLE');
   const [actionNotice, setActionNotice] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -903,6 +904,12 @@ export default function CourseLearningPlayerPage() {
   const handleToggleLesson = async (lessonId: string, markCompleted: boolean) => {
     const targetLesson = modules.flatMap((m) => m.lessons).find((l) => l.id === lessonId);
     if (!targetLesson) return;
+    if (isSavingLesson) return; // Prevent concurrent modifications
+
+    // Preserve previous state for rollback on error
+    const previousCompletedIds = [...completedLessonIds];
+    const previousCompletedCount = completedCount;
+    const previousProgressPct = courseProgressPct;
 
     const storageKey = currentUser?.id
       ? (getScopedStorageKey('course_progress', slug) || `sv_course_progress_${currentUser.id}_${slug}`)
@@ -913,7 +920,7 @@ export default function CourseLearningPlayerPage() {
       ? Array.from(new Set([...completedLessonIds, lessonId]))
       : completedLessonIds.filter((id) => id !== lessonId);
 
-    // Immediately update UI state
+    // Optimistically update UI state
     setCompletedLessonIds(nextCompletedIds);
     setCompletedCount(nextCompletedIds.length);
     const newProgressPct = totalLessons > 0
@@ -921,22 +928,12 @@ export default function CourseLearningPlayerPage() {
       : 0;
     setCourseProgressPct(newProgressPct);
 
-    // Save to isolated student localStorage
-    if (storageKey) {
-      try {
-        localStorage.setItem(storageKey, JSON.stringify(nextCompletedIds));
-      } catch (_) {}
-    }
-
-    setActionNotice(
-      markCompleted
-        ? 'Lesson marked as complete!'
-        : `Lesson marked as incomplete.`
-    );
-    setTimeout(() => setActionNotice(null), 2500);
+    // Update save status indicator
+    setIsSavingLesson(lessonId);
+    setSaveStatus('SAVING');
+    setActionError(null);
 
     // Sync with backend API (permanent database persistence)
-    setIsSavingLesson(lessonId);
     try {
       const res = await api.student.updateLessonProgress(slug, lessonId, {
         isCompleted: markCompleted,
@@ -945,20 +942,39 @@ export default function CourseLearningPlayerPage() {
         completionMethod: 'MANUAL_VERIFIED',
       });
 
-      if (res && res.success && res.completedLessonIds) {
-        setCompletedLessonIds(res.completedLessonIds);
-        setCompletedCount(res.completedLessonIds.length);
+      if (res && res.success) {
+        const confirmedLessonIds = res.completedLessonIds || nextCompletedIds;
+        setCompletedLessonIds(confirmedLessonIds);
+        setCompletedCount(res.completedCount ?? confirmedLessonIds.length);
         if (totalLessons > 0) {
-          setCourseProgressPct(Math.round((res.completedLessonIds.length / totalLessons) * 1000) / 10);
+          const confirmedPct = Math.round(((res.completedCount ?? confirmedLessonIds.length) / totalLessons) * 1000) / 10;
+          setCourseProgressPct(confirmedPct);
         }
         if (storageKey) {
           try {
-            localStorage.setItem(storageKey, JSON.stringify(res.completedLessonIds));
+            localStorage.setItem(storageKey, JSON.stringify(confirmedLessonIds));
           } catch (_) {}
         }
+        setSaveStatus('SAVED');
+        setActionNotice(markCompleted ? 'Lesson marked complete • Progress saved to database.' : 'Lesson marked incomplete • Progress updated.');
+        setTimeout(() => {
+          setSaveStatus('IDLE');
+          setActionNotice(null);
+        }, 3000);
+      } else {
+        throw new Error('Database transaction did not confirm success.');
       }
     } catch (err: any) {
-      // Quiet fallback - optimistic state remains intact
+      // Rollback on failure
+      setCompletedLessonIds(previousCompletedIds);
+      setCompletedCount(previousCompletedCount);
+      setCourseProgressPct(previousProgressPct);
+      setSaveStatus('ERROR');
+      setActionError('Unable to save progress to database. Please check your connection and retry.');
+      setTimeout(() => {
+        setSaveStatus('IDLE');
+        setActionError(null);
+      }, 4000);
     } finally {
       setIsSavingLesson(null);
     }
@@ -1145,17 +1161,22 @@ export default function CourseLearningPlayerPage() {
               </div>
             </div>
 
-            {/* Action Feedback Alerts */}
-            {actionNotice && (
-              <div className="p-3.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                <span>{actionNotice}</span>
+            {/* Action Feedback Alerts & Live Progress Save Status */}
+            {saveStatus === 'SAVING' && (
+              <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs flex items-center gap-2">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-400" />
+                <span>Saving progress to database...</span>
               </div>
             )}
-
+            {saveStatus === 'SAVED' && (
+              <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Progress saved to PostgreSQL database.</span>
+              </div>
+            )}
             {actionError && (
-              <div className="p-3.5 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs flex items-center gap-2 animate-fadeIn">
-                <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0" />
+              <div className="p-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs flex items-center gap-2 animate-fadeIn">
+                <AlertCircle className="w-3.5 h-3.5 text-rose-400" />
                 <span>{actionError}</span>
               </div>
             )}
