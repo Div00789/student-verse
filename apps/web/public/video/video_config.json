@@ -1,0 +1,105 @@
+{
+  "title": "Professional AI Avatar Video – Muskan Kawatra's Introduction",
+  "instructor": {
+    "name": "Muskan Kawatra",
+    "role": "Digital Marketing Trainer",
+    "experience": "5+ Years of Industry Experience",
+    "referenceImage": "muskan-kawatra.jpg"
+  },
+  "technicalSpecs": {
+    "resolution": "1920x1080 (1080p Full HD) or 3840x2160 (4K UHD)",
+    "aspectRatio": "16:9 Landscape",
+    "frameRate": "30 FPS",
+    "estimatedDurationSeconds": 92,
+    "targetPaceWpm": 120,
+    "voiceProfile": {
+      "language": "en-IN",
+      "gender": "Female",
+      "accent": "Indian English (Professional, clear, conversational)",
+      "recommendedVoices": [
+        "ElevenLabs - Indian Professional Female (e.g. Aditi / Priya / Ananya)",
+        "Azure Speech - en-IN-NeerjaNeural (Expressive)",
+        "Google Cloud TTS - en-IN-Wavenet-D / en-IN-Neural2-A",
+        "HeyGen - Indian Female Voice (e.g. Swara / Shreya)"
+      ]
+    }
+  },
+  "scenes": [
+    {
+      "sceneNumber": 1,
+      "name": "Personal Introduction",
+      "startTime": 0,
+      "endTime": 12,
+      "spokenDialogue": "Hi I am Muskan Kawatra a digital marketing trainer with over five years of experience in the digital marketing industry.",
+      "cameraFraming": "Eye-level medium shot (chest upwards), centered composition",
+      "lowerThird": {
+        "title": "Muskan Kawatra",
+        "subtitle": "Digital Marketing Trainer",
+        "badge": "5+ Years of Industry Experience"
+      },
+      "gestures": "Warm smile directly into camera, subtle welcoming open-hand gesture"
+    },
+    {
+      "sceneNumber": 2,
+      "name": "Helping Students and Professionals",
+      "startTime": 12,
+      "endTime": 25,
+      "spokenDialogue": "I specialize in helping students aspiring marketers and professionals develop practical digital marketing skills and successful careers.",
+      "cameraFraming": "Medium close-up, soft studio depth of field",
+      "gestures": "Gentle nod, engaging hand gestures indicating guidance and mentorship"
+    },
+    {
+      "sceneNumber": 3,
+      "name": "Digital Marketing Expertise",
+      "startTime": 25,
+      "endTime": 55,
+      "spokenDialogue": "My areas of expertise include SEO, AEO, GEO, social media marketing, Google Ads and Meta Ads, content marketing, Google Analytics, Google Tag Manager, email marketing, AI-powered digital marketing, HubSpot CRM and marketing automation.",
+      "cameraFraming": "Medium shot with dynamic keyword callouts on the right side",
+      "animatedKeywords": [
+        "SEO, AEO and GEO",
+        "Social Media Marketing",
+        "Google Ads and Meta Ads",
+        "Content Marketing",
+        "Google Analytics and Google Tag Manager",
+        "Email Marketing",
+        "AI-Powered Digital Marketing",
+        "HubSpot CRM",
+        "Marketing Automation"
+      ],
+      "gestures": "Confident professional demeanor, precise hand pacing matching topic rhythm"
+    },
+    {
+      "sceneNumber": 4,
+      "name": "Teaching Methodology",
+      "startTime": 55,
+      "endTime": 70,
+      "spokenDialogue": "My teaching approach combines theoretical knowledge with practical implementation, real-world examples, live projects, and industry-relevant tools.",
+      "cameraFraming": "Medium shot with subtle minimalist infographic cards",
+      "minimalGraphics": [
+        "Practical Implementation",
+        "Real-World Examples",
+        "Live Projects",
+        "Industry-Relevant Tools"
+      ],
+      "gestures": "Explanatory hand motion, expressive sincere facial communication"
+    },
+    {
+      "sceneNumber": 5,
+      "name": "Passion for Digital Marketing",
+      "startTime": 70,
+      "endTime": 84,
+      "spokenDialogue": "I am passionate about simplifying complex digital marketing concepts and keeping students updated with emerging technologies, industry trends, and AI-driven marketing strategies.",
+      "cameraFraming": "Subtle slow cinematic push-in (1.0x to 1.05x)",
+      "gestures": "Enthusiastic speaking tone, positive facial radiance, natural eye contact"
+    },
+    {
+      "sceneNumber": 6,
+      "name": "Mission and Closing",
+      "startTime": 84,
+      "endTime": 92,
+      "spokenDialogue": "My mission is to empower learners with the knowledge, practical skills, and confidence they need to become successful industry-ready digital marketing professionals. Thank you.",
+      "cameraFraming": "Medium close-up, warm closing smile, gentle nod, 2-second hold, smooth fade to black",
+      "gestures": "Inspiring delivery, warm nod on 'Thank you', holding eye contact before fadeout"
+    }
+  ]
+}
