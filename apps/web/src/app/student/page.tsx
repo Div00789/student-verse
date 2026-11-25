@@ -21,11 +21,14 @@ import {
   FileCheck2,
   Award,
   Loader2,
-  ArrowRight
+  ArrowRight,
+  Search,
+  X
 } from 'lucide-react';
 import { getAuthUser, updateAuthUser, clearAuthSession, AuthUser, formatStudentName, isStudent, isEmployer } from '../../lib/auth';
 import { formatINR } from '../../lib/currency';
 import { api } from '../../lib/api';
+import { searchAndFilterCourses } from '../../lib/courseSearch';
 
 const ALL_EXPLORE_COURSES = [
   {
@@ -138,6 +141,7 @@ export default function StudentPortalPage() {
   const [purchasesData, setPurchasesData] = useState<any[]>([]);
   const [loadingDashboard, setLoadingDashboard] = useState<boolean>(true);
   const [courseFilter, setCourseFilter] = useState<'ALL' | 'IN_PROGRESS' | 'COMPLETED'>('ALL');
+  const [myCoursesSearch, setMyCoursesSearch] = useState<string>('');
 
   // Profile editing state
   const [editName, setEditName] = useState('');
@@ -241,11 +245,16 @@ export default function StudentPortalPage() {
   const enrollments = dashboardData?.enrollments || [];
   const enrolledCount = enrollments.length;
 
-  const filteredEnrollments = enrollments.filter((e: any) => {
-    if (courseFilter === 'COMPLETED') return (e.progressPct || 0) >= 100;
-    if (courseFilter === 'IN_PROGRESS') return (e.progressPct || 0) > 0 && (e.progressPct || 0) < 100;
-    return true;
-  });
+  const filteredEnrollments = React.useMemo(() => {
+    let list = enrollments.filter((e: any) => {
+      if (courseFilter === 'COMPLETED') return (e.progressPct || 0) >= 100;
+      if (courseFilter === 'IN_PROGRESS') return (e.progressPct || 0) > 0 && (e.progressPct || 0) < 100;
+      return true;
+    });
+
+    if (!myCoursesSearch.trim()) return list;
+    return searchAndFilterCourses(list, myCoursesSearch);
+  }, [enrollments, courseFilter, myCoursesSearch]);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
@@ -619,35 +628,58 @@ export default function StudentPortalPage() {
               </Link>
             </div>
 
-            {/* Filter Pills */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCourseFilter('ALL')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${courseFilter === 'ALL'
-                  ? 'bg-slate-900 text-white shadow-sm'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-                  }`}
-              >
-                All Courses ({enrollments.length})
-              </button>
-              <button
-                onClick={() => setCourseFilter('IN_PROGRESS')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${courseFilter === 'IN_PROGRESS'
-                  ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-                  }`}
-              >
-                In Progress
-              </button>
-              <button
-                onClick={() => setCourseFilter('COMPLETED')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${courseFilter === 'COMPLETED'
-                  ? 'bg-emerald-600 text-white shadow-sm'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-                  }`}
-              >
-                Completed
-              </button>
+            {/* Filter Pills and Search */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCourseFilter('ALL')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${courseFilter === 'ALL'
+                    ? 'bg-slate-900 text-white shadow-sm'
+                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                    }`}
+                >
+                  All Courses ({enrollments.length})
+                </button>
+                <button
+                  onClick={() => setCourseFilter('IN_PROGRESS')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${courseFilter === 'IN_PROGRESS'
+                    ? 'bg-indigo-600 text-white shadow-sm'
+                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                    }`}
+                >
+                  In Progress
+                </button>
+                <button
+                  onClick={() => setCourseFilter('COMPLETED')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${courseFilter === 'COMPLETED'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                    }`}
+                >
+                  Completed
+                </button>
+              </div>
+
+              {/* Quick Search inside Enrolled Courses */}
+              <div className="relative w-full sm:w-64">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search my courses..."
+                  value={myCoursesSearch}
+                  onChange={(e) => setMyCoursesSearch(e.target.value)}
+                  className="w-full pl-8 pr-7 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 text-slate-900 placeholder:text-slate-400"
+                />
+                {myCoursesSearch && (
+                  <button
+                    onClick={() => setMyCoursesSearch('')}
+                    title="Clear filter"
+                    className="absolute right-2 top-2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
             </div>
 
             {filteredEnrollments.length === 0 ? (
