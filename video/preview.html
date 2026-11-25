@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Muskan Kawatra – AI Trainer Introduction Video Preview</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    body {
+      background: #090d16;
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .container {
+      width: 100%;
+      max-width: 960px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #1e293b;
+    }
+    .header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #a5b4fc;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .video-viewport {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: radial-gradient(circle at center, #131b2e 0%, #060911 100%);
+      border-radius: 20px;
+      border: 1px solid #1e293b;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .avatar-wrapper {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .avatar-img {
+      height: 95%;
+      max-width: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 15px 35px rgba(0,0,0,0.8));
+      transition: transform 0.5s ease;
+    }
+    .speaking-pulse {
+      animation: subtleBreathe 4s ease-in-out infinite alternate;
+    }
+    @keyframes subtleBreathe {
+      0% { transform: scale(1.0); }
+      100% { transform: scale(1.015); }
+    }
+    /* Studio Lighting Ambient Glow */
+    .studio-ambient {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 20%, rgba(59, 130, 246, 0.15), transparent 70%),
+                  radial-gradient(circle at 10% 80%, rgba(99, 102, 241, 0.1), transparent 50%);
+      pointer-events: none;
+    }
+    /* Lower Third Banner */
+    .lower-third {
+      position: absolute;
+      bottom: 60px;
+      left: 36px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(12px);
+      padding: 12px 20px;
+      border-radius: 12px;
+      border-left: 4px solid #3b82f6;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      border-right: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      transition: all 0.4s ease;
+    }
+    .lower-third .name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.3px;
+    }
+    .lower-third .role {
+      font-size: 12px;
+      font-weight: 500;
+      color: #93c5fd;
+    }
+    .lower-third .experience {
+      font-size: 11px;
+      font-weight: 600;
+      color: #10b981;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+    /* Animated Keywords Callout */
+    .keywords-callout {
+      position: absolute;
+      top: 40px;
+      right: 36px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 280px;
+    }
+    .keyword-pill {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #e2e8f0;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: slideInRight 0.3s ease forwards;
+    }
+    .keyword-pill::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #3b82f6;
+    }
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    /* Subtitles */
+    .subtitles-bar {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 12;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(8px);
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #ffffff;
+      text-align: center;
+      max-width: 85%;
+      border: 1px solid rgba(255,255,255,0.08);
+      line-height: 1.4;
+      transition: all 0.2s ease;
+    }
+    /* Controls Bar */
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #0f172a;
+      padding: 14px 20px;
+      border-radius: 14px;
+      border: 1px solid #1e293b;
+    }
+    .play-btn {
+      background: #2563eb;
+      hover:background: #1d4ed8;
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .play-btn:hover {
+      background: #1d4ed8;
+    }
+    .timeline {
+      flex: 1;
+      height: 6px;
+      background: #334155;
+      border-radius: 3px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+    .timeline-progress {
+      width: 0%;
+      height: 100%;
+      background: #3b82f6;
+      transition: width 0.1s linear;
+    }
+    .time-display {
+      font-size: 12px;
+      color: #94a3b8;
+      font-variant-numeric: tabular-nums;
+      min-width: 80px;
+      text-align: right;
+    }
+    .scene-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .scene-chip {
+      background: #1e293b;
+      color: #cbd5e1;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+    .scene-chip:hover, .scene-chip.active {
+      border-color: #3b82f6;
+      color: #ffffff;
+      background: #1e3a8a;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>
+        <span>Muskan Kawatra</span>
+        <span class="badge">AI Trainer Video Preview</span>
+      </h1>
+      <span style="font-size: 12px; color: #94a3b8;">1080p Full HD &bull; 16:9 Cinema</span>
+    </div>
+
+    <!-- VIDEO VIEWPORT CANVAS -->
+    <div class="video-viewport">
+      <div class="studio-ambient"></div>
+      
+      <!-- Character Avatar Visual Reference -->
+      <div class="avatar-wrapper">
+        <img src="muskan-kawatra.jpg" alt="Muskan Kawatra" class="avatar-img speaking-pulse" id="avatarImg">
+      </div>
+
+      <!-- Lower Third Title -->
+      <div class="lower-third" id="lowerThird">
+        <div class="name">Muskan Kawatra</div>
+        <div class="role">Digital Marketing Trainer</div>
+        <div class="experience">5+ Years Industry Experience</div>
+      </div>
+
+      <!-- Keywords Callout Box -->
+      <div class="keywords-callout" id="keywordsBox"></div>
+
+      <!-- Synchronized Subtitles -->
+      <div class="subtitles-bar" id="subtitles">
+        Click "Play Preview with Speech" below to start.
+      </div>
+    </div>
+
+    <!-- CONTROLS BAR -->
+    <div class="controls">
+      <button class="play-btn" id="playBtn" onclick="togglePlay()">
+        ▶ Play Preview with Speech
+      </button>
+
+      <div class="timeline" onclick="seek(event)">
+        <div class="timeline-progress" id="timelineProgress"></div>
+      </div>
+
+      <div class="time-display" id="timeDisplay">00:00 / 01:30</div>
+    </div>
+
+    <!-- SCENE SELECTOR -->
+    <div class="scene-chips">
+      <div class="scene-chip active" onclick="jumpToScene(0)">1. Introduction</div>
+      <div class="scene-chip" onclick="jumpToScene(1)">2. Target Audience</div>
+      <div class="scene-chip" onclick="jumpToScene(2)">3. Core Expertise</div>
+      <div class="scene-chip" onclick="jumpToScene(3)">4. Teaching Approach</div>
+      <div class="scene-chip" onclick="jumpToScene(4)">5. Passion & Trends</div>
+      <div class="scene-chip" onclick="jumpToScene(5)">6. Mission & Thank You</div>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_SCENES = [
+      {
+        id: 1,
+        title: "Introduction",
+        start: 0,
+        end: 12,
+        text: "Hi I am Muskan Kawatra a digital marketing trainer with over five years of experience in the digital marketing industry.",
+        showLowerThird: true,
+        keywords: []
+      },
+      {
+        id: 2,
+        title: "Helping Students",
+        start: 12,
+        end: 25,
+        text: "I specialize in helping students aspiring marketers and professionals develop practical digital marketing skills and successful careers.",
+        showLowerThird: false,
+        keywords: ["Career Development", "Practical Skills", "Live Mentorship"]
+      },
+      {
+        id: 3,
+        title: "Expertise",
+        start: 25,
+        end: 55,
+        text: "My areas of expertise include SEO, AEO, GEO, social media marketing, Google Ads and Meta Ads, content marketing, Google Analytics, Google Tag Manager, email marketing, AI-powered digital marketing, HubSpot CRM and marketing automation.",
+        showLowerThird: false,
+        keywords: [
+          "SEO, AEO and GEO",
+          "Google Ads & Meta Ads",
+          "GA4 & Google Tag Manager",
+          "AI-Powered Marketing",
+          "HubSpot CRM & Automation"
+        ]
+      },
+      {
+        id: 4,
+        title: "Teaching Approach",
+        start: 55,
+        end: 70,
+        text: "My teaching approach combines theoretical knowledge with practical implementation, real-world examples, live projects, and industry-relevant tools.",
+        showLowerThird: false,
+        keywords: ["Practical Implementation", "Real-World Examples", "Live Projects", "Industry Tools"]
+      },
+      {
+        id: 5,
+        title: "Passion for Trends",
+        start: 70,
+        end: 84,
+        text: "I am passionate about simplifying complex digital marketing concepts and keeping students updated with emerging technologies, industry trends, and AI-driven marketing strategies.",
+        showLowerThird: false,
+        keywords: ["Emerging Tech", "Industry Trends", "AI-Driven Strategies"]
+      },
+      {
+        id: 6,
+        title: "Mission & Closing",
+        start: 84,
+        end: 92,
+        text: "My mission is to empower learners with the knowledge, practical skills, and confidence they need to become successful industry-ready digital marketing professionals. Thank you.",
+        showLowerThird: true,
+        keywords: ["Industry-Ready", "Verified Confidence"]
+      }
+    ];
+
+    let isPlaying = false;
+    let currentTime = 0;
+    const totalDuration = 92;
+    let timerInterval = null;
+    let speechUtterance = null;
+
+    function formatTime(secs) {
+      const m = Math.floor(secs / 60).toString().padStart(2, '0');
+      const s = Math.floor(secs % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function updateSceneDisplay(time) {
+      const currentScene = SCRIPT_SCENES.find(s => time >= s.start && time < s.end) || SCRIPT_SCENES[SCRIPT_SCENES.length - 1];
+      
+      // Update Subtitles
+      document.getElementById('subtitles').textContent = currentScene.text;
+
+      // Lower Third
+      const lowerThird = document.getElementById('lowerThird');
+      if (currentScene.showLowerThird) {
+        lowerThird.style.opacity = '1';
+        lowerThird.style.transform = 'translateY(0)';
+      } else {
+        lowerThird.style.opacity = '0';
+        lowerThird.style.transform = 'translateY(20px)';
+      }
+
+      // Keywords Callout
+      const keywordsBox = document.getElementById('keywordsBox');
+      keywordsBox.innerHTML = '';
+      if (currentScene.keywords && currentScene.keywords.length > 0) {
+        currentScene.keywords.forEach(kw => {
+          const pill = document.createElement('div');
+          pill.className = 'keyword-pill';
+          pill.textContent = kw;
+          keywordsBox.appendChild(pill);
+        });
+      }
+
+      // Highlight Scene Chip
+      const chips = document.querySelectorAll('.scene-chip');
+      chips.forEach((c, idx) => {
+        if (SCRIPT_SCENES[idx] === currentScene) {
+          c.classList.add('active');
+        } else {
+          c.classList.remove('active');
+        }
+      });
+    }
+
+    function togglePlay() {
+      if (isPlaying) {
+        pause();
+      } else {
+        play();
+      }
+    }
+
+    function play() {
+      isPlaying = true;
+      document.getElementById('playBtn').innerHTML = '⏸ Pause Preview';
+      
+      // Browser Speech Synthesis
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const fullScript = SCRIPT_SCENES.map(s => s.text).join(' ');
+        speechUtterance = new SpeechSynthesisUtterance(fullScript);
+        speechUtterance.rate = 0.95;
+        
+        // Try selecting an Indian English female voice
+        const voices = window.speechSynthesis.getVoices();
+        const inVoice = voices.find(v => v.lang.includes('en-IN') && (v.name.includes('Female') || v.name.includes('Neerja') || v.name.includes('Zira') || v.name.includes('Google')));
+        if (inVoice) {
+          speechUtterance.voice = inVoice;
+        }
+        window.speechSynthesis.speak(speechUtterance);
+      }
+
+      timerInterval = setInterval(() => {
+        currentTime += 0.5;
+        if (currentTime > totalDuration) {
+          pause();
+          currentTime = 0;
+        }
+        updateTimeline();
+      }, 500);
+    }
+
+    function pause() {
+      isPlaying = false;
+      document.getElementById('playBtn').innerHTML = '▶ Play Preview with Speech';
+      clearInterval(timerInterval);
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function updateTimeline() {
+      const pct = (currentTime / totalDuration) * 100;
+      document.getElementById('timelineProgress').style.width = `${pct}%`;
+      document.getElementById('timeDisplay').textContent = `${formatTime(currentTime)} / ${formatTime(totalDuration)}`;
+      updateSceneDisplay(currentTime);
+    }
+
+    function jumpToScene(idx) {
+      if (SCRIPT_SCENES[idx]) {
+        currentTime = SCRIPT_SCENES[idx].start;
+        updateTimeline();
+      }
+    }
+
+    function seek(event) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const clickX = event.clientX - rect.left;
+      const pct = clickX / rect.width;
+      currentTime = pct * totalDuration;
+      updateTimeline();
+    }
+
+    // Initialize
+    updateSceneDisplay(0);
+  </script>
+</body>
+</html>
