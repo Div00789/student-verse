@@ -85,6 +85,7 @@ export async function GET(req: NextRequest) {
 
     const totalLessonsBySlug: Record<string, number> = {
       'ai-digital-marketing-course': 41,
+      'aman-digital-marketing-course': 44,
       'digital-marketing-foundations': 8,
       'seo-and-ai-search-optimization': 8,
       'paid-performance-google-meta-ads': 8,
@@ -95,6 +96,7 @@ export async function GET(req: NextRequest) {
 
     const totalModulesBySlug: Record<string, number> = {
       'ai-digital-marketing-course': 14,
+      'aman-digital-marketing-course': 15,
       'digital-marketing-foundations': 4,
       'seo-and-ai-search-optimization': 4,
       'paid-performance-google-meta-ads': 4,

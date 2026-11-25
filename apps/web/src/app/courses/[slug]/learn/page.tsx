@@ -575,15 +575,28 @@ export default function CourseLearningPlayerPage() {
             )}
 
             {/* LESSON PLAYER CANVAS */}
-            <div className="aspect-video bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden relative shadow-2xl flex flex-col items-center justify-center p-6 text-center group">
+            <div className="aspect-video bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden relative shadow-2xl flex flex-col items-center justify-center p-0 text-center group">
               {currentLesson?.videoUrl ? (
-                <iframe
-                  src={currentLesson.videoUrl}
-                  title={currentLesson.title}
-                  className="w-full h-full border-0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+                <div className="relative w-full h-full">
+                  <iframe
+                    src={currentLesson.videoUrl}
+                    title={currentLesson.title}
+                    className="w-full h-full border-0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                  {currentLesson.videoUrl.includes('drive.google.com') && (
+                    <a
+                      href={currentLesson.videoUrl.replace('/preview', '/view?usp=sharing')}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="absolute top-3 right-3 z-10 px-3 py-1.5 bg-slate-900/80 hover:bg-slate-900 text-white text-[11px] font-semibold rounded-lg border border-slate-700/80 backdrop-blur shadow-md flex items-center gap-1.5 transition-colors"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      Open in Drive
+                    </a>
+                  )}
+                </div>
               ) : (
                 <div className="space-y-4 max-w-lg">
                   <div className="w-20 h-20 rounded-3xl bg-indigo-600/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center mx-auto shadow-inner group-hover:scale-105 transition-transform duration-300">

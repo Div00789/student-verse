@@ -152,6 +152,16 @@ export const COURSE_METADATA_FALLBACKS: Record<string, Partial<UniversalCourse>>
     price: 29999,
     thumbnailUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
     description: 'Master digital marketing with artificial intelligence through hands-on training in SEO, Google Ads, GA4, Social Media Marketing, Email Marketing, Content Marketing, Marketing Automation, Affiliate Marketing, and Freelancing.',
+  },
+  'aman-digital-marketing-course': {
+    title: 'Aman Digital Marketing Course',
+    subtitle: 'Comprehensive 15-Module Professional Programme: SEO, Web Development, Google Ads, GA4, Automation & AI Tools',
+    category: 'Digital Marketing',
+    durationHours: 48,
+    totalSessions: 16,
+    price: 29999,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
+    description: 'A comprehensive digital marketing learning programme designed to provide practical knowledge of Search Engine Optimisation, website development, keyword research, paid advertising, social media marketing, analytics, artificial intelligence and other essential digital marketing skills through live training, recorded lessons, presentations and practical assignments.',
   }
 };
 

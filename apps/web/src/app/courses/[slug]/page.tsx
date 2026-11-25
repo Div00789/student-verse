@@ -408,6 +408,60 @@ const COURSE_DATA: Record<string, any> = {
         ]
       }
     ]
+  },
+  'aman-digital-marketing-course': {
+    slug: 'aman-digital-marketing-course',
+    title: 'Aman Digital Marketing Course',
+    subtitle: 'Comprehensive 15-Module Professional Programme: SEO, Web Development, Google Ads, GA4, Paid Media, Automation & Modern AI',
+    category: 'Digital Marketing / Artificial Intelligence / Career Development',
+    level: 'BEGINNER TO ADVANCED',
+    format: 'LIVE CLASSES + RECORDED LECTURES + PRACTICAL PROJECTS',
+    durationHours: 48,
+    totalSessions: 16,
+    originalPrice: 37499,
+    discountPercent: 20,
+    price: 29999,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
+    trainerName: 'StudentVerse Expert Faculty (Industry Growth Directors & AI Leads)',
+    batchCode: 'SV-AMDM-COHORT1',
+    batchSchedule: 'Mon & Wed: 18:00 - 20:00 UTC (100% Live Sessions + Recorded Video Masterclasses + 24/7 Labs)',
+    description: 'A comprehensive digital marketing learning programme designed to provide practical knowledge of Search Engine Optimisation, website development, keyword research, paid advertising, social media marketing, analytics, artificial intelligence and other essential digital marketing skills through live training, recorded lessons, presentations and practical assignments.',
+    prerequisites: [
+      'Basic web literacy and computer familiarity',
+      'Curiosity to master modern AI marketing tools and agentic workflows',
+      'No prior coding or technical marketing experience required'
+    ],
+    learningOutcomes: [
+      'Master full-funnel search engine optimisation with dedicated video masterclasses on Keyword Research & On-Page SEO',
+      'Set up and configure websites and domains using Hostinger',
+      'Build, manage, and scale high-converting Google Ads campaigns and paid social ads across Meta, LinkedIn, and YouTube',
+      'Deploy Google Analytics 4, Tag Manager dataLayers, UTM pipelines, and executive Looker Studio performance dashboards',
+      'Automate email marketing, lead capture, CRM pipelines, and AI agent workflows using Zapier, Make, and n8n',
+      'Deliver practical assignments reviewed by dedicated mentors and launch a verified marketing career'
+    ],
+    modules: [
+      {
+        title: 'Module 1: Search Engine Optimisation (SEO)',
+        lessons: [
+          { title: '1.1 Basic SEO – Introduction to Search Engine Optimisation', type: 'RECORDED_VIDEO', duration: '75 min', freePreview: true },
+          { title: '1.2 Keywords and Keyword Research – Part 1', type: 'RECORDED_VIDEO', duration: '80 min', freePreview: false },
+          { title: '1.3 Keywords and Keyword Research – Part 2', type: 'RECORDED_VIDEO', duration: '75 min', freePreview: false },
+          { title: '1.4 On-Page SEO – Part 1', type: 'RECORDED_VIDEO', duration: '85 min', freePreview: false },
+          { title: '1.5 On-Page SEO – Part 2', type: 'RECORDED_VIDEO', duration: '90 min', freePreview: false },
+          { title: '1.6 Technical SEO, Core Web Vitals & Crawlability Audits', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+          { title: '1.7 Off-Page SEO, Digital PR & Ethical Link Building', type: 'RECORDED_VIDEO', duration: '60 min', freePreview: false },
+          { title: '1.8 AI SEO, Answer Engine Optimisation (AEO) & GEO', type: 'LIVE_SESSION', duration: '90 min', freePreview: false },
+        ]
+      },
+      {
+        title: 'Module 2: Website Development & Hosting Architecture',
+        lessons: [
+          { title: '2.1 Website and Hostinger Setup', type: 'RECORDED_VIDEO', duration: '60 min', freePreview: true },
+          { title: '2.2 Domain Registration, DNS Mapping & SSL Configuration', type: 'LIVE_SESSION', duration: '60 min', freePreview: false },
+          { title: '2.3 WordPress Installation & High-Converting Landing Page Design', type: 'PROJECT', duration: '90 min', freePreview: false },
+        ]
+      }
+    ]
   }
 };
 

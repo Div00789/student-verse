@@ -739,6 +739,356 @@ export const RICH_CURRICULUM_DATA: Record<string, ModuleItem[]> = {
   ]
 };
 
+function buildAmanCurriculum(): ModuleItem[] {
+  const baseAiModules = RICH_CURRICULUM_DATA['ai-digital-marketing-course'] || [];
+
+  const mod1: ModuleItem = {
+    id: 'mod-1',
+    title: 'Module 1: Search Engine Optimisation (SEO)',
+    description: 'Foundations of crawling, indexing, keyword research, on-page SEO, technical audits, Core Web Vitals, link building, modern SEO tools, and AI/AEO/GEO optimization with dedicated recorded masterclasses and presentation slide decks.',
+    orderIndex: 1,
+    lessons: [
+      {
+        id: 'l-1-1',
+        code: 'l-1-1',
+        title: '1.1 Basic SEO – Introduction to Search Engine Optimisation',
+        type: 'RECORDED_VIDEO',
+        duration: '75 min',
+        durationMinutes: 75,
+        videoUrl: 'https://drive.google.com/file/d/13neNPg-I_vlLa8PBrgLhzv7Z8oMP8NUF/preview',
+        notes: 'Understand the fundamentals of SEO, the role of search engines, importance of organic website traffic, and basic SEO terminology. Master the crawling, indexing, and ranking architecture.',
+        aiTools: ['Ahrefs AI', 'Semrush Keyword Magic', 'ChatGPT Search Intent Classifier'],
+        resources: [
+          { title: 'SEO Module 1 – Presentation Slides', url: 'https://docs.google.com/presentation/d/1QTwmRAZF0dv1pIanpvk1LVcRf3qvDtL4/preview', type: 'PRESENTATION' },
+          { title: 'SEO Module 2 – Presentation Slides', url: 'https://docs.google.com/presentation/d/1xp3iJ58g74lOsJmc9e1ng8Jum_j8q1U5/preview', type: 'PRESENTATION' },
+          { title: 'Google Crawlability & Indexation Cheat Sheet', url: '#', type: 'PDF' },
+        ],
+        quiz: {
+          question: 'What is the primary role of a search engine index?',
+          options: [
+            'A massive, structured database where web pages are organized, parsed, and retrieved for ranking.',
+            'A tool for running paid search advertisements.',
+            'A firewall blocking unauthorized web scrapers.',
+            'A cache storing only image thumbnails.'
+          ],
+          correctIndex: 0,
+          explanation: 'The search index is the parsed repository from which Google evaluates relevance and computes rankings in milliseconds.'
+        }
+      },
+      {
+        id: 'l-1-2',
+        code: 'l-1-2',
+        title: '1.2 Keywords and Keyword Research – Part 1',
+        type: 'RECORDED_VIDEO',
+        duration: '80 min',
+        durationMinutes: 80,
+        videoUrl: 'https://drive.google.com/file/d/1BcrzWo1VshLsH1JJXWTa5vCF3E-tlCnW/preview',
+        notes: 'Understand keywords, search intent, keyword research fundamentals, search volumes, competition, and how to identify high-converting keyword opportunities.',
+        aiTools: ['Semrush Keyword Magic', 'Ahrefs Keywords Explorer', 'Google Keyword Planner'],
+        resources: [
+          { title: 'Keyword Intent Categorization Matrix', url: '#', type: 'TEMPLATE' },
+          { title: 'Search Volume & Difficulty Calculator', url: '#', type: 'SHEET' }
+        ],
+        quiz: {
+          question: 'Which search intent indicates a user looking to buy a specific software subscription immediately?',
+          options: [
+            'Transactional intent',
+            'Informational intent',
+            'Navigational intent',
+            'Broad exploratory intent'
+          ],
+          correctIndex: 0,
+          explanation: 'Transactional intent denotes high buying readiness where commercial terms (e.g., pricing, discount, buy) dominate.'
+        }
+      },
+      {
+        id: 'l-1-3',
+        code: 'l-1-3',
+        title: '1.3 Keywords and Keyword Research – Part 2',
+        type: 'RECORDED_VIDEO',
+        duration: '75 min',
+        durationMinutes: 75,
+        videoUrl: 'https://drive.google.com/file/d/1k7COQRLOQeMbcJLAUgaIX6dODGBtp5ZE/preview',
+        notes: 'Develop keyword research skills, explore keyword selection frameworks, map keywords to website pages, and avoid keyword cannibalization.',
+        aiTools: ['ChatGPT Topical Cluster Generator', 'SurferSEO Content Planner'],
+        resources: [
+          { title: 'Keyword-to-URL Mapping Blueprint (XLSX)', url: '#', type: 'TEMPLATE' },
+          { title: 'Topical Authority Cluster Guide', url: '#', type: 'PDF' }
+        ],
+        quiz: {
+          question: 'What is keyword cannibalization?',
+          options: [
+            'When multiple pages on the same website compete for the same keyword and intent, diluting rankings.',
+            'When competitors copy your keyword targets.',
+            'When search engines delete old indexed keywords.',
+            'When keywords have zero search volume.'
+          ],
+          correctIndex: 0,
+          explanation: 'Keyword cannibalization splits link equity and confuses search crawlers regarding which page is authoritative.'
+        }
+      },
+      {
+        id: 'l-1-4',
+        code: 'l-1-4',
+        title: '1.4 On-Page SEO – Part 1',
+        type: 'RECORDED_VIDEO',
+        duration: '85 min',
+        durationMinutes: 85,
+        videoUrl: 'https://drive.google.com/file/d/1WSQwKhvFsceflR5s-gzevKYnO4MYjfD4/preview',
+        notes: 'Understand on-page optimisation, learn page titles, meta descriptions, heading structures (H1-H6), and optimize website content for maximum organic relevance.',
+        aiTools: ['Yoast SEO / RankMath', 'Claude 3.5 Sonnet for Title Rewrites'],
+        resources: [
+          { title: 'On-Page SEO Optimization Checklist', url: '#', type: 'PDF' },
+          { title: 'Meta Title & Description CTR Formula', url: '#', type: 'TEMPLATE' }
+        ],
+        quiz: {
+          question: 'What is the recommended character count for Google SERP title tags to prevent truncation?',
+          options: [
+            '50 to 60 characters (approximately 580 pixels)',
+            '90 to 110 characters',
+            '20 to 30 characters',
+            'Over 150 characters'
+          ],
+          correctIndex: 0,
+          explanation: 'Desktop and mobile SERPs truncate titles wider than 580-600px, which corresponds to 50-60 characters.'
+        }
+      },
+      {
+        id: 'l-1-5',
+        code: 'l-1-5',
+        title: '1.5 On-Page SEO – Part 2',
+        type: 'RECORDED_VIDEO',
+        duration: '90 min',
+        durationMinutes: 90,
+        videoUrl: 'https://drive.google.com/file/d/1b9MuzcId5SSuhZn-gE3QJ6SZ9iKd8f-G/preview',
+        notes: 'Advanced on-page optimisation: internal linking strategies, image SEO with alt text, schema markup basics, and practical on-page implementation.',
+        aiTools: ['Schema App', 'TinyPNG', 'Screaming Frog InLinks'],
+        resources: [
+          { title: 'Internal Linking Silo Architecture Model', url: '#', type: 'PDF' },
+          { title: 'Image SEO & Compression SOP', url: '#', type: 'DOC' }
+        ],
+        quiz: {
+          question: 'Why are descriptive anchor texts critical for internal linking?',
+          options: [
+            'They pass explicit contextual relevance and link equity to the destination page for targeted keywords.',
+            'They make links look like paid banner ads.',
+            'They guarantee an instant #1 ranking on Google.',
+            'They prevent the browser from caching CSS files.'
+          ],
+          correctIndex: 0,
+          explanation: 'Descriptive anchor text provides both search engines and users clear contextual signals about target page topics.'
+        }
+      },
+      {
+        id: 'l-1-6',
+        code: 'l-1-6',
+        title: '1.6 Technical SEO, Core Web Vitals & Crawlability Audits',
+        type: 'LIVE_SESSION',
+        duration: '90 min',
+        durationMinutes: 90,
+        notes: 'Conduct comprehensive technical SEO audits using Screaming Frog. Diagnose canonical tags, robots.txt directives, XML sitemaps, 301/302 redirects, Core Web Vitals (LCP, INP, CLS), and JSON-LD schema markup.',
+        aiTools: ['Screaming Frog SEO Spider', 'Google PageSpeed Insights', 'Google Search Console'],
+        resources: [
+          { title: 'Technical SEO Audit SOP & Diagnostic Sheet (100+ Checkpoints)', url: '#', type: 'TEMPLATE' },
+          { title: 'Core Web Vitals Optimization Guide (LCP, INP, CLS)', url: '#', type: 'PDF' }
+        ],
+        quiz: {
+          question: 'Which Core Web Vital measures visual loading performance and flags when the main content block has rendered?',
+          options: [
+            'Largest Contentful Paint (LCP)',
+            'Interaction to Next Paint (INP)',
+            'Cumulative Layout Shift (CLS)',
+            'Time to First Byte (TTFB)'
+          ],
+          correctIndex: 0,
+          explanation: 'LCP measures the time from when the user initiates loading to when the largest image or text block is rendered on screen. Target: under 2.5 seconds.'
+        }
+      },
+      {
+        id: 'l-1-7',
+        code: 'l-1-7',
+        title: '1.7 Off-Page SEO, Digital PR & Ethical Link Building',
+        type: 'RECORDED_VIDEO',
+        duration: '60 min',
+        durationMinutes: 60,
+        notes: 'Learn high-authority white-hat link acquisition strategies: Digital PR data studies, unlinked brand mention reclamation, competitor backlink gap analysis, and analyzing link equity distributions.',
+        aiTools: ['Hunter.io', 'Buzzstream', 'Ahrefs Link Intersect'],
+        resources: [
+          { title: 'Cold Digital PR Outreach Email Templates (High Response Rate)', url: '#', type: 'TEMPLATE' },
+          { title: 'Backlink Quality Evaluation Rubric', url: '#', type: 'PDF' }
+        ],
+        quiz: {
+          question: 'What distinguishes a high-value editorial backlink from a low-quality web directory submission?',
+          options: [
+            'Topical relevance of the referring domain, high organic traffic, and natural in-content placement without commercial manipulation flags.',
+            'The sheer quantity of outbound links present on the referring page.',
+            'Whether the link was purchased on a forum signature.',
+            'Directory submissions always carry more Domain Authority than tier-1 publications.'
+          ],
+          correctIndex: 0,
+          explanation: 'Google Penguin and modern spam algorithms evaluate topical context, referring domain organic visibility, and editorial intent.'
+        }
+      },
+      {
+        id: 'l-1-8',
+        code: 'l-1-8',
+        title: '1.8 AI SEO, Answer Engine Optimisation (AEO) & GEO',
+        type: 'LIVE_SESSION',
+        duration: '90 min',
+        durationMinutes: 90,
+        notes: 'Master generative engine optimization for AI search engines like ChatGPT Search, Perplexity, and Google AI Overviews. Structure entity-based content and optimize for citation probability.',
+        aiTools: ['Perplexity Pro', 'Google Gemini Advanced', 'ChatGPT with Search'],
+        resources: [
+          { title: 'AEO Entity Optimization Framework', url: '#', type: 'PDF' },
+          { title: 'Citation Density & LLM Extraction Blueprint', url: '#', type: 'TEMPLATE' }
+        ],
+        quiz: {
+          question: 'How do AI Search Engines (Perplexity, ChatGPT Search, Google AI Overviews) select sources for citations?',
+          options: [
+            'They evaluate semantic fact clarity, entity authority, topical consensus, and direct answers to user queries.',
+            'They strictly choose the page with the highest number of keyword repetitions.',
+            'They only cite paid Wikipedia contributors.',
+            'They randomly rotate through all indexable URLs.'
+          ],
+          correctIndex: 0,
+          explanation: 'LLM retrieval mechanisms rank citations based on information gain, conciseness, structured factual density, and source trustworthiness.'
+        }
+      }
+    ],
+    assignment: {
+      id: 'asg-mod-1',
+      title: 'Module 1 Practical Deliverable: Comprehensive Technical SEO & Keyword Architecture Audit',
+      instructions: 'Conduct an end-to-end SEO audit for a live commercial or staging website. Deliver an audit spreadsheet diagnosing technical crawlability, keyword intent mapping, on-page optimization, and an AEO readiness plan.',
+      deliverables: [
+        'Screaming Frog / Site Audit CSV Export highlighting HTTP status errors and canonical conflicts',
+        'Topical Keyword Map (100+ keywords) grouped by search intent and target landing pages',
+        'On-Page Optimization Checklist for 3 target URLs (Meta, H1, Schema, Internal Links)',
+        'Executive SEO Strategy Summary with prioritised 90-day action items'
+      ],
+      maxScore: 100
+    }
+  };
+
+  const mod2: ModuleItem = {
+    id: 'mod-2',
+    title: 'Module 2: Website Development & Hosting Architecture',
+    description: 'Practical training on web hosting environments, Hostinger hPanel configuration, DNS record mapping, SSL certificate deployment, WordPress administration, and high-converting landing page creation.',
+    orderIndex: 2,
+    lessons: [
+      {
+        id: 'l-2-1',
+        code: 'l-2-1',
+        title: '2.1 Website and Hostinger Setup',
+        type: 'RECORDED_VIDEO',
+        duration: '60 min',
+        durationMinutes: 60,
+        videoUrl: 'https://drive.google.com/file/d/1irSf7agAAyNsTYY2IDV3QPSr1ZFwtNSN/preview',
+        notes: 'Understand website hosting fundamentals, the Hostinger platform architecture, domain association, hPanel navigation, server location selection, and the end-to-end setup process.',
+        aiTools: ['Hostinger AI Website Builder', 'Cloudflare CDN'],
+        resources: [
+          { title: 'Hostinger Quick Setup & hPanel Configuration Guide', url: '#', type: 'PDF' },
+          { title: 'Web Hosting Benchmark & TTFB Comparison Checklist', url: '#', type: 'SHEET' }
+        ],
+        quiz: {
+          question: 'What is the role of web hosting in the website deployment architecture?',
+          options: [
+            'Web hosting provides the server hardware, storage, and networking that serves website files to internet visitors.',
+            'Web hosting only acts as the domain registrar.',
+            'Web hosting is only needed when creating email campaigns.',
+            'Web hosting converts JavaScript directly into Python code.'
+          ],
+          correctIndex: 0,
+          explanation: 'A web host runs web servers (e.g. LiteSpeed, NGINX) that store site files and deliver them over HTTP/HTTPS when visitors request the domain.'
+        }
+      },
+      {
+        id: 'l-2-2',
+        code: 'l-2-2',
+        title: '2.2 Domain Registration, DNS Mapping & SSL Configuration',
+        type: 'LIVE_SESSION',
+        duration: '60 min',
+        durationMinutes: 60,
+        notes: 'Practical workshop on domain DNS mapping (A records, CNAME, TXT, MX), Nameserver pointing, Cloudflare CDN integration, and automated Let\'s Encrypt SSL certificate deployment.',
+        aiTools: ['Cloudflare Dashboard', 'DNSChecker.org', 'SSL Labs'],
+        resources: [
+          { title: 'DNS Record Management & Troubleshooting SOP', url: '#', type: 'PDF' },
+          { title: 'Cloudflare Free CDN & Security Baseline Configuration', url: '#', type: 'TEMPLATE' }
+        ],
+        quiz: {
+          question: 'Which DNS record points a root domain (e.g. example.com) directly to a server\'s IPv4 address?',
+          options: [
+            'A Record',
+            'CNAME Record',
+            'MX Record',
+            'TXT Record'
+          ],
+          correctIndex: 0,
+          explanation: 'An "A" (Address) record maps a hostname to a 32-bit IPv4 address, directing internet traffic to the host server.'
+        }
+      },
+      {
+        id: 'l-2-3',
+        code: 'l-2-3',
+        title: '2.3 WordPress Installation & High-Converting Landing Page Design',
+        type: 'PROJECT',
+        duration: '90 min',
+        durationMinutes: 90,
+        notes: 'Deploy WordPress via Hostinger 1-click installer, configure SEO-friendly permalinks, install core performance and security plugins, and design a responsive lead generation landing page.',
+        aiTools: ['Elementor AI', 'Astra Pro', 'WP Rocket'],
+        resources: [
+          { title: 'WordPress Essential Plugins & Security Hardening SOP', url: '#', type: 'PDF' },
+          { title: 'High-Converting Landing Page Wireframe & Copy Template', url: '#', type: 'TEMPLATE' }
+        ],
+        quiz: {
+          question: 'What is the recommended WordPress permalink structure for optimal SEO crawlability?',
+          options: [
+            'Post name (/%postname%/)',
+            'Plain (/?p=123)',
+            'Numeric (/archives/123)',
+            'Day and name (/%year%/%monthnum%/%day%/%postname%/)'
+          ],
+          correctIndex: 0,
+          explanation: 'The /%postname%/ structure produces clean, human-readable URLs that contain targeted keywords without unnecessary date or numeric bloat.'
+        }
+      }
+    ],
+    assignment: {
+      id: 'asg-mod-2',
+      title: 'Module 2 Practical Deliverable: Live Website & Landing Page Deployment on Hostinger',
+      instructions: 'Deploy a live WordPress website on Hostinger with custom domain DNS, active SSL certificate, SEO permalinks, and a responsive lead-capture landing page.',
+      deliverables: [
+        'Live published website URL with verified active HTTPS/SSL certificate',
+        'Screenshot of Hostinger hPanel DNS records (A record, CNAME, SSL status)',
+        'Screenshot of WordPress dashboard showing SEO permalink structure and core plugins',
+        'Lead capture form functional test submission confirmation'
+      ],
+      maxScore: 100
+    }
+  };
+
+  // Modules 3 to 15: Map remaining 13 modules from ai-digital-marketing-course
+  const remainingModules = baseAiModules.slice(1).map((m, idx) => {
+    const newModOrder = idx + 3;
+    return {
+      ...m,
+      id: `mod-${newModOrder}`,
+      orderIndex: newModOrder,
+      lessons: m.lessons.map((l, lIdx) => ({
+        ...l,
+        code: `l-${newModOrder}-${lIdx + 1}`
+      })),
+      assignment: {
+        ...m.assignment,
+        id: `asg-mod-${newModOrder}`
+      }
+    };
+  });
+
+  return [mod1, mod2, ...remainingModules];
+}
+
+RICH_CURRICULUM_DATA['aman-digital-marketing-course'] = buildAmanCurriculum();
+
 /**
  * Universal helper that takes course slug and database modules/lessons,
  * and produces rich interactive ModuleItem[] for the universal learning player.
