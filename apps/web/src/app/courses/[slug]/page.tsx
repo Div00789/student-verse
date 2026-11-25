@@ -425,9 +425,9 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
     trainerName: fallback?.trainerName || 'StudentVerse Senior Industry Faculty',
     batchCode: fallback?.batchCode || `SV-${(params.slug || 'COURSE').toUpperCase().slice(0, 6)}-COHORT`,
     batchSchedule: fallback?.batchSchedule || 'Live Evening Classes + Dedicated Lab Sessions',
-    originalPrice: fallback?.originalPrice || (dbCourse?.price ? Math.round(dbCourse.price * 1.25) : 34999),
+    originalPrice: fallback?.originalPrice || ((dbCourse?.price && dbCourse.price >= 1000) ? Math.round(dbCourse.price * 1.25) : 34999),
     discountPercent: fallback?.discountPercent || 20,
-    price: dbCourse?.price || fallback?.price || 24999,
+    price: (dbCourse?.price && dbCourse.price >= 1000) ? dbCourse.price : (fallback?.price || 29999),
   };
 
   return (

@@ -138,14 +138,18 @@ export default function CoursesPage() {
       try {
         const dbCourses = await api.courses.getAll();
         if (dbCourses && Array.isArray(dbCourses) && dbCourses.length > 0) {
-          // Merge dynamic DB courses with default UI skill tags and batch dates
-          const merged = dbCourses.map((dbC: any) => {
-            const staticMatch = ALL_COURSES.find((ac) => ac.slug === dbC.slug);
+          // Merge dynamic DB courses with default UI skill tags, batch dates, and verified INR pricing
+          const merged = ALL_COURSES.map((staticMatch) => {
+            const dbC = dbCourses.find((c: any) => c.slug === staticMatch.slug);
+            const resolvedPrice = (dbC?.price && dbC.price >= 1000) ? dbC.price : staticMatch.price;
             return {
               ...staticMatch,
-              ...dbC,
-              skills: staticMatch?.skills || ['Live Interactive Cohort', 'Practical Assignments', 'Verified Industry Skills'],
-              nextBatch: staticMatch?.nextBatch || 'Upcoming Live Batch',
+              ...(dbC || {}),
+              price: resolvedPrice,
+              originalPrice: staticMatch.originalPrice,
+              discountPercent: staticMatch.discountPercent,
+              skills: staticMatch.skills,
+              nextBatch: staticMatch.nextBatch,
             };
           });
           setCoursesList(merged);

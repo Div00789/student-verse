@@ -57,6 +57,28 @@ export interface UniversalCourse {
 }
 
 /**
+ * Calculates authoritative course price in INR.
+ * Handles minor units (paise >= 100000, e.g. 2999900 -> 29999),
+ * direct rupee values (>= 1000, e.g. 29999 -> 29999),
+ * and prevents corrupted/erroneously divided values (< 1000, e.g. 299, 499) from overriding legitimate prices.
+ */
+export function resolveCoursePrice(rawPriceMinorUnits?: number | null, fallbackPrice: number = 29999): number {
+  if (!rawPriceMinorUnits || rawPriceMinorUnits <= 0) {
+    return fallbackPrice;
+  }
+  // If stored in paise (>= 100,000, e.g. 2999900 paise = ₹29,999)
+  if (rawPriceMinorUnits >= 100000) {
+    return Math.round(rawPriceMinorUnits / 100);
+  }
+  // If stored directly in rupees (>= 1,000, e.g. 19999, 24999, 29999, 35999)
+  if (rawPriceMinorUnits >= 1000) {
+    return rawPriceMinorUnits;
+  }
+  // Unrealistic/corrupted low value (< 1000, e.g. 299, 349, 499)
+  return fallbackPrice;
+}
+
+/**
  * Fallback static metadata registry for rich curriculum content
  * (interactive quizzes, lab notes, AI toolstacks, resources)
  */
@@ -189,7 +211,7 @@ export async function getAllCourses(): Promise<UniversalCourse[]> {
         format: c.format || 'LIVE_ONLINE',
         durationHours: c.durationHours || fallback.durationHours || 30,
         totalSessions: c.totalSessions || fallback.totalSessions || 10,
-        price: c.priceMinorUnits ? Math.round(c.priceMinorUnits / 100) : (fallback.price || 24999),
+        price: resolveCoursePrice(c.priceMinorUnits, fallback.price || 24999),
         currency: c.currency || 'INR',
         description: c.description || fallback.description || '',
         thumbnailUrl: c.thumbnailUrl || fallback.thumbnailUrl || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
@@ -339,7 +361,7 @@ export async function getCourseBySlug(slug: string): Promise<UniversalCourse | n
       format: course.format || 'LIVE_ONLINE',
       durationHours: course.durationHours || fallback.durationHours || 30,
       totalSessions: course.totalSessions || fallback.totalSessions || 10,
-      price: course.priceMinorUnits ? Math.round(course.priceMinorUnits / 100) : (fallback.price || 29999),
+      price: resolveCoursePrice(course.priceMinorUnits, fallback.price || 29999),
       currency: course.currency || 'INR',
       description: course.description || fallback.description || '',
       thumbnailUrl: course.thumbnailUrl || fallback.thumbnailUrl || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
