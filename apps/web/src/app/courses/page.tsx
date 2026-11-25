@@ -225,7 +225,7 @@ export default function CoursesPage() {
           });
           setUserEnrollmentsMap(map);
         }
-      } catch (_) {}
+      } catch (_) { }
     }
     loadStudentEnrollments();
     return () => {
@@ -255,7 +255,7 @@ export default function CoursesPage() {
   return (
     <div className="py-12 bg-slate-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-semibold mb-3">
@@ -273,7 +273,7 @@ export default function CoursesPage() {
 
         {/* Filter and Search Bar */}
         <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
-          
+
           {/* Dynamic Categories Pill Selector */}
           <div className="flex flex-wrap gap-2 w-full md:w-auto">
             {categories.map((cat) => {
@@ -282,11 +282,10 @@ export default function CoursesPage() {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    isSelected
-                      ? 'bg-indigo-600 text-white shadow-sm ring-2 ring-indigo-600/20'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${isSelected
+                    ? 'bg-indigo-600 text-white shadow-sm ring-2 ring-indigo-600/20'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
                 >
                   {cat === 'ALL' ? 'All Programmes' : cat}
                 </button>

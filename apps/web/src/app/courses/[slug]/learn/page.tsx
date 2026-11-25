@@ -85,11 +85,17 @@ export default function CourseLearningPlayerPage() {
   // Helper: check if a lesson is completed
   const isLessonDone = (lesson?: LessonItem) => {
     if (!lesson) return false;
-    return completedLessonIds.includes(lesson.id) || (Boolean(lesson.code) && completedLessonIds.includes(lesson.code!));
+    return (
+      completedLessonIds.includes(lesson.id) ||
+      (Boolean(lesson.code) && completedLessonIds.includes(lesson.code!))
+    );
   };
 
-  // 1. Strict Authentication Guard - Guests are redirected to login immediately
+  // 1. Single Unified Initialization Effect: Authenticates and fetches Course & Progress in Parallel
   useEffect(() => {
+    let isCancelled = false;
+
+    // Check Authentication
     const user = getAuthUser();
     if (!user || !user.id) {
       setIsAuthorized(false);
@@ -98,74 +104,67 @@ export default function CourseLearningPlayerPage() {
     }
     setCurrentUser(user);
     setIsAuthorized(true);
-  }, [slug, router]);
 
-  // 2. Fetch Dynamic Course Identity & Modules from Database
-  useEffect(() => {
-    let isMounted = true;
-    async function loadCourseData() {
-      try {
-        setIsLoadingCourse(true);
-        const fetchedCourse = await api.courses.getBySlug(slug).catch(() => null);
-        if (isMounted) {
-          const resolvedModules = getCurriculumForCourse(slug, fetchedCourse);
-          setModules(resolvedModules);
-          setCourse(fetchedCourse || {
-            slug,
-            title: slug.split('-').map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' '),
-            category: 'Professional Learning Cohort',
-          });
-          // Expand the first module by default
-          if (resolvedModules.length > 0) {
-            setExpandedModules({ [resolvedModules[0].id]: true });
-          }
-        }
-      } finally {
-        if (isMounted) setIsLoadingCourse(false);
-      }
-    }
-    loadCourseData();
-    return () => {
-      isMounted = false;
-    };
-  }, [slug]);
+    const storageKey = getScopedStorageKey('course_progress', slug) || `sv_course_progress_${user.id}_${slug}`;
 
-  // 3. Load User-Isolated Progress (Only runs when genuine user is authenticated)
-  useEffect(() => {
-    if (!currentUser || !currentUser.id) return;
-
-    let isMounted = true;
-    const storageKey = getScopedStorageKey('course_progress', slug) || `sv_course_progress_${currentUser.id}_${slug}`;
-
-    // Read student-isolated local cache first for instant UI response
+    // Read cached completed lessons for instantaneous UI feedback without flashing 0%
     try {
       const localSaved = localStorage.getItem(storageKey);
       if (localSaved) {
         const parsed = JSON.parse(localSaved);
-        if (Array.isArray(parsed) && isMounted) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
           const validUnique = Array.from(new Set<string>(parsed as string[])).filter((id) => typeof id === 'string');
-          const count = totalLessons > 0 ? Math.min(validUnique.length, totalLessons) : validUnique.length;
           setCompletedLessonIds(validUnique);
-          setCompletedCount(count);
+          setCompletedCount(validUnique.length);
           if (totalLessons > 0) {
-            const initialPct = count === totalLessons ? 100 : Math.min(99.9, Math.round((count / totalLessons) * 1000) / 10);
+            const initialPct = validUnique.length === totalLessons ? 100 : Math.min(99.9, Math.round((validUnique.length / totalLessons) * 1000) / 10);
             setCourseProgressPct(initialPct);
           }
         }
       }
     } catch (_) {}
 
-    async function loadStudentProgress() {
+    async function initCourseAndProgress() {
       try {
+        setIsLoadingCourse(true);
         setIsLoadingProgress(true);
-        const res = await api.student.getCourseProgress(slug);
-        if (isMounted && res) {
-          setIsEnrolled(res.isEnrolled ?? true);
-          const rawServer: string[] = (res.completedLessonIds || []) as string[];
-          const allCourseLessons = modules.flatMap((m) => m.lessons || []);
 
-          // Build a set of all completed identifiers (both UUIDs and canonical codes)
+        // Fetch Course Details and Student Progress CONCURRENTLY in a single parallel roundtrip
+        const [fetchedCourse, progressRes] = await Promise.all([
+          api.courses.getBySlug(slug).catch(() => null),
+          api.student.getCourseProgress(slug).catch(() => null),
+        ]);
+
+        if (isCancelled) return;
+
+        // 1. Resolve Course Curriculum & Modules
+        const resolvedModules = getCurriculumForCourse(slug, fetchedCourse);
+        setModules(resolvedModules);
+        setCourse(
+          fetchedCourse || {
+            slug,
+            title: slug.split('-').map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' '),
+            category: 'Professional Learning Cohort',
+          }
+        );
+
+        const totalEligibleLessons = resolvedModules.reduce((acc, m) => acc + (m.lessons?.length || 0), 0);
+        const allCourseLessons = resolvedModules.flatMap((m) => m.lessons || []);
+
+        // 2. Authoritative Progress Resolution
+        let confirmedLessonIds: string[] = [];
+        let confirmedCount = 0;
+        let confirmedPct = 0;
+        let lastAccessedId: string | null = null;
+
+        if (progressRes) {
+          setIsEnrolled(progressRes.isEnrolled ?? true);
+          const rawServer = (progressRes.completedLessonIds || []) as string[];
+          lastAccessedId = progressRes.lastAccessedLessonId || null;
+
           const completedSet = new Set<string>(rawServer);
+
+          // Synchronize both database UUIDs and canonical lesson codes ('l-1-1')
           allCourseLessons.forEach((l) => {
             if (completedSet.has(l.id) || (l.code && completedSet.has(l.code))) {
               completedSet.add(l.id);
@@ -173,81 +172,92 @@ export default function CourseLearningPlayerPage() {
             }
           });
 
-          // Calculate unique verified completed lessons against this course's actual curriculum
-          const distinctCompletedCount = allCourseLessons.filter(
+          const verifiedMatchCount = allCourseLessons.filter(
             (l) => completedSet.has(l.id) || (Boolean(l.code) && completedSet.has(l.code!))
           ).length;
 
-          const verifiedCount = typeof res.completedCount === 'number' && res.completedCount > 0
-            ? Math.min(res.completedCount, totalLessons || res.completedCount)
-            : (totalLessons > 0 ? distinctCompletedCount : (rawServer.length || 0));
+          confirmedCount = typeof progressRes.completedCount === 'number' && progressRes.completedCount > 0
+            ? Math.min(progressRes.completedCount, totalEligibleLessons)
+            : (totalEligibleLessons > 0 ? verifiedMatchCount : rawServer.length);
 
-          const verifiedPct = totalLessons > 0
-            ? (verifiedCount === totalLessons ? 100 : Math.min(99.9, Math.round((verifiedCount / totalLessons) * 1000) / 10))
-            : (res.progressPct || 0);
+          confirmedPct = totalEligibleLessons > 0
+            ? (confirmedCount === totalEligibleLessons ? 100 : Math.min(99.9, Math.round((confirmedCount / totalEligibleLessons) * 1000) / 10))
+            : (progressRes.progressPct || 0);
 
-          let finalLessonIds = Array.from(completedSet);
+          confirmedLessonIds = Array.from(completedSet);
 
-          // If server reported confirmed progress but completedLessonIds was empty
-          if (finalLessonIds.length === 0 && verifiedCount > 0 && allCourseLessons.length > 0) {
-            finalLessonIds = allCourseLessons.slice(0, verifiedCount).map((l) => l.id || l.code || '');
+          // If confirmedCount > 0 but ID array was empty, deduce from course curriculum order
+          if (confirmedLessonIds.length === 0 && confirmedCount > 0 && allCourseLessons.length > 0) {
+            confirmedLessonIds = allCourseLessons.slice(0, confirmedCount).map((l) => l.id || l.code || '');
           }
+        }
 
-          setCompletedLessonIds(finalLessonIds);
-          setCompletedCount(verifiedCount);
-          setCourseProgressPct(verifiedPct);
+        // Safety fallback: if progress is still 0, check authoritative student dashboard
+        if (confirmedCount === 0 || confirmedLessonIds.length === 0) {
+          try {
+            const dash = await api.student.getDashboard();
+            const match = dash?.enrollments?.find((e: any) => e.slug === slug || e.courseSlug === slug);
+            if (match && ((match.completedLessons || 0) > 0 || (match.progressPct || 0) > 0)) {
+              confirmedCount = match.completedLessons || match.completedCount || 0;
+              confirmedPct = match.progressPct || match.progressPercentage || 0;
+              const deduced = allCourseLessons.slice(0, confirmedCount).map((l) => l.id || l.code || '');
+              confirmedLessonIds = Array.from(new Set([...(match.completedLessonIds || []), ...deduced]));
+            }
+          } catch (_) {}
+        }
 
-          if (storageKey && finalLessonIds.length > 0) {
-            try {
-              localStorage.setItem(storageKey, JSON.stringify(finalLessonIds));
-            } catch (_) {}
-          }
+        if (isCancelled) return;
 
-          // Continue Learning: if lastAccessedLessonId exists, activate it automatically
-          if (res.lastAccessedLessonId && modules.length > 0) {
-            for (let mIdx = 0; mIdx < modules.length; mIdx++) {
-              const lIdx = modules[mIdx].lessons.findIndex(
-                (l) => l.id === res.lastAccessedLessonId || l.code === res.lastAccessedLessonId
+        // Apply synchronized state atomically
+        setCompletedLessonIds(confirmedLessonIds);
+        setCompletedCount(confirmedCount);
+        setCourseProgressPct(confirmedPct);
+
+        // Update scoped local storage
+        if (storageKey && confirmedLessonIds.length > 0) {
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(confirmedLessonIds));
+          } catch (_) {}
+        }
+
+        // Activate last accessed lesson or default to first module/lesson
+        if (resolvedModules.length > 0) {
+          let targetModIdx = 0;
+          let targetLessonIdx = 0;
+
+          if (lastAccessedId) {
+            for (let m = 0; m < resolvedModules.length; m++) {
+              const lIdx = resolvedModules[m].lessons.findIndex(
+                (l) => l.id === lastAccessedId || l.code === lastAccessedId
               );
               if (lIdx !== -1) {
-                setActiveModuleIndex(mIdx);
-                setActiveLessonIndex(lIdx);
-                setExpandedModules((prev) => ({ ...prev, [modules[mIdx].id]: true }));
+                targetModIdx = m;
+                targetLessonIdx = lIdx;
                 break;
               }
             }
           }
+
+          setActiveModuleIndex(targetModIdx);
+          setActiveLessonIndex(targetLessonIdx);
+          setExpandedModules({ [resolvedModules[targetModIdx].id]: true });
         }
-      } catch (err: any) {
-        // Fallback: check dashboard data if getCourseProgress threw
-        try {
-          const dash = await api.student.getDashboard();
-          const match = dash?.enrollments?.find((e: any) => e.slug === slug || e.courseSlug === slug);
-          if (isMounted && match) {
-            const cCount = match.completedLessons ?? match.completedCount ?? 0;
-            const pPct = match.progressPct ?? match.progressPercentage ?? 0;
-            const allCourseLessons = modules.flatMap((m) => m.lessons.map((l) => l.id || l.code || ''));
-            const deduced = allCourseLessons.slice(0, cCount);
-            setCompletedLessonIds(deduced);
-            setCompletedCount(cCount);
-            setCourseProgressPct(pPct);
-            if (storageKey && deduced.length > 0) {
-              try {
-                localStorage.setItem(storageKey, JSON.stringify(deduced));
-              } catch (_) {}
-            }
-          }
-        } catch (_) {}
+      } catch (err) {
+        console.error('Failed to initialize course learning player:', err);
       } finally {
-        if (isMounted) setIsLoadingProgress(false);
+        if (!isCancelled) {
+          setIsLoadingCourse(false);
+          setIsLoadingProgress(false);
+        }
       }
     }
 
-    loadStudentProgress();
+    initCourseAndProgress();
+
     return () => {
-      isMounted = false;
+      isCancelled = true;
     };
-  }, [currentUser, slug, totalLessons, modules]);
+  }, [slug, router]);
 
   const toggleModuleExpand = (modId: string) => {
     setExpandedModules((prev) => ({

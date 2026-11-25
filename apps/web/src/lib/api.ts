@@ -35,9 +35,40 @@ function getApiUrl(endpoint: string): string {
   return `http://localhost:${port}${apiPath}`;
 }
 
+const inFlightRequests = new Map<string, Promise<any>>();
+const memoryCache = new Map<string, { data: any; expiry: number }>();
+
+export function clearApiCache(): void {
+  memoryCache.clear();
+  inFlightRequests.clear();
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('sv_auth_changed', clearApiCache);
+}
+
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  const method = (options.method || 'GET').toUpperCase();
   const url = getApiUrl(endpoint);
   const token = getAuthToken();
+  const cacheKey = `${method}:${url}:${token || 'anon'}`;
+
+  // For non-GET requests, invalidate cached data to guarantee immediate consistency
+  if (method !== 'GET') {
+    memoryCache.clear();
+  } else {
+    // Check in-memory cache
+    const cached = memoryCache.get(cacheKey);
+    if (cached && cached.expiry > Date.now()) {
+      return cached.data as T;
+    }
+
+    // Check in-flight promise deduplication
+    const inFlight = inFlightRequests.get(cacheKey);
+    if (inFlight) {
+      return inFlight as Promise<T>;
+    }
+  }
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -48,19 +79,37 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  const fetchPromise = (async () => {
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers,
+      });
 
-  const data = await response.json().catch(() => ({}));
+      const data = await response.json().catch(() => ({}));
 
-  if (!response.ok) {
-    const errorMsg = data.message || `Request failed with status ${response.status}`;
-    throw new Error(Array.isArray(errorMsg) ? errorMsg.join(', ') : errorMsg);
+      if (!response.ok) {
+        const errorMsg = data.message || `Request failed with status ${response.status}`;
+        throw new Error(Array.isArray(errorMsg) ? errorMsg.join(', ') : errorMsg);
+      }
+
+      // Cache successful GET results: 30s TTL for public catalogue, 10s TTL for dynamic student data
+      if (method === 'GET') {
+        const ttl = endpoint.includes('/courses') && !endpoint.includes('progress') ? 30000 : 10000;
+        memoryCache.set(cacheKey, { data, expiry: Date.now() + ttl });
+      }
+
+      return data as T;
+    } finally {
+      inFlightRequests.delete(cacheKey);
+    }
+  })();
+
+  if (method === 'GET') {
+    inFlightRequests.set(cacheKey, fetchPromise);
   }
 
-  return data as T;
+  return fetchPromise;
 }
 
 export const api = {
@@ -171,7 +220,7 @@ export const api = {
     },
 
     getCourseProgress: async (courseSlug: string) => {
-      // 1. Try student course progress endpoint
+      // 1. Try authoritative student course progress endpoint
       try {
         const res = await request<{
           isEnrolled: boolean;
@@ -190,8 +239,15 @@ export const api = {
             isCompleted: boolean;
           }>;
           lessonProgress?: any[];
+          lastAccessedLessonId?: string | null;
         }>(`/student/courses/${encodeURIComponent(courseSlug)}/progress`);
-        if (res && (res.completedLessonIds || res.completedCount !== undefined || res.progressPct !== undefined)) {
+        if (
+          res &&
+          res.isEnrolled &&
+          ((res.completedCount || 0) > 0 ||
+            (res.progressPct || 0) > 0 ||
+            (Array.isArray(res.completedLessonIds) && res.completedLessonIds.length > 0))
+        ) {
           return res;
         }
       } catch (_) {}
@@ -199,32 +255,22 @@ export const api = {
       // 2. Try courses progress endpoint
       try {
         const res = await request<any>(`/courses/${encodeURIComponent(courseSlug)}/progress`);
-        if (res && (res.completedLessonIds || res.completedCount !== undefined || res.progressPct !== undefined)) {
+        if (
+          res &&
+          res.isEnrolled &&
+          ((res.completedCount || 0) > 0 ||
+            (res.progressPct || 0) > 0 ||
+            (Array.isArray(res.completedLessonIds) && res.completedLessonIds.length > 0))
+        ) {
           return res;
         }
       } catch (_) {}
 
-      // 3. Try flat progress query endpoint
-      try {
-        const res = await request<any>(`/student/courses/progress?slug=${encodeURIComponent(courseSlug)}`);
-        if (res && (res.completedLessonIds || res.completedCount !== undefined || res.progressPct !== undefined)) {
-          return res;
-        }
-      } catch (_) {}
-
-      // 4. Fallback to /courses/progress?slug=...
-      try {
-        const res = await request<any>(`/courses/progress?slug=${encodeURIComponent(courseSlug)}`);
-        if (res && (res.completedLessonIds || res.completedCount !== undefined || res.progressPct !== undefined)) {
-          return res;
-        }
-      } catch (_) {}
-
-      // 5. Fallback to /student/dashboard which always has genuine PostgreSQL enrollment & progressPct
+      // 3. Fallback to /student/dashboard which always has genuine PostgreSQL enrollment & progressPct
       try {
         const dash = await request<any>('/student/dashboard');
         const match = dash?.enrollments?.find((e: any) => e.slug === courseSlug || e.courseSlug === courseSlug);
-        if (match) {
+        if (match && ((match.completedLessons || 0) > 0 || (match.progressPct || 0) > 0)) {
           return {
             isEnrolled: true,
             enrollmentId: match.enrollmentId || match.id,
@@ -232,6 +278,7 @@ export const api = {
             completedCount: match.completedLessons ?? match.completedCount ?? 0,
             progressPct: match.progressPct ?? match.progressPercentage ?? 0,
             completedLessonIds: match.completedLessonIds || [],
+            lastAccessedLessonId: match.lastAccessedLessonId || null,
           };
         }
       } catch (_) {}
@@ -242,6 +289,7 @@ export const api = {
         completedCount: 0,
         progressPct: 0,
         completedLessonIds: [],
+        lastAccessedLessonId: null,
       };
     },
 
@@ -353,4 +401,6 @@ export const api = {
       return request<any>(`/courses/${slug}`);
     },
   },
+
+  clearCache: clearApiCache,
 };

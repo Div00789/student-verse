@@ -20,33 +20,43 @@ export async function GET(req: NextRequest) {
 
     const userId = decoded.sub;
 
-    // 1. Query enrollments from Supabase
-    const { data: enrollmentsData, error } = await supabaseServer
-      .from('Enrollment')
-      .select(`
-        id,
-        courseId,
-        progressPct,
-        isCompleted,
-        enrolledAt,
-        Course (
+    // 1. Parallel Consolidated Query: Fetch enrollments with course details and learner profile concurrently
+    const [enrollmentsRes, profileRes] = await Promise.all([
+      supabaseServer
+        .from('Enrollment')
+        .select(`
           id,
-          slug,
-          title,
-          category,
-          subtitle,
-          durationHours,
-          thumbnailUrl
-        )
-      `)
-      .eq('userId', userId);
+          courseId,
+          progressPct,
+          isCompleted,
+          enrolledAt,
+          Course (
+            id,
+            slug,
+            title,
+            category,
+            subtitle,
+            durationHours,
+            thumbnailUrl
+          )
+        `)
+        .eq('userId', userId),
+      supabaseServer
+        .from('LearnerProfile')
+        .select('visibility')
+        .eq('userId', userId)
+        .maybeSingle(),
+    ]);
 
-    if (error) {
-      return NextResponse.json({ message: error.message }, { status: 500 });
+    if (enrollmentsRes.error) {
+      return NextResponse.json({ message: enrollmentsRes.error.message }, { status: 500 });
     }
 
+    const enrollmentsData = enrollmentsRes.data || [];
+    const enrollmentIds = enrollmentsData.map((e: any) => e.id);
+
     // Fallback course detail lookup if join was empty
-    const missingCourseIds = (enrollmentsData || [])
+    const missingCourseIds = enrollmentsData
       .filter((e: any) => !e.Course && e.courseId)
       .map((e: any) => e.courseId);
 
@@ -63,67 +73,101 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // 2. Synchronize each enrollment with the single authoritative progress calculation
-    const enrollments = await Promise.all(
-      (enrollmentsData || []).map(async (e: any) => {
-        const courseObj = e.Course || coursesMap[e.courseId] || {};
-        const slug = courseObj.slug || 'ai-digital-marketing-course';
-        const title = courseObj.title || 'Course';
-        const subtitle = courseObj.subtitle || '100% Live Instructor-Led Cohort & Verified Skill Mastery';
-        const durationHours = courseObj.durationHours || 30;
-        const category = courseObj.category || 'Digital Skills & Career Track';
-        const thumbnailUrl = courseObj.thumbnailUrl || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80';
+    // 2. Batch Query Lesson Progress for ALL user enrollments in a single database roundtrip
+    const { data: lpData } = enrollmentIds.length > 0
+      ? await supabaseServer
+          .from('LessonProgress')
+          .select('enrollmentId, lessonId, isCompleted, updatedAt')
+          .in('enrollmentId', enrollmentIds)
+          .eq('isCompleted', true)
+          .order('updatedAt', { ascending: false })
+      : { data: [] };
 
-        // Calculate genuine progress directly from actual database LessonProgress rows
-        const progressResult = await calculateStudentCourseProgress(userId, slug);
+    const totalLessonsBySlug: Record<string, number> = {
+      'ai-digital-marketing-course': 41,
+      'digital-marketing-foundations': 8,
+      'seo-and-ai-search-optimization': 8,
+      'paid-performance-google-meta-ads': 8,
+      'analytics-ga4-google-tag-manager': 8,
+      'social-media-marketing-strategy': 8,
+      'ai-tools-for-digital-marketers': 8,
+    };
 
-        return {
-          id: e.id,
-          enrollmentId: e.id,
-          courseId: e.courseId || courseObj.id,
+    const totalModulesBySlug: Record<string, number> = {
+      'ai-digital-marketing-course': 14,
+      'digital-marketing-foundations': 4,
+      'seo-and-ai-search-optimization': 4,
+      'paid-performance-google-meta-ads': 4,
+      'analytics-ga4-google-tag-manager': 4,
+      'social-media-marketing-strategy': 4,
+      'ai-tools-for-digital-marketers': 4,
+    };
+
+    // 3. Assemble synchronized enrollment records
+    const enrollments = enrollmentsData.map((e: any) => {
+      const courseObj = e.Course || coursesMap[e.courseId] || {};
+      const slug = courseObj.slug || 'ai-digital-marketing-course';
+      const title = courseObj.title || 'Course';
+      const subtitle = courseObj.subtitle || '100% Live Instructor-Led Cohort & Verified Skill Mastery';
+      const durationHours = courseObj.durationHours || 30;
+      const category = courseObj.category || 'Digital Skills & Career Track';
+      const thumbnailUrl = courseObj.thumbnailUrl || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80';
+
+      const progressRecords = (lpData || []).filter((lp: any) => lp.enrollmentId === e.id);
+      const completedCount = progressRecords.length;
+      const completedLessonIds = progressRecords.map((lp: any) => lp.lessonId);
+      const lastAccessedLessonId = progressRecords[0]?.lessonId || null;
+
+      const totalLessons = totalLessonsBySlug[slug] || 8;
+      const totalModules = totalModulesBySlug[slug] || 4;
+
+      let progressPercentage = typeof e.progressPct === 'number' && e.progressPct > 0 ? e.progressPct : 0;
+      if (progressPercentage === 0 && completedCount > 0 && totalLessons > 0) {
+        progressPercentage = completedCount >= totalLessons ? 100 : Math.min(99.9, Math.round((completedCount / totalLessons) * 1000) / 10);
+      }
+
+      const isCompleted = Boolean(e.isCompleted || progressPercentage >= 100);
+      const status = isCompleted ? 'COMPLETED' : (completedCount > 0 ? 'IN_PROGRESS' : 'NOT_STARTED');
+
+      return {
+        id: e.id,
+        enrollmentId: e.id,
+        courseId: e.courseId || courseObj.id,
+        slug,
+        courseSlug: slug,
+        title,
+        courseTitle: title,
+        subtitle,
+        durationHours,
+        category,
+        thumbnailUrl,
+        totalModules,
+        modulesCount: totalModules,
+        totalLessons,
+        completedLessons: completedCount,
+        completedCount,
+        completedLessonIds,
+        progressPercentage,
+        progressPct: progressPercentage,
+        isCompleted,
+        status,
+        lastAccessedLessonId,
+        enrolledAt: e.enrolledAt,
+        course: {
+          id: e.courseId || courseObj.id,
           slug,
-          courseSlug: slug,
           title,
-          courseTitle: title,
           subtitle,
           durationHours,
           category,
           thumbnailUrl,
-          totalModules: progressResult.totalModules,
-          modulesCount: progressResult.totalModules,
-          totalLessons: progressResult.totalLessons,
-          completedLessons: progressResult.completedCount,
-          completedCount: progressResult.completedCount,
-          progressPercentage: progressResult.progressPercentage,
-          progressPct: progressResult.progressPercentage,
-          isCompleted: progressResult.isCompleted,
-          status: progressResult.status,
-          lastAccessedLessonId: progressResult.lastAccessedLessonId,
-          modules: progressResult.modules,
-          enrolledAt: e.enrolledAt,
-          course: {
-            id: e.courseId || courseObj.id,
-            slug,
-            title,
-            subtitle,
-            durationHours,
-            category,
-            thumbnailUrl,
-            totalModules: progressResult.totalModules,
-            totalLessons: progressResult.totalLessons,
-          },
-        };
-      })
-    );
+          totalModules,
+          totalLessons,
+        },
+      };
+    });
 
-    // Query student learner profile for talent pool discovery consent
-    const { data: learnerProfile } = await supabaseServer
-      .from('LearnerProfile')
-      .select('visibility')
-      .eq('userId', userId)
-      .maybeSingle();
-
-    const talentPoolOptIn = learnerProfile?.visibility === 'SEARCHABLE';
+    const talentPoolOptIn = profileRes.data?.visibility === 'SEARCHABLE';
 
     return NextResponse.json({
       enrolledCourseCount: enrollments.length,
