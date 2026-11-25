@@ -138,3 +138,85 @@ export async function calculateStudentCourseProgress(
     isCompleted: progressPercentage >= 100,
   };
 }
+
+/**
+ * Single authoritative service function to record or update a student's lesson completion state in PostgreSQL.
+ * Inserts or updates LessonProgress, then synchronizes Course/Enrollment progress.
+ */
+export async function saveStudentLessonProgress(
+  userId: string,
+  courseSlug: string,
+  lessonId: string,
+  isCompleted: boolean
+): Promise<CourseProgressResult> {
+  const { data: course } = await supabaseServer
+    .from('Course')
+    .select('id, slug, title')
+    .eq('slug', courseSlug)
+    .maybeSingle();
+
+  if (!course) {
+    throw new Error('Course not found');
+  }
+
+  // Get or create permanent enrollment
+  let { data: enrollment } = await supabaseServer
+    .from('Enrollment')
+    .select('id')
+    .eq('userId', userId)
+    .eq('courseId', course.id)
+    .maybeSingle();
+
+  if (!enrollment) {
+    const newEnrollmentId = crypto.randomUUID();
+    await supabaseServer.from('Enrollment').insert({
+      id: newEnrollmentId,
+      userId,
+      courseId: course.id,
+      progressPct: 0,
+      isCompleted: false,
+    });
+    enrollment = { id: newEnrollmentId };
+  }
+
+  // Canonicalize lessonId to match foreign key / UUID in Lesson table
+  const targetDbLessonId = resolveToDbLessonId(lessonId);
+  const targetFrontendCode = resolveToFrontendLessonCode(targetDbLessonId);
+
+  // Check if progress row already exists under either targetDbLessonId or targetFrontendCode
+  const { data: existingProgress } = await supabaseServer
+    .from('LessonProgress')
+    .select('id, lessonId')
+    .eq('enrollmentId', enrollment.id)
+    .or(`lessonId.eq.${targetDbLessonId},lessonId.eq.${targetFrontendCode}`)
+    .maybeSingle();
+
+  const now = new Date().toISOString();
+  const markComplete = Boolean(isCompleted);
+
+  if (existingProgress) {
+    await supabaseServer
+      .from('LessonProgress')
+      .update({
+        isCompleted: markComplete,
+        status: markComplete ? 'COMPLETED' : 'NOT_STARTED',
+        completedAt: markComplete ? now : null,
+        updatedAt: now,
+      })
+      .eq('id', existingProgress.id);
+  } else {
+    await supabaseServer.from('LessonProgress').insert({
+      id: crypto.randomUUID(),
+      enrollmentId: enrollment.id,
+      lessonId: targetDbLessonId,
+      isCompleted: markComplete,
+      status: markComplete ? 'COMPLETED' : 'NOT_STARTED',
+      completedAt: markComplete ? now : null,
+      startedAt: now,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
+  return calculateStudentCourseProgress(userId, courseSlug);
+}
