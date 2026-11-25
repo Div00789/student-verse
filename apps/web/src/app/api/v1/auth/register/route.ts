@@ -38,8 +38,9 @@ export async function POST(req: NextRequest) {
     const isEmployer = role === 'EMPLOYER';
     // Strictly isolate roles: students only receive STUDENT; employers only receive EMPLOYER
     const assignedRoles = isEmployer ? ['EMPLOYER'] : ['STUDENT'];
+    const now = new Date().toISOString();
 
-    // 3. Create permanent User record
+    // 3. Create permanent User record with required timestamps
     const { error: userErr } = await supabaseServer.from('User').insert({
       id: userId,
       email: emailNorm,
@@ -48,6 +49,8 @@ export async function POST(req: NextRequest) {
       country: country || 'India',
       timezone: 'UTC',
       isEmailVerified: true,
+      createdAt: now,
+      updatedAt: now,
     });
 
     if (userErr) {
@@ -62,6 +65,7 @@ export async function POST(req: NextRequest) {
       id: crypto.randomUUID(),
       userId,
       role: r,
+      createdAt: now,
     }));
     await supabaseServer.from('UserRoleAssignment').insert(roleInserts);
 
@@ -78,12 +82,15 @@ export async function POST(req: NextRequest) {
         website: website || 'https://company.com',
         country: country || 'India',
         verificationStatus: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
       });
       await supabaseServer.from('OrganisationMember').insert({
         id: crypto.randomUUID(),
         organisationId: orgId,
         userId,
         role: 'EMPLOYER_OWNER',
+        createdAt: now,
       });
     } else {
       await supabaseServer.from('LearnerProfile').insert({
@@ -92,6 +99,8 @@ export async function POST(req: NextRequest) {
         headline: designation || 'Digital Skills Learner',
         visibility: 'PRIVATE',
         skills: [],
+        createdAt: now,
+        updatedAt: now,
       });
     }
 
