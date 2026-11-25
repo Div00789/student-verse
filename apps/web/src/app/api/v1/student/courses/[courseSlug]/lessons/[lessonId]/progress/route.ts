@@ -26,12 +26,13 @@ export async function POST(
     const slug = params?.courseSlug || req.nextUrl.searchParams.get('courseSlug') || req.nextUrl.searchParams.get('slug') || body?.courseSlug || 'ai-digital-marketing-course';
     const lessonId = params?.lessonId || body?.lessonId;
     const isCompleted = body.isCompleted !== undefined ? Boolean(body.isCompleted) : (body.status === 'COMPLETED');
+    const completionMethod = body?.completionMethod || (isCompleted ? 'MANUAL_CHECKBOX' : undefined);
 
     if (!lessonId) {
       return NextResponse.json({ message: 'Lesson ID required' }, { status: 400 });
     }
 
-    const progressResult = await saveStudentLessonProgress(userId, slug, lessonId, isCompleted);
+    const progressResult = await saveStudentLessonProgress(userId, slug, lessonId, isCompleted, completionMethod);
 
     return NextResponse.json({
       success: true,

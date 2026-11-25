@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import {
@@ -274,7 +274,11 @@ export default function CourseLearningPlayerPage() {
     setActiveTab('notes');
   };
 
-  const handleToggleLesson = async (lessonIdentifier: string, markCompleted: boolean) => {
+  const handleToggleLesson = async (
+    lessonIdentifier: string,
+    markCompleted: boolean,
+    method: 'VIDEO_ENDED' | 'MANUAL_CHECKBOX' | 'MARK_COMPLETE_BUTTON' = 'MANUAL_CHECKBOX'
+  ) => {
     if (!currentLesson) return;
     if (isSavingLesson) return;
 
@@ -332,7 +336,7 @@ export default function CourseLearningPlayerPage() {
         isCompleted: markCompleted,
         status: markCompleted ? 'COMPLETED' : 'NOT_STARTED',
         totalLessons,
-        completionMethod: 'MANUAL_VERIFIED',
+        completionMethod: method,
       });
 
       if (res && res.success) {
@@ -369,7 +373,24 @@ export default function CourseLearningPlayerPage() {
           } catch (_) {}
         }
         setSaveStatus('SAVED');
-        setActionNotice(markCompleted ? 'Lesson marked complete • Progress saved to database.' : 'Lesson marked incomplete • Progress updated.');
+
+        // Context-aware feedback based on completion method
+        let noticeText = markCompleted
+          ? 'Lesson marked complete • Progress saved to database.'
+          : 'Lesson marked incomplete • Progress updated.';
+        if (method === 'VIDEO_ENDED') {
+          noticeText = 'Video finished • Lesson marked complete!';
+        } else if (method === 'MANUAL_CHECKBOX') {
+          noticeText = markCompleted
+            ? 'Checkbox checked • Lesson completed and saved.'
+            : 'Checkbox unchecked • Lesson marked incomplete.';
+        } else if (method === 'MARK_COMPLETE_BUTTON') {
+          noticeText = markCompleted
+            ? 'Marked complete • Progress saved to database.'
+            : 'Marked incomplete • Progress updated.';
+        }
+
+        setActionNotice(noticeText);
         setTimeout(() => {
           setSaveStatus('IDLE');
           setActionNotice(null);
@@ -392,6 +413,63 @@ export default function CourseLearningPlayerPage() {
       setIsSavingLesson(null);
     }
   };
+
+  // Method 1: Automatic Video Completion
+  const currentLessonRef = useRef(currentLesson);
+  useEffect(() => {
+    currentLessonRef.current = currentLesson;
+  }, [currentLesson]);
+
+  const handleAutoVideoComplete = useCallback(
+    (lessonToComplete?: LessonItem | null) => {
+      const target = lessonToComplete || currentLessonRef.current;
+      if (!target) return;
+      const targetId = target.id || target.code || '';
+      if (!targetId) return;
+
+      // Idempotency: if already completed, do not record or increment twice
+      if (isLessonDone(target)) {
+        return;
+      }
+
+      handleToggleLesson(targetId, true, 'VIDEO_ENDED');
+    },
+    [completedLessonIds, modules]
+  );
+
+  // External video message listener (YouTube, Vimeo, HTML5 postMessage, custom LMS players)
+  useEffect(() => {
+    const handleWindowMessage = (event: MessageEvent) => {
+      try {
+        let payload = event.data;
+        if (typeof payload === 'string') {
+          try {
+            payload = JSON.parse(payload);
+          } catch (_) {}
+        }
+        // YouTube Player API event: state 0 is YT.PlayerState.ENDED
+        if (payload?.event === 'onStateChange' && payload?.info === 0) {
+          handleAutoVideoComplete(currentLessonRef.current);
+        }
+        // Vimeo API ended event
+        if (payload?.event === 'finish' || payload?.event === 'ended') {
+          handleAutoVideoComplete(currentLessonRef.current);
+        }
+        // Generic HTML5 video / SCORM / custom player message
+        if (
+          payload?.type === 'VIDEO_ENDED' ||
+          payload?.type === 'LESSON_COMPLETED' ||
+          payload?.event === 'video_ended' ||
+          payload?.action === 'ENDED'
+        ) {
+          handleAutoVideoComplete(currentLessonRef.current);
+        }
+      } catch (_) {}
+    };
+
+    window.addEventListener('message', handleWindowMessage);
+    return () => window.removeEventListener('message', handleWindowMessage);
+  }, [handleAutoVideoComplete]);
 
   const handleNextLesson = () => {
     if (!currentModule) return;
@@ -578,13 +656,29 @@ export default function CourseLearningPlayerPage() {
             <div className="aspect-video bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden relative shadow-2xl flex flex-col items-center justify-center p-0 text-center group">
               {currentLesson?.videoUrl ? (
                 <div className="relative w-full h-full">
-                  <iframe
-                    src={currentLesson.videoUrl}
-                    title={currentLesson.title}
-                    className="w-full h-full border-0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
+                  {currentLesson.videoUrl.match(/\.(mp4|webm|ogg)($|\?)/i) ? (
+                    <video
+                      key={currentLesson.videoUrl}
+                      src={currentLesson.videoUrl}
+                      controls
+                      playsInline
+                      className="w-full h-full object-contain bg-black"
+                      onEnded={() => handleAutoVideoComplete(currentLesson)}
+                    />
+                  ) : (
+                    <iframe
+                      id="course-lesson-video-frame"
+                      src={
+                        currentLesson.videoUrl.includes('youtube.com') || currentLesson.videoUrl.includes('youtu.be')
+                          ? `${currentLesson.videoUrl}${currentLesson.videoUrl.includes('?') ? '&' : '?'}enablejsapi=1`
+                          : currentLesson.videoUrl
+                      }
+                      title={currentLesson.title}
+                      className="w-full h-full border-0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  )}
                   {currentLesson.videoUrl.includes('drive.google.com') && (
                     <a
                       href={currentLesson.videoUrl.replace('/preview', '/view?usp=sharing')}
@@ -633,26 +727,29 @@ export default function CourseLearningPlayerPage() {
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 {currentLessonIsCompleted ? (
                   <div className="flex items-center gap-3">
-                    <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                      <span>Lesson Completed</span>
-                    </div>
                     <button
-                      onClick={() => handleToggleLesson(currentLesson?.id || currentLesson?.code || '', false)}
+                      onClick={() => handleToggleLesson(currentLesson?.id || currentLesson?.code || '', false, 'MARK_COMPLETE_BUTTON')}
                       disabled={isSavingLesson === (currentLesson?.id || currentLesson?.code)}
-                      className="text-xs font-semibold text-slate-400 hover:text-rose-400 underline underline-offset-4 transition-colors"
+                      className="px-4 py-2.5 rounded-xl bg-[#16A34A] hover:bg-[#15803d] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-2 group active:scale-95"
+                      title="Lesson completed • Click to mark as incomplete"
                     >
-                      {isSavingLesson === (currentLesson?.id || currentLesson?.code) ? 'Updating...' : 'Mark as Incomplete'}
+                      {isSavingLesson === (currentLesson?.id || currentLesson?.code) ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      ) : (
+                        <CheckCircle2 className="w-4 h-4 text-white" />
+                      )}
+                      <span>Completed</span>
+                      <span className="text-[10px] font-normal opacity-85 group-hover:underline ml-1">(Undo)</span>
                     </button>
                   </div>
                 ) : (
                   <button
-                    onClick={() => handleToggleLesson(currentLesson?.id || currentLesson?.code || '', true)}
+                    onClick={() => handleToggleLesson(currentLesson?.id || currentLesson?.code || '', true, 'MARK_COMPLETE_BUTTON')}
                     disabled={isSavingLesson === (currentLesson?.id || currentLesson?.code)}
-                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-2"
+                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-2 active:scale-95"
                   >
                     {isSavingLesson === (currentLesson?.id || currentLesson?.code) ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin text-white" />
                     ) : (
                       <CheckCircle2 className="w-4 h-4 text-indigo-200" />
                     )}
@@ -1038,9 +1135,9 @@ export default function CourseLearningPlayerPage() {
                         <div className="flex items-center justify-between gap-2">
                           <span className="font-bold text-white block leading-snug truncate">{mod.title}</span>
                           {isModCompleted && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold flex-shrink-0">
-                              <Check className="w-3 h-3 text-emerald-400 stroke-[3]" />
-                              <span>100%</span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#16A34A]/20 text-[#16A34A] border border-[#16A34A]/40 text-[10px] font-bold flex-shrink-0 animate-in fade-in duration-200">
+                              <Check className="w-3 h-3 text-white stroke-[3] bg-[#16A34A] rounded-full p-0.5" />
+                              <span>Completed</span>
                             </span>
                           )}
                         </div>
@@ -1048,7 +1145,7 @@ export default function CourseLearningPlayerPage() {
                         {/* Dynamic Module Progress Stats */}
                         <div className="flex items-center justify-between text-[10px] text-slate-400 mt-1">
                           <span>{modCompletedCount} of {modTotalLessons} Completed</span>
-                          <span className={isModCompleted ? 'text-emerald-400 font-bold' : 'text-slate-400 font-medium'}>
+                          <span className={isModCompleted ? 'text-[#16A34A] font-bold' : 'text-slate-400 font-medium'}>
                             {modProgressPct}%
                           </span>
                         </div>
@@ -1057,7 +1154,7 @@ export default function CourseLearningPlayerPage() {
                         <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden mt-1.5">
                           <div
                             className={`h-full transition-all duration-300 ${
-                              isModCompleted ? 'bg-emerald-500' : 'bg-indigo-500'
+                              isModCompleted ? 'bg-[#16A34A]' : 'bg-indigo-500'
                             }`}
                             style={{ width: `${modProgressPct}%` }}
                           />
@@ -1096,13 +1193,13 @@ export default function CourseLearningPlayerPage() {
                                 tabIndex={0}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleToggleLesson(lesson.id || lesson.code || '', !isCompleted);
+                                  handleToggleLesson(lesson.id || lesson.code || '', !isCompleted, 'MANUAL_CHECKBOX');
                                 }}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter' || e.key === ' ') {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    handleToggleLesson(lesson.id || lesson.code || '', !isCompleted);
+                                    handleToggleLesson(lesson.id || lesson.code || '', !isCompleted, 'MANUAL_CHECKBOX');
                                   }
                                 }}
                                 title={
@@ -1110,21 +1207,28 @@ export default function CourseLearningPlayerPage() {
                                     ? 'Completed • Click to mark as incomplete'
                                     : 'Click to mark as complete'
                                 }
-                                className={`w-4 h-4 rounded border flex items-center justify-center transition-all cursor-pointer flex-shrink-0 mt-0.5 ${
+                                className={`w-4 h-4 rounded-[4px] border flex items-center justify-center transition-all duration-150 cursor-pointer flex-shrink-0 mt-0.5 shadow-sm active:scale-90 ${
                                   isCompleted
-                                    ? 'bg-emerald-500 border-emerald-400 text-slate-950 shadow-sm'
-                                    : 'border-slate-600 bg-slate-950/80 hover:border-indigo-400 text-transparent'
+                                    ? 'bg-[#16A34A] border-[#16A34A] text-white'
+                                    : 'border-[#64748B] bg-slate-950/80 hover:border-slate-400 text-transparent'
                                 } ${isSavingLesson === (lesson.id || lesson.code) ? 'opacity-50 pointer-events-none' : ''}`}
                               >
                                 {isSavingLesson === (lesson.id || lesson.code) ? (
-                                  <Loader2 className="w-3 h-3 animate-spin text-indigo-400" />
+                                  <Loader2 className="w-2.5 h-2.5 animate-spin text-white" />
                                 ) : isCompleted ? (
-                                  <Check className="w-3 h-3 stroke-[3]" />
+                                  <Check className="w-3 h-3 text-white stroke-[3]" />
                                 ) : null}
                               </div>
 
                               <div className="flex-1 overflow-hidden">
-                                <span className="block truncate">{lesson.title}</span>
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="block truncate">{lesson.title}</span>
+                                  {isCompleted && (
+                                    <span className="text-[9px] font-bold text-[#16A34A] uppercase tracking-wider px-1.5 py-0.2 bg-[#16A34A]/10 rounded border border-[#16A34A]/25">
+                                      Completed
+                                    </span>
+                                  )}
+                                </div>
                                 <span
                                   className={`text-[10px] block mt-0.5 ${
                                     isCurrent ? 'text-indigo-200' : 'text-slate-500'

@@ -95,13 +95,13 @@ export async function POST(
     const userId = decoded.sub;
     const body = await req.json().catch(() => ({}));
     const slug = params?.slug || req.nextUrl.searchParams.get('slug') || req.nextUrl.searchParams.get('courseSlug') || body?.courseSlug || 'ai-digital-marketing-course';
-    const { lessonId, isCompleted } = body;
+    const { lessonId, isCompleted, completionMethod } = body;
 
     if (!lessonId) {
       return NextResponse.json({ message: 'Lesson ID required' }, { status: 400 });
     }
 
-    const progressResult = await saveStudentLessonProgress(userId, slug, lessonId, Boolean(isCompleted));
+    const progressResult = await saveStudentLessonProgress(userId, slug, lessonId, Boolean(isCompleted), completionMethod);
 
     return NextResponse.json({
       success: true,

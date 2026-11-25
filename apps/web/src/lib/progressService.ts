@@ -287,7 +287,8 @@ export async function saveStudentLessonProgress(
   userId: string,
   courseSlug: string,
   lessonId: string,
-  isCompleted: boolean
+  isCompleted: boolean,
+  completionMethod?: string
 ): Promise<CourseProgressResult> {
   const { data: course } = await supabaseServer
     .from('Course')
@@ -375,6 +376,7 @@ export async function saveStudentLessonProgress(
 
   const now = new Date().toISOString();
   const markComplete = Boolean(isCompleted);
+  const resolvedMethod = markComplete ? (completionMethod || 'MANUAL_CHECKBOX') : null;
 
   if (existingProgress) {
     await supabaseServer
@@ -382,6 +384,7 @@ export async function saveStudentLessonProgress(
       .update({
         isCompleted: markComplete,
         status: markComplete ? 'COMPLETED' : 'NOT_STARTED',
+        completionMethod: resolvedMethod,
         completedAt: markComplete ? now : null,
         updatedAt: now,
       })
@@ -393,6 +396,7 @@ export async function saveStudentLessonProgress(
       lessonId: targetDbLessonId,
       isCompleted: markComplete,
       status: markComplete ? 'COMPLETED' : 'NOT_STARTED',
+      completionMethod: resolvedMethod,
       completedAt: markComplete ? now : null,
       startedAt: now,
       createdAt: now,
