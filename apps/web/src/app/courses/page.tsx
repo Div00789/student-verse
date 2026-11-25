@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, Filter, Clock, BookOpen, CheckCircle, ArrowRight, Video, Sparkles } from 'lucide-react';
 import { formatINR } from '../../lib/currency';
+import { api } from '../../lib/api';
 
 const ALL_COURSES = [
   {
@@ -128,8 +129,31 @@ const ALL_COURSES = [
 ];
 
 export default function CoursesPage() {
+  const [coursesList, setCoursesList] = useState<any[]>(ALL_COURSES);
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  useEffect(() => {
+    async function loadDynamicCourses() {
+      try {
+        const dbCourses = await api.courses.getAll();
+        if (dbCourses && Array.isArray(dbCourses) && dbCourses.length > 0) {
+          // Merge dynamic DB courses with default UI skill tags and batch dates
+          const merged = dbCourses.map((dbC: any) => {
+            const staticMatch = ALL_COURSES.find((ac) => ac.slug === dbC.slug);
+            return {
+              ...staticMatch,
+              ...dbC,
+              skills: staticMatch?.skills || ['Live Interactive Cohort', 'Practical Assignments', 'Verified Industry Skills'],
+              nextBatch: staticMatch?.nextBatch || 'Upcoming Live Batch',
+            };
+          });
+          setCoursesList(merged);
+        }
+      } catch (_) {}
+    }
+    loadDynamicCourses();
+  }, []);
 
   const categories = [
     'ALL',
@@ -141,12 +165,12 @@ export default function CoursesPage() {
     'AI for Digital Marketing'
   ];
 
-  const filteredCourses = ALL_COURSES.filter((course) => {
+  const filteredCourses = coursesList.filter((course) => {
     const matchesCategory = selectedCategory === 'ALL' || course.category === selectedCategory;
     const matchesSearch =
-      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.skills.some((s) => s.toLowerCase().includes(searchQuery.toLowerCase()));
+      (course.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (course.description || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (course.skills || []).some((s: string) => s.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesCategory && matchesSearch;
   });
 
@@ -237,7 +261,7 @@ export default function CoursesPage() {
 
                   {/* Skills tags */}
                   <div className="pt-2 flex flex-wrap gap-1.5">
-                    {course.skills.map((s, idx) => (
+                    {course.skills?.map((s: string, idx: number) => (
                       <span
                         key={idx}
                         className="text-[11px] bg-slate-100 text-slate-700 font-semibold px-2 py-0.5 rounded"

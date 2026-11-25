@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '@/lib/supabaseServer';
-import { calculateStudentCourseProgress, saveStudentLessonProgress, COURSE_TOTAL_LESSONS } from '@/lib/progressService';
+import { calculateStudentCourseProgress, saveStudentLessonProgress } from '@/lib/progressService';
 
 export async function GET(
   req: NextRequest,
@@ -46,13 +46,18 @@ export async function GET(
       enrollmentId: progress.enrollmentId,
       courseId: progress.courseId,
       courseSlug: progress.courseSlug,
+      courseTitle: progress.courseTitle,
       completedLessonIds: progress.completedLessonIds,
       completedCount: progress.completedCount,
       completedLessons: progress.completedCount,
       totalLessons: progress.totalLessons,
+      totalModules: progress.totalModules,
       progressPercentage: progress.progressPercentage,
       progressPct: progress.progressPercentage,
       isCompleted: progress.isCompleted,
+      status: progress.status,
+      lastAccessedLessonId: progress.lastAccessedLessonId,
+      modules: progress.modules,
     });
   } catch (err: any) {
     return NextResponse.json({
@@ -61,7 +66,9 @@ export async function GET(
       progressPercentage: 0,
       progressPct: 0,
       completedCount: 0,
-      totalLessons: 41,
+      totalLessons: 0,
+      totalModules: 0,
+      status: 'NOT_STARTED',
       error: err.message,
     });
   }

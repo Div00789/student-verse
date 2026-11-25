@@ -496,7 +496,7 @@ export default function StudentPortalPage() {
                             </div>
                             <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
                               <span>{completedLessons} of {totalLessons} lessons completed</span>
-                              <span>Curriculum: 14 Modules</span>
+                              <span>Curriculum: {course.totalModules || course.modulesCount || 1} Modules</span>
                             </div>
                           </div>
 
@@ -512,7 +512,7 @@ export default function StudentPortalPage() {
                               href={`/courses/${slug}/learn`}
                               className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition-colors"
                             >
-                              <span>Continue Learning</span>
+                              <span>{progress >= 100 ? 'Review Course' : 'Continue Learning'}</span>
                               <ChevronRight className="w-4 h-4" />
                             </Link>
                           </div>
@@ -674,8 +674,9 @@ export default function StudentPortalPage() {
                     ? course.progressPercentage
                     : (typeof course.progressPct === 'number' ? course.progressPct : 0);
                   const completedLessons = course.completedLessons ?? course.completedCount ?? 0;
-                  const totalLessons = course.totalLessons || 41;
-                  const duration = course.durationHours || 48;
+                  const totalLessons = course.totalLessons ?? 0;
+                  const totalModules = course.totalModules || course.modulesCount || 1;
+                  const duration = course.durationHours || 30;
 
                   return (
                     <div
@@ -686,11 +687,12 @@ export default function StudentPortalPage() {
                         <div className="flex items-center gap-2">
                           <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${progress >= 100
                             ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                            : (progress > 0 ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-slate-100 text-slate-700 border border-slate-200')
                             }`}>
-                            {progress >= 100 ? 'Completed' : 'In Progress'}
+                            {progress >= 100 ? 'Completed' : (progress > 0 ? 'In Progress' : 'Not Started')}
                           </span>
                           <span className="text-xs text-slate-400">Duration: {duration} Hours</span>
+                          <span className="text-xs text-slate-400">&bull; {totalModules} Modules</span>
                           <span className="text-xs font-bold text-indigo-600">&bull; {completedLessons} of {totalLessons} lessons completed ({progress}%)</span>
                         </div>
                         <h3 className="text-xl font-bold text-slate-900">{course.title}</h3>
@@ -709,7 +711,7 @@ export default function StudentPortalPage() {
                           href={`/courses/${slug}/learn`}
                           className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow flex items-center gap-2"
                         >
-                          <span>Continue Learning</span>
+                          <span>{progress >= 100 ? 'Review Course' : 'Continue Learning'}</span>
                           <ChevronRight className="w-4 h-4" />
                         </Link>
                       </div>

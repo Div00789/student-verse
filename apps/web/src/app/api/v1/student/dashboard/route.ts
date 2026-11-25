@@ -68,10 +68,10 @@ export async function GET(req: NextRequest) {
       (enrollmentsData || []).map(async (e: any) => {
         const courseObj = e.Course || coursesMap[e.courseId] || {};
         const slug = courseObj.slug || 'ai-digital-marketing-course';
-        const title = courseObj.title || 'AI Digital Marketing Course';
-        const subtitle = courseObj.subtitle || 'Comprehensive 14-Module Professional Programme: SEO, PPC, GA4, Paid Media, Automation & Modern AI Tools';
-        const durationHours = courseObj.durationHours || 48;
-        const category = courseObj.category || 'Digital Marketing / Artificial Intelligence';
+        const title = courseObj.title || 'Course';
+        const subtitle = courseObj.subtitle || '100% Live Instructor-Led Cohort & Verified Skill Mastery';
+        const durationHours = courseObj.durationHours || 30;
+        const category = courseObj.category || 'Digital Skills & Career Track';
         const thumbnailUrl = courseObj.thumbnailUrl || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80';
 
         // Calculate genuine progress directly from actual database LessonProgress rows
@@ -89,12 +89,17 @@ export async function GET(req: NextRequest) {
           durationHours,
           category,
           thumbnailUrl,
+          totalModules: progressResult.totalModules,
+          modulesCount: progressResult.totalModules,
           totalLessons: progressResult.totalLessons,
           completedLessons: progressResult.completedCount,
           completedCount: progressResult.completedCount,
           progressPercentage: progressResult.progressPercentage,
           progressPct: progressResult.progressPercentage,
           isCompleted: progressResult.isCompleted,
+          status: progressResult.status,
+          lastAccessedLessonId: progressResult.lastAccessedLessonId,
+          modules: progressResult.modules,
           enrolledAt: e.enrolledAt,
           course: {
             id: e.courseId || courseObj.id,
@@ -104,6 +109,8 @@ export async function GET(req: NextRequest) {
             durationHours,
             category,
             thumbnailUrl,
+            totalModules: progressResult.totalModules,
+            totalLessons: progressResult.totalLessons,
           },
         };
       })

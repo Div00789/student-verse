@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { formatINR } from '../../../lib/currency';
 import EnrollmentActionButton from '../../../components/EnrollmentActionButton';
+import { getCourseBySlug } from '../../../lib/courseService';
 
 const COURSE_DATA: Record<string, any> = {
   'ai-digital-marketing-course': {
@@ -410,12 +411,24 @@ const COURSE_DATA: Record<string, any> = {
   }
 };
 
-export default function CourseDetailPage({ params }: { params: { slug: string } }) {
-  const course = COURSE_DATA[params.slug];
+export default async function CourseDetailPage({ params }: { params: { slug: string } }) {
+  const dbCourse = await getCourseBySlug(params.slug);
+  const fallback = COURSE_DATA[params.slug];
 
-  if (!course) {
+  if (!dbCourse && !fallback) {
     notFound();
   }
+
+  const course = {
+    ...fallback,
+    ...dbCourse,
+    trainerName: fallback?.trainerName || 'StudentVerse Senior Industry Faculty',
+    batchCode: fallback?.batchCode || `SV-${(params.slug || 'COURSE').toUpperCase().slice(0, 6)}-COHORT`,
+    batchSchedule: fallback?.batchSchedule || 'Live Evening Classes + Dedicated Lab Sessions',
+    originalPrice: fallback?.originalPrice || (dbCourse?.price ? Math.round(dbCourse.price * 1.25) : 34999),
+    discountPercent: fallback?.discountPercent || 20,
+    price: dbCourse?.price || fallback?.price || 24999,
+  };
 
   return (
     <div className="py-12 bg-slate-50 min-h-screen">

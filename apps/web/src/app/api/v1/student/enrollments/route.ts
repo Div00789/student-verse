@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { supabaseServer, JWT_SECRET } from '@/lib/supabaseServer';
+import { calculateStudentCourseProgress } from '@/lib/progressService';
 
 export async function GET(req: NextRequest) {
   try {
@@ -60,35 +61,50 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    const enrollments = (enrollmentsData || []).map((e: any) => {
-      const courseObj = e.Course || coursesMap[e.courseId] || {};
-      const slug = courseObj.slug || '';
-      const title = courseObj.title || 'Course';
-      return {
-        id: e.id,
-        courseId: e.courseId || courseObj.id,
-        slug,
-        title,
-        subtitle: courseObj.subtitle || '',
-        category: courseObj.category || 'Digital Marketing',
-        durationHours: courseObj.durationHours || 48,
-        thumbnailUrl: courseObj.thumbnailUrl || '',
-        progressPct: typeof e.progressPct === 'number' ? e.progressPct : 0,
-        isCompleted: Boolean(e.isCompleted),
-        enrolledAt: e.enrolledAt,
-        courseSlug: slug,
-        courseTitle: title,
-        course: {
-          id: e.courseId || courseObj.id,
+    const enrollments = await Promise.all(
+      (enrollmentsData || []).map(async (e: any) => {
+        const courseObj = e.Course || coursesMap[e.courseId] || {};
+        const slug = courseObj.slug || 'ai-digital-marketing-course';
+        const title = courseObj.title || 'Course';
+
+        const progressResult = await calculateStudentCourseProgress(userId, slug);
+
+        return {
+          id: e.id,
+          courseId: e.courseId || courseObj.id,
           slug,
           title,
           subtitle: courseObj.subtitle || '',
-          durationHours: courseObj.durationHours || 48,
-          category: courseObj.category || 'Digital Marketing',
-          thumbnailUrl: courseObj.thumbnailUrl || '',
-        },
-      };
-    });
+          category: courseObj.category || 'Digital Skills & Career Track',
+          durationHours: courseObj.durationHours || 30,
+          thumbnailUrl: courseObj.thumbnailUrl || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
+          totalModules: progressResult.totalModules,
+          modulesCount: progressResult.totalModules,
+          totalLessons: progressResult.totalLessons,
+          completedLessons: progressResult.completedCount,
+          completedCount: progressResult.completedCount,
+          progressPercentage: progressResult.progressPercentage,
+          progressPct: progressResult.progressPercentage,
+          isCompleted: progressResult.isCompleted,
+          status: progressResult.status,
+          lastAccessedLessonId: progressResult.lastAccessedLessonId,
+          enrolledAt: e.enrolledAt,
+          courseSlug: slug,
+          courseTitle: title,
+          course: {
+            id: e.courseId || courseObj.id,
+            slug,
+            title,
+            subtitle: courseObj.subtitle || '',
+            durationHours: courseObj.durationHours || 30,
+            category: courseObj.category || 'Digital Skills & Career Track',
+            thumbnailUrl: courseObj.thumbnailUrl || '',
+            totalModules: progressResult.totalModules,
+            totalLessons: progressResult.totalLessons,
+          },
+        };
+      })
+    );
 
     return NextResponse.json(enrollments);
   } catch (err: any) {
