@@ -157,7 +157,7 @@ const rawModules = [
         durationSec: 279,
         actualDurationSec: 279,
         plannedDurationSec: 1200,
-        videoUrl: '/videos/How_to_create_Marketing_Emails_in_HubSpot.mp4',
+        videoUrl: 'https://www.loom.com/share/c5fded7904054283a17a9fd739e07388',
         aiTools: ['HubSpot Marketing Hub', 'HubSpot Drag-and-Drop Email Editor'],
         notes: 'This lesson introduces students to creating professional marketing emails using HubSpot. Students will learn how to navigate the marketing email editor, select and customize templates, configure sender details and subject lines, insert personalization tokens, configure subscription types and recipient lists, preview and test emails across desktop and mobile, and schedule or send campaigns.',
         learningObjectives: [
@@ -181,7 +181,7 @@ const rawModules = [
       { code: '5.10', title: '5.10 Marketing Campaign Management', durationSec: 1200, aiTools: ['HubSpot Campaigns Tool'], notes: 'Orchestrate multi-asset campaigns: tag landing pages, forms, emails, social posts, and UTM tracking links under unified campaign dashboards.' },
       { code: '5.11', title: '5.11 Workflow Fundamentals', durationSec: 1200, aiTools: ['HubSpot Workflows'], notes: 'Master workflow automation: enrollment triggers, re-enrollment criteria, action execution order, delay steps, and unenrollment rules.' },
       { code: '5.12', title: '5.12 Advanced Workflow Automation', durationSec: 1200, aiTools: ['HubSpot Advanced Logic'], notes: 'Build complex branch trees: if/then branches, branching based on multiple property conditions, webhooks actions, and cross-object workflows.' },
-      { code: '5.13', title: '5.14 Lead Scoring & Qualification', durationSec: 1200, aiTools: ['HubSpot Lead Scoring Engine'], notes: 'Implement algorithmic lead scoring: positive behavioral score additions (page views, form submits) and negative decay deductions (inactivity, bounces).' },
+      { code: '5.13', title: '5.13 Lead Scoring & Qualification', durationSec: 1200, aiTools: ['HubSpot Lead Scoring Engine'], notes: 'Implement algorithmic lead scoring: positive behavioral score additions (page views, form submits) and negative decay deductions (inactivity, bounces).' },
       { code: '5.14', title: '5.14 Automated Lead Assignment', durationSec: 1200, aiTools: ['HubSpot Round-Robin Assignment'], notes: 'Distribute qualified opportunities: round-robin sales assignment, territory-based routing, and immediate task/notification creation for sales reps.' },
       { code: '5.15', title: '5.15 Sales Pipelines & Deal Automation', durationSec: 1200, aiTools: ['HubSpot Deals & Pipelines'], notes: 'Structure deal pipelines: stage probability metrics, mandatory fields on stage exit, automated deal creation upon MQL qualification, and won/lost tracking.' },
       { code: '5.16', title: '5.16 Sales Sequences & Follow-Ups', durationSec: 1200, aiTools: ['HubSpot Sequences'], notes: 'Create automated 1-to-1 sales outreach sequences: scheduled personal emails, automated task reminders, LinkedIn messaging steps, and auto-unenrollment.' },
