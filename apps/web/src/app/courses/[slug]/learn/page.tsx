@@ -49,8 +49,8 @@ export default function CourseLearningPlayerPage() {
   const [activeLessonIndex, setActiveLessonIndex] = useState(0);
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
 
-  // Authentication Guard State
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+  // Authentication Guard State - Public by default (no mandatory login required)
+  const [isAuthorized, setIsAuthorized] = useState<boolean>(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
   // Completed Lessons State - Initialized strictly to 0 / empty
@@ -102,17 +102,18 @@ export default function CourseLearningPlayerPage() {
   useEffect(() => {
     let isCancelled = false;
 
-    // Check Authentication
+    // Optional Authentication: Allow anyone to view and learn without mandatory profile login
     const user = getAuthUser();
-    if (!user || !user.id) {
-      setIsAuthorized(false);
-      router.replace(`/student/login?redirect=${encodeURIComponent(`/courses/${slug}/learn`)}`);
-      return;
+    if (user && user.id) {
+      setCurrentUser(user);
+    } else {
+      setCurrentUser(null);
     }
-    setCurrentUser(user);
     setIsAuthorized(true);
 
-    const storageKey = getScopedStorageKey('course_progress', slug) || `sv_course_progress_${user.id}_${slug}`;
+    const storageKey = user?.id
+      ? (getScopedStorageKey('course_progress', slug) || `sv_course_progress_${user.id}_${slug}`)
+      : `sv_course_progress_guest_${slug}`;
 
     // Read cached completed lessons for instantaneous UI feedback without flashing 0%
     try {
@@ -139,7 +140,7 @@ export default function CourseLearningPlayerPage() {
         // Fetch Course Details and Student Progress CONCURRENTLY in a single parallel roundtrip
         const [fetchedCourse, progressRes] = await Promise.all([
           api.courses.getBySlug(slug).catch(() => null),
-          api.student.getCourseProgress(slug).catch(() => null),
+          user?.id ? api.student.getCourseProgress(slug).catch(() => null) : Promise.resolve(null),
         ]);
 
         if (isCancelled) return;
@@ -199,8 +200,26 @@ export default function CourseLearningPlayerPage() {
           }
         }
 
-        // Safety fallback: if progress is still 0, check authoritative student dashboard
-        if (confirmedCount === 0 || confirmedLessonIds.length === 0) {
+        if (!user?.id) {
+          setIsEnrolled(true);
+          try {
+            const guestSaved = localStorage.getItem(storageKey);
+            if (guestSaved) {
+              const parsed = JSON.parse(guestSaved);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                const valid = Array.from(new Set<string>(parsed as string[]));
+                confirmedLessonIds = valid;
+                confirmedCount = valid.length;
+                confirmedPct = totalEligibleLessons > 0
+                  ? (confirmedCount === totalEligibleLessons ? 100 : Math.min(99.9, Math.round((confirmedCount / totalEligibleLessons) * 1000) / 10))
+                  : 0;
+              }
+            }
+          } catch (_) {}
+        }
+
+        // Safety fallback for authenticated students: if progress is still 0, check authoritative dashboard
+        if (user?.id && (confirmedCount === 0 || confirmedLessonIds.length === 0)) {
           try {
             const dash = await api.student.getDashboard();
             const match = dash?.enrollments?.find((e: any) => e.slug === slug || e.courseSlug === slug);
@@ -304,7 +323,7 @@ export default function CourseLearningPlayerPage() {
 
     const storageKey = currentUser?.id
       ? (getScopedStorageKey('course_progress', slug) || `sv_course_progress_${currentUser.id}_${slug}`)
-      : null;
+      : `sv_course_progress_guest_${slug}`;
 
     // Compute next completed IDs including both id and code
     const nextCompletedIds = markCompleted
@@ -336,6 +355,39 @@ export default function CourseLearningPlayerPage() {
     setIsSavingLesson(targetLessonId);
     setSaveStatus('SAVING');
     setActionError(null);
+
+    // If guest / public visitor (no mandatory profile login required)
+    if (!currentUser?.id) {
+      if (storageKey) {
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(nextCompletedIds));
+        } catch (_) {}
+      }
+      setSaveStatus('SAVED');
+
+      let noticeText = markCompleted
+        ? 'Lesson marked complete • Progress saved.'
+        : 'Lesson marked incomplete • Progress updated.';
+      if (method === 'VIDEO_ENDED') {
+        noticeText = 'Video finished • Lesson marked complete!';
+      } else if (method === 'MANUAL_CHECKBOX') {
+        noticeText = markCompleted
+          ? 'Checkbox checked • Lesson completed.'
+          : 'Checkbox unchecked • Lesson marked incomplete.';
+      } else if (method === 'MARK_COMPLETE_BUTTON') {
+        noticeText = markCompleted
+          ? 'Marked complete • Progress saved.'
+          : 'Marked incomplete • Progress updated.';
+      }
+
+      setActionNotice(noticeText);
+      setTimeout(() => {
+        setSaveStatus('IDLE');
+        setActionNotice(null);
+      }, 3000);
+      setIsSavingLesson(null);
+      return;
+    }
 
     // Sync with backend API (permanent database persistence)
     try {
@@ -515,35 +567,6 @@ export default function CourseLearningPlayerPage() {
     }, 1000);
   };
 
-  // If unauthorized or pending auth check, render secure redirect loading screen
-  if (isAuthorized === false || isAuthorized === null) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center mb-4">
-          <Lock className="w-8 h-8 text-indigo-400" />
-        </div>
-        <h2 className="text-xl font-bold text-white mb-2">Protected Student Learning Portal</h2>
-        <p className="text-sm text-slate-400 max-w-md mb-6 leading-relaxed">
-          Please sign in to access your course materials, cohort sessions, and verified progress tracking.
-        </p>
-        <div className="flex items-center gap-3">
-          <Link
-            href={`/student/login?redirect=${encodeURIComponent(`/courses/${slug}/learn`)}`}
-            className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider transition-colors"
-          >
-            Sign In to Continue
-          </Link>
-          <Link
-            href={`/courses/${slug}`}
-            className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs uppercase tracking-wider transition-colors"
-          >
-            Course Syllabus
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   // If course not found and finished loading
   if (!isLoadingCourse && modules.length === 0) {
     return (
@@ -553,18 +576,12 @@ export default function CourseLearningPlayerPage() {
         </div>
         <h2 className="text-xl font-bold text-white mb-2">Course Curriculum Not Found</h2>
         <p className="text-sm text-slate-400 max-w-md mb-6 leading-relaxed">
-          The requested course syllabus is either unpublished or unavailable. Please return to your active courses.
+          The requested course syllabus is either unpublished or unavailable. Please return to explore active courses.
         </p>
         <div className="flex items-center gap-3">
           <Link
-            href="/student?tab=courses"
-            className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider transition-colors"
-          >
-            Back to My Courses
-          </Link>
-          <Link
             href="/courses"
-            className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs uppercase tracking-wider transition-colors"
+            className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider transition-colors"
           >
             Explore Courses
           </Link>
@@ -584,11 +601,11 @@ export default function CourseLearningPlayerPage() {
       <header className="h-16 border-b border-slate-800 bg-slate-900 px-4 sm:px-6 flex items-center justify-between flex-shrink-0 z-20">
         <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <Link
-            href="/student"
+            href={currentUser ? "/student" : "/courses"}
             className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors flex-shrink-0"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Dashboard</span>
+            <span className="hidden sm:inline">{currentUser ? "Dashboard" : "All Courses"}</span>
           </Link>
           <div className="h-4 w-px bg-slate-800 hidden sm:block" />
           <div className="min-w-0">
@@ -628,22 +645,6 @@ export default function CourseLearningPlayerPage() {
 
           {/* LEFT COLUMN: 72% LEARNING WORKSPACE */}
           <div className="lg:col-span-8 flex flex-col space-y-6 min-w-0">
-
-            {/* Audit Mode Notice if applicable */}
-            {!isEnrolled && !isLoadingProgress && (
-              <div className="p-4 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-2xl text-xs flex items-center justify-between gap-4">
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0" />
-                  <span>You are previewing this course syllabus in audit mode. Enrol to save verified completions and receive certificate credentials.</span>
-                </div>
-                <Link
-                  href={`/courses/${slug}`}
-                  className="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold hover:bg-amber-400 transition-colors flex-shrink-0"
-                >
-                  Enrol Now
-                </Link>
-              </div>
-            )}
 
             {/* Notification Toasts */}
             {actionNotice && (

@@ -68,14 +68,14 @@ export const EnrollmentActionButton: React.FC<EnrollmentActionButtonProps> = ({ 
     }
   };
 
-  // Case 1: Guest (not logged in)
+  // Case 1: Guest (not logged in) - Open public access without mandatory login
   if (!user) {
     return (
       <Link
-        href={`/student/login?redirect=/courses/${slug}`}
-        className="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow transition-all flex items-center justify-center gap-2"
+        href={`/courses/${slug}/learn`}
+        className="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow transition-all flex items-center justify-center gap-2"
       >
-        <span>Sign In to Enrol</span>
+        <span>Start Learning Now</span>
         <ArrowRight className="w-4 h-4" />
       </Link>
     );
