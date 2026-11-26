@@ -91,6 +91,13 @@ export default function CourseLearningPlayerPage() {
     );
   };
 
+  // Helper: extract Google Drive file ID for native streaming
+  const getDriveFileId = (url?: string) => {
+    if (!url) return null;
+    const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    return match ? match[1] : null;
+  };
+
   // 1. Single Unified Initialization Effect: Authenticates and fetches Course & Progress in Parallel
   useEffect(() => {
     let isCancelled = false;
@@ -656,40 +663,51 @@ export default function CourseLearningPlayerPage() {
             <div className="aspect-video bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden relative shadow-2xl flex flex-col items-center justify-center p-0 text-center group">
               {currentLesson?.videoUrl ? (
                 <div className="relative w-full h-full">
-                  {currentLesson.videoUrl.match(/\.(mp4|webm|ogg)($|\?)/i) ? (
-                    <video
-                      key={currentLesson.videoUrl}
-                      src={currentLesson.videoUrl}
-                      controls
-                      playsInline
-                      className="w-full h-full object-contain bg-black"
-                      onEnded={() => handleAutoVideoComplete(currentLesson)}
-                    />
-                  ) : (
-                    <iframe
-                      id="course-lesson-video-frame"
-                      src={
-                        currentLesson.videoUrl.includes('youtube.com') || currentLesson.videoUrl.includes('youtu.be')
-                          ? `${currentLesson.videoUrl}${currentLesson.videoUrl.includes('?') ? '&' : '?'}enablejsapi=1`
-                          : currentLesson.videoUrl
-                      }
-                      title={currentLesson.title}
-                      className="w-full h-full border-0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  )}
-                  {currentLesson.videoUrl.includes('drive.google.com') && (
-                    <a
-                      href={currentLesson.videoUrl.replace('/preview', '/view?usp=sharing')}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="absolute top-3 right-3 z-10 px-3 py-1.5 bg-slate-900/80 hover:bg-slate-900 text-white text-[11px] font-semibold rounded-lg border border-slate-700/80 backdrop-blur shadow-md flex items-center gap-1.5 transition-colors"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      Open in Drive
-                    </a>
-                  )}
+                  {(() => {
+                    const driveFileId = getDriveFileId(currentLesson.videoUrl);
+                    const isDirectVideo = currentLesson.videoUrl.match(/\.(mp4|webm|ogg)($|\?)/i);
+
+                    if (driveFileId) {
+                      return (
+                        <video
+                          key={`drive-${driveFileId}`}
+                          src={`/api/v1/video/stream?fileId=${driveFileId}`}
+                          controls
+                          playsInline
+                          className="w-full h-full object-contain bg-black"
+                          onEnded={() => handleAutoVideoComplete(currentLesson)}
+                        />
+                      );
+                    }
+
+                    if (isDirectVideo) {
+                      return (
+                        <video
+                          key={currentLesson.videoUrl}
+                          src={currentLesson.videoUrl}
+                          controls
+                          playsInline
+                          className="w-full h-full object-contain bg-black"
+                          onEnded={() => handleAutoVideoComplete(currentLesson)}
+                        />
+                      );
+                    }
+
+                    return (
+                      <iframe
+                        id="course-lesson-video-frame"
+                        src={
+                          currentLesson.videoUrl.includes('youtube.com') || currentLesson.videoUrl.includes('youtu.be')
+                            ? `${currentLesson.videoUrl}${currentLesson.videoUrl.includes('?') ? '&' : '?'}enablejsapi=1`
+                            : currentLesson.videoUrl
+                        }
+                        title={currentLesson.title}
+                        className="w-full h-full border-0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    );
+                  })()}
                 </div>
               ) : (
                 <div className="space-y-4 max-w-lg">
@@ -730,13 +748,13 @@ export default function CourseLearningPlayerPage() {
                     <button
                       onClick={() => handleToggleLesson(currentLesson?.id || currentLesson?.code || '', false, 'MARK_COMPLETE_BUTTON')}
                       disabled={isSavingLesson === (currentLesson?.id || currentLesson?.code)}
-                      className="px-4 py-2.5 rounded-xl bg-[#16A34A] hover:bg-[#15803d] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-2 group active:scale-95"
+                      className="px-5 py-2.5 rounded-xl bg-[#22C55E] hover:bg-[#16a34a] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-2 group active:scale-95"
                       title="Lesson completed • Click to mark as incomplete"
                     >
                       {isSavingLesson === (currentLesson?.id || currentLesson?.code) ? (
                         <Loader2 className="w-4 h-4 animate-spin text-white" />
                       ) : (
-                        <CheckCircle2 className="w-4 h-4 text-white" />
+                        <Check className="w-4 h-4 text-white stroke-[3]" />
                       )}
                       <span>Completed</span>
                       <span className="text-[10px] font-normal opacity-85 group-hover:underline ml-1">(Undo)</span>
@@ -1113,9 +1131,10 @@ export default function CourseLearningPlayerPage() {
                 const modCompletedCount = modLessons.filter(isLessonDone).length;
                 const modTotalLessons = modLessons.length;
                 const isModCompleted = modTotalLessons > 0 && modCompletedCount >= modTotalLessons;
-                const modProgressPct = modTotalLessons > 0
-                  ? (isModCompleted ? 100 : Math.min(99, Math.round((modCompletedCount / modTotalLessons) * 100)))
-                  : 0;
+                const rawModPct = modTotalLessons > 0 ? (modCompletedCount / modTotalLessons) * 100 : 0;
+                const modProgressPct = isModCompleted
+                  ? 100
+                  : (rawModPct % 1 === 0 ? rawModPct : Math.round(rawModPct * 10) / 10);
 
                 return (
                   <div
@@ -1135,8 +1154,8 @@ export default function CourseLearningPlayerPage() {
                         <div className="flex items-center justify-between gap-2">
                           <span className="font-bold text-white block leading-snug truncate">{mod.title}</span>
                           {isModCompleted && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#16A34A]/20 text-[#16A34A] border border-[#16A34A]/40 text-[10px] font-bold flex-shrink-0 animate-in fade-in duration-200">
-                              <Check className="w-3 h-3 text-white stroke-[3] bg-[#16A34A] rounded-full p-0.5" />
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#22C55E]/20 text-[#22C55E] border border-[#22C55E]/40 text-[10px] font-bold flex-shrink-0 animate-in fade-in duration-200">
+                              <Check className="w-3 h-3 text-white stroke-[3] bg-[#22C55E] rounded-full p-0.5" />
                               <span>Completed</span>
                             </span>
                           )}
@@ -1145,7 +1164,7 @@ export default function CourseLearningPlayerPage() {
                         {/* Dynamic Module Progress Stats */}
                         <div className="flex items-center justify-between text-[10px] text-slate-400 mt-1">
                           <span>{modCompletedCount} of {modTotalLessons} Completed</span>
-                          <span className={isModCompleted ? 'text-[#16A34A] font-bold' : 'text-slate-400 font-medium'}>
+                          <span className={isModCompleted ? 'text-[#22C55E] font-bold' : 'text-slate-400 font-medium'}>
                             {modProgressPct}%
                           </span>
                         </div>
@@ -1154,7 +1173,7 @@ export default function CourseLearningPlayerPage() {
                         <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden mt-1.5">
                           <div
                             className={`h-full transition-all duration-300 ${
-                              isModCompleted ? 'bg-[#16A34A]' : 'bg-indigo-500'
+                              isModCompleted ? 'bg-[#22C55E]' : 'bg-indigo-500'
                             }`}
                             style={{ width: `${modProgressPct}%` }}
                           />
@@ -1209,7 +1228,7 @@ export default function CourseLearningPlayerPage() {
                                 }
                                 className={`w-4 h-4 rounded-[4px] border flex items-center justify-center transition-all duration-150 cursor-pointer flex-shrink-0 mt-0.5 shadow-sm active:scale-90 ${
                                   isCompleted
-                                    ? 'bg-[#16A34A] border-[#16A34A] text-white'
+                                    ? 'bg-[#22C55E] border-[#22C55E] text-white'
                                     : 'border-[#64748B] bg-slate-950/80 hover:border-slate-400 text-transparent'
                                 } ${isSavingLesson === (lesson.id || lesson.code) ? 'opacity-50 pointer-events-none' : ''}`}
                               >
@@ -1224,7 +1243,7 @@ export default function CourseLearningPlayerPage() {
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="block truncate">{lesson.title}</span>
                                   {isCompleted && (
-                                    <span className="text-[9px] font-bold text-[#16A34A] uppercase tracking-wider px-1.5 py-0.2 bg-[#16A34A]/10 rounded border border-[#16A34A]/25">
+                                    <span className="text-[9px] font-bold text-[#22C55E] uppercase tracking-wider px-1.5 py-0.5 bg-[#22C55E]/10 rounded border border-[#22C55E]/30">
                                       Completed
                                     </span>
                                   )}
