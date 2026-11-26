@@ -140,7 +140,7 @@ export const COURSE_METADATA_FALLBACKS: Record<string, Partial<UniversalCourse>>
     durationHours: 24,
     totalSessions: 8,
     price: 24999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80',
     description: 'Transform manual marketing tasks into automated AI workflows. Build chain-of-thought prompt templates, orchestrate multi-step data pipelines with webhooks, and deploy custom customer research agents.',
   },
   'ai-digital-marketing-course': {
@@ -160,7 +160,7 @@ export const COURSE_METADATA_FALLBACKS: Record<string, Partial<UniversalCourse>>
     durationHours: 48,
     totalSessions: 16,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1432888622747-4eb9a8f2c293?w=800&auto=format&fit=crop&q=80',
     description: 'A comprehensive digital marketing learning programme designed to provide practical knowledge of Search Engine Optimisation, website development, keyword research, paid advertising, social media marketing, analytics, artificial intelligence and other essential digital marketing skills through live training, recorded lessons, presentations and practical assignments.',
   },
   'ai-business-automation-masterclass': {
