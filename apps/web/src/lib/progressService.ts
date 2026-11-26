@@ -309,17 +309,7 @@ export async function saveStudentLessonProgress(
     .maybeSingle();
 
   if (!enrollment) {
-    const newEnrollmentId = crypto.randomUUID();
-    await supabaseServer.from('Enrollment').insert({
-      id: newEnrollmentId,
-      userId,
-      courseId: course.id,
-      progressPct: 0,
-      isCompleted: false,
-      enrolledAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    });
-    enrollment = { id: newEnrollmentId };
+    throw new Error('Unauthorized: User must be enrolled in this course to save progress.');
   }
 
   // 2. Fetch all valid lessons for this course

@@ -49,15 +49,16 @@ export default function CourseLearningPlayerPage() {
   const [activeLessonIndex, setActiveLessonIndex] = useState(0);
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
 
-  // Authentication Guard State - Public by default (no mandatory login required)
-  const [isAuthorized, setIsAuthorized] = useState<boolean>(true);
+  // Authentication Guard & Enrollment State
+  const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
   // Completed Lessons State - Initialized strictly to 0 / empty
   const [completedLessonIds, setCompletedLessonIds] = useState<string[]>([]);
   const [completedCount, setCompletedCount] = useState<number>(0);
   const [courseProgressPct, setCourseProgressPct] = useState<number>(0);
-  const [isEnrolled, setIsEnrolled] = useState<boolean>(true);
+  const [isEnrolled, setIsEnrolled] = useState<boolean>(false);
+  const [isEnrolling, setIsEnrolling] = useState<boolean>(false);
   const [isLoadingProgress, setIsLoadingProgress] = useState<boolean>(true);
   const [isSavingLesson, setIsSavingLesson] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<'IDLE' | 'SAVING' | 'SAVED' | 'ERROR'>('IDLE');
@@ -99,29 +100,29 @@ export default function CourseLearningPlayerPage() {
     return match ? match[1] : null;
   };
 
-  // Helper: extract Loom embed URL
+  // Helper: extract Loom embed URL with all official privacy and chrome removal parameters
   const getLoomEmbedUrl = (url?: string) => {
     if (!url) return null;
     const match = url.match(/loom\.com\/(share|embed)\/([a-zA-Z0-9_-]+)/);
-    return match ? `https://www.loom.com/embed/${match[2]}` : null;
+    return match
+      ? `https://www.loom.com/embed/${match[2]}?hide_owner=true&hide_share=true&hide_title=true&hideEmbedTopBar=true`
+      : null;
   };
 
   // 1. Single Unified Initialization Effect: Authenticates and fetches Course & Progress in Parallel
   useEffect(() => {
     let isCancelled = false;
 
-    // Optional Authentication: Allow anyone to view and learn without mandatory profile login
+    // Strict Authentication: Redirect unauthenticated visitors to login
     const user = getAuthUser();
-    if (user && user.id) {
-      setCurrentUser(user);
-    } else {
-      setCurrentUser(null);
+    if (!user || !user.id) {
+      router.replace(`/student/login?redirect=${encodeURIComponent(`/courses/${slug}/learn`)}`);
+      return;
     }
+    setCurrentUser(user);
     setIsAuthorized(true);
 
-    const storageKey = user?.id
-      ? (getScopedStorageKey('course_progress', slug) || `sv_course_progress_${user.id}_${slug}`)
-      : `sv_course_progress_guest_${slug}`;
+    const storageKey = getScopedStorageKey('course_progress', slug) || `sv_course_progress_${user.id}_${slug}`;
 
     // Read cached completed lessons for instantaneous UI feedback without flashing 0%
     try {
@@ -174,7 +175,7 @@ export default function CourseLearningPlayerPage() {
         let lastAccessedId: string | null = null;
 
         if (progressRes) {
-          setIsEnrolled(progressRes.isEnrolled ?? true);
+          setIsEnrolled(Boolean(progressRes.isEnrolled));
           const rawServer = (progressRes.completedLessonIds || []) as string[];
           lastAccessedId = progressRes.lastAccessedLessonId || null;
 
@@ -208,23 +209,6 @@ export default function CourseLearningPlayerPage() {
           }
         }
 
-        if (!user?.id) {
-          setIsEnrolled(true);
-          try {
-            const guestSaved = localStorage.getItem(storageKey);
-            if (guestSaved) {
-              const parsed = JSON.parse(guestSaved);
-              if (Array.isArray(parsed) && parsed.length > 0) {
-                const valid = Array.from(new Set<string>(parsed as string[]));
-                confirmedLessonIds = valid;
-                confirmedCount = valid.length;
-                confirmedPct = totalEligibleLessons > 0
-                  ? (confirmedCount === totalEligibleLessons ? 100 : Math.min(99.9, Math.round((confirmedCount / totalEligibleLessons) * 1000) / 10))
-                  : 0;
-              }
-            }
-          } catch (_) {}
-        }
 
         // Safety fallback for authenticated students: if progress is still 0, check authoritative dashboard
         if (user?.id && (confirmedCount === 0 || confirmedLessonIds.length === 0)) {
@@ -309,11 +293,41 @@ export default function CourseLearningPlayerPage() {
     setDriveStreamError(false);
   };
 
+  // Method to enroll the current user into this course
+  const handleEnrollInCourse = async () => {
+    if (!currentUser?.id) {
+      router.push(`/student/login?redirect=${encodeURIComponent(`/courses/${slug}/learn`)}`);
+      return;
+    }
+    try {
+      setIsEnrolling(true);
+      setActionError(null);
+      const res = await api.student.enroll(slug);
+      if (res && res.success) {
+        setIsEnrolled(true);
+        setActionNotice('Enrolled successfully! You now have full access to all lessons.');
+        setTimeout(() => setActionNotice(null), 4000);
+      } else {
+        throw new Error((res as any)?.error || (res as any)?.message || 'Enrollment failed');
+      }
+    } catch (err: any) {
+      setActionError(err.message || 'Failed to complete enrollment. Please try again.');
+      setTimeout(() => setActionError(null), 5000);
+    } finally {
+      setIsEnrolling(false);
+    }
+  };
+
   const handleToggleLesson = async (
     lessonIdentifier: string,
     markCompleted: boolean,
     method: 'VIDEO_ENDED' | 'MANUAL_CHECKBOX' | 'MARK_COMPLETE_BUTTON' = 'MANUAL_CHECKBOX'
   ) => {
+    if (!isEnrolled) {
+      setActionError('You must enroll in this course to mark lectures as complete.');
+      setTimeout(() => setActionError(null), 4000);
+      return;
+    }
     if (!currentLesson) return;
     if (isSavingLesson) return;
 
@@ -737,7 +751,50 @@ export default function CourseLearningPlayerPage() {
 
             {/* LESSON PLAYER CANVAS */}
             <div className="aspect-video bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden relative shadow-2xl flex flex-col items-center justify-center p-0 text-center group">
-              {currentLesson?.videoUrl ? (
+              {!isEnrolled ? (
+                /* Strict Enrollment Guard: Do NOT load or render any video element or iframe until enrolled */
+                <div className="space-y-4 max-w-lg p-6">
+                  <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 flex items-center justify-center mx-auto shadow-inner">
+                    <Lock className="w-8 h-8 text-indigo-400" />
+                  </div>
+                  <div className="space-y-2">
+                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 inline-flex items-center gap-1.5">
+                      Course Enrollment Required
+                    </span>
+                    <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                      Enroll to Watch Lessons
+                    </h2>
+                    <p className="text-sm font-semibold text-slate-200 max-w-md mx-auto leading-relaxed">
+                      You are exploring the course curriculum. Enroll now to unlock video playback, assignments, quizzes, and earn your verified certificate.
+                    </p>
+                  </div>
+                  <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+                    <button
+                      onClick={handleEnrollInCourse}
+                      disabled={isEnrolling}
+                      className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm tracking-wide transition-all shadow-lg flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    >
+                      {isEnrolling ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-white" />
+                          <span>Enrolling...</span>
+                        </>
+                      ) : (
+                        <>
+                          <PlayCircle className="w-4 h-4 text-white" />
+                          <span>Enroll in Course</span>
+                        </>
+                      )}
+                    </button>
+                    <Link
+                      href={`/courses/${slug}`}
+                      className="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition-colors"
+                    >
+                      View Syllabus & Details
+                    </Link>
+                  </div>
+                </div>
+              ) : currentLesson?.videoUrl ? (
                 <div className="relative w-full h-full">
                   {(() => {
                     const driveFileId = getDriveFileId(currentLesson.videoUrl);
@@ -856,7 +913,25 @@ export default function CourseLearningPlayerPage() {
             {/* LESSON CONTROL BAR */}
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
               <div className="flex items-center gap-3 w-full sm:w-auto">
-                {currentLessonIsCompleted ? (
+                {!isEnrolled ? (
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={handleEnrollInCourse}
+                      disabled={isEnrolling}
+                      className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-2 active:scale-95 disabled:opacity-50"
+                    >
+                      {isEnrolling ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      ) : (
+                        <PlayCircle className="w-4 h-4 text-white" />
+                      )}
+                      <span>Enroll in Course</span>
+                    </button>
+                    <span className="text-[11px] text-slate-400">
+                      Enroll to mark lectures complete and save progress
+                    </span>
+                  </div>
+                ) : currentLessonIsCompleted ? (
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => handleToggleLesson(currentLesson?.id || currentLesson?.code || '', false, 'MARK_COMPLETE_BUTTON')}

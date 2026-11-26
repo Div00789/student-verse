@@ -157,7 +157,7 @@ const rawModules = [
         durationSec: 279,
         actualDurationSec: 279,
         plannedDurationSec: 1200,
-        videoUrl: 'https://www.loom.com/share/c5fded7904054283a17a9fd739e07388',
+        videoUrl: '/videos/How_to_create_Marketing_Emails_in_HubSpot.mp4',
         aiTools: ['HubSpot Marketing Hub', 'HubSpot Drag-and-Drop Email Editor'],
         notes: 'This lesson introduces students to creating professional marketing emails using HubSpot. Students will learn how to navigate the marketing email editor, select and customize templates, configure sender details and subject lines, insert personalization tokens, configure subscription types and recipient lists, preview and test emails across desktop and mobile, and schedule or send campaigns.',
         learningObjectives: [
