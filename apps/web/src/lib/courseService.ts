@@ -90,7 +90,7 @@ export const COURSE_METADATA_FALLBACKS: Record<string, Partial<UniversalCourse>>
     durationHours: 32,
     totalSessions: 10,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1571786256017-aee7a0c009b6?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/seo-and-ai-search-optimization.jpg',
     description: 'Learn modern search mechanics beyond basic keywords. Conduct technical site audits, build topical clusters, optimize for Google Search Console, and master Answer Engine Optimisation (AEO) for AI search engines like ChatGPT Search and Google AI Overviews.',
   },
   'digital-marketing-foundations': {
@@ -100,7 +100,7 @@ export const COURSE_METADATA_FALLBACKS: Record<string, Partial<UniversalCourse>>
     durationHours: 36,
     totalSessions: 12,
     price: 24999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60',
+    thumbnailUrl: '/images/courses/digital-marketing-foundations.jpg',
     description: 'Master practical digital marketing strategy through real-time instructor guidance. Build end-to-end customer acquisition funnels, plan multi-channel campaigns, execute content schedules, and measure performance metrics across modern channels.',
   },
   'paid-performance-google-meta-ads': {
@@ -110,7 +110,7 @@ export const COURSE_METADATA_FALLBACKS: Record<string, Partial<UniversalCourse>>
     durationHours: 36,
     totalSessions: 12,
     price: 35999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=60',
+    thumbnailUrl: '/images/courses/paid-performance-google-meta-ads.jpg',
     description: 'Master high-volume paid media buying. Set up Google Search and Performance Max campaigns, architect Meta Ads creative testing frameworks, configure Server-Side Conversion APIs, and optimize ad spend with rigorous ROAS attribution.',
   },
   'analytics-ga4-google-tag-manager': {
@@ -120,7 +120,7 @@ export const COURSE_METADATA_FALLBACKS: Record<string, Partial<UniversalCourse>>
     durationHours: 30,
     totalSessions: 10,
     price: 24999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&auto=format&fit=crop&q=60',
+    thumbnailUrl: '/images/courses/analytics-ga4-google-tag-manager.jpg',
     description: 'Stop guessing which marketing channels work. Master Google Tag Manager dataLayers, configure custom GA4 conversion events, implement cross-domain tracking, and build interactive client-facing dashboards in Looker Studio.',
   },
   'social-media-marketing-strategy': {
@@ -130,7 +130,7 @@ export const COURSE_METADATA_FALLBACKS: Record<string, Partial<UniversalCourse>>
     durationHours: 24,
     totalSessions: 8,
     price: 19999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/social-media-marketing-strategy.jpg',
     description: 'Build organic social distribution that compounds. Develop platform-native content pillars, write high-retention hooks and video scripts, manage brand communities, and deploy automated multi-channel posting workflows.',
   },
   'ai-tools-for-digital-marketers': {
@@ -140,7 +140,7 @@ export const COURSE_METADATA_FALLBACKS: Record<string, Partial<UniversalCourse>>
     durationHours: 24,
     totalSessions: 8,
     price: 24999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/ai-tools-for-digital-marketers.jpg',
     description: 'Transform manual marketing tasks into automated AI workflows. Build chain-of-thought prompt templates, orchestrate multi-step data pipelines with webhooks, and deploy custom customer research agents.',
   },
   'ai-digital-marketing-course': {
@@ -150,7 +150,7 @@ export const COURSE_METADATA_FALLBACKS: Record<string, Partial<UniversalCourse>>
     durationHours: 48,
     totalSessions: 16,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/ai-digital-marketing-course.jpg',
     description: 'Master digital marketing with artificial intelligence through hands-on training in SEO, Google Ads, GA4, Social Media Marketing, Email Marketing, Content Marketing, Marketing Automation, Affiliate Marketing, and Freelancing.',
   },
   'aman-digital-marketing-course': {
@@ -160,7 +160,7 @@ export const COURSE_METADATA_FALLBACKS: Record<string, Partial<UniversalCourse>>
     durationHours: 48,
     totalSessions: 16,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/aman-digital-marketing-course.jpg',
     description: 'A comprehensive digital marketing learning programme designed to provide practical knowledge of Search Engine Optimisation, website development, keyword research, paid advertising, social media marketing, analytics, artificial intelligence and other essential digital marketing skills through live training, recorded lessons, presentations and practical assignments.',
   },
   'ai-business-automation-masterclass': {
@@ -174,7 +174,7 @@ export const COURSE_METADATA_FALLBACKS: Record<string, Partial<UniversalCourse>>
     totalModules: 16,
     totalLessons: 200,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/ai-business-automation-masterclass.jpg',
     description: 'Master AI-powered business automation, intelligent workflows, application integrations and modern business systems using industry-leading platforms such as Zapier, n8n, HubSpot, Apollo.io, GoHighLevel and Make.com. Learn to build intelligent AI agents, automate repetitive business processes, integrate applications using APIs and webhooks, develop WhatsApp and voice AI assistants, and implement production-ready automation solutions.',
   }
 };

@@ -8,11 +8,13 @@ export interface QuizQuestion {
 export interface LessonItem {
   id: string;
   code?: string;
+  displayNumber?: string;
   title: string;
   type: 'LIVE_SESSION' | 'RECORDED_VIDEO' | 'PROJECT';
   duration: string;
   durationMinutes?: number;
   videoUrl?: string;
+  isAvailable?: boolean;
   notes: string;
   aiTools: string[];
   resources: { title: string; url: string; type: string }[];
@@ -22,8 +24,15 @@ export interface LessonItem {
 export interface ModuleItem {
   id: string;
   title: string;
+  cleanTitle?: string;
+  displayTitle?: string;
+  displayNumber?: number;
   description: string;
   orderIndex?: number;
+  availableVideoCount?: number;
+  upcomingCount?: number;
+  isAvailable?: boolean;
+  availabilityStatus?: string;
   lessons: LessonItem[];
   assignment: {
     id: string;
@@ -1093,6 +1102,99 @@ import { buildAiBusinessAutomationCurriculum } from './aiBusinessAutomationCurri
 RICH_CURRICULUM_DATA['ai-business-automation-masterclass'] = buildAiBusinessAutomationCurriculum();
 
 /**
+ * Dynamically reorganises course modules and lessons according to available published videos.
+ *
+ * Rules:
+ * 1. Modules with the highest number of available videos appear at the top.
+ * 2. Modules with fewer available videos appear next.
+ * 3. Modules with no available videos appear at the bottom.
+ * 4. If two modules have the same number of available videos, retain their original relative order.
+ * 5. Within each module, available video lessons appear first; unavailable lessons appear afterwards.
+ * 6. Visible module and lesson numbering is updated dynamically.
+ * 7. Original module IDs and lesson IDs are strictly preserved so student progress is unaffected.
+ */
+export function reorganizeModulesAndLessons(modules: ModuleItem[]): ModuleItem[] {
+  if (!Array.isArray(modules) || modules.length === 0) return [];
+
+  // 1. Process lessons within each module: partition available first, then upcoming
+  const processed = modules.map((mod, originalIdx) => {
+    const rawLessons = mod.lessons || [];
+    const availableLessons: LessonItem[] = [];
+    const unavailableLessons: LessonItem[] = [];
+
+    rawLessons.forEach((l) => {
+      const isAvailable = Boolean(l.videoUrl && typeof l.videoUrl === 'string' && l.videoUrl.trim() !== '');
+      const lessonObj: LessonItem = {
+        ...l,
+        isAvailable
+      };
+
+      if (isAvailable) {
+        availableLessons.push(lessonObj);
+      } else {
+        unavailableLessons.push(lessonObj);
+      }
+    });
+
+    const combinedLessons = [...availableLessons, ...unavailableLessons];
+    const availableVideoCount = availableLessons.length;
+    const upcomingCount = unavailableLessons.length;
+    const isAvailable = availableVideoCount > 0;
+    const availabilityStatus = isAvailable
+      ? `${availableVideoCount} Video${availableVideoCount > 1 ? 's' : ''} Available`
+      : 'Coming Soon';
+
+    const cleanTitle = mod.title.replace(/^Module\s+\d+\s*[:\-]\s*/i, '').trim();
+
+    return {
+      ...mod,
+      cleanTitle,
+      availableVideoCount,
+      upcomingCount,
+      isAvailable,
+      availabilityStatus,
+      lessons: combinedLessons,
+      _originalIndex: originalIdx,
+      _originalOrder: mod.orderIndex ?? (originalIdx + 1)
+    };
+  });
+
+  // 2. Sort modules: highest available video count first, tie-breaker: original relative index (stable)
+  const sorted = [...processed].sort((a, b) => {
+    if (b.availableVideoCount !== a.availableVideoCount) {
+      return b.availableVideoCount - a.availableVideoCount;
+    }
+    return a._originalIndex - b._originalIndex;
+  });
+
+  // 3. Dynamically assign display numbers and update visible numbering
+  return sorted.map((mod, modIdx) => {
+    const displayNum = modIdx + 1;
+    const displayTitle = `Module ${displayNum}: ${mod.cleanTitle || mod.title}`;
+
+    const numberedLessons = mod.lessons.map((l, lIdx) => {
+      const lessonDisplayNum = `${displayNum}.${lIdx + 1}`;
+      const cleanLessonTitle = l.title.replace(/^\d+(\.\d+)?\s*([–\-:]\s*)?/i, '').trim();
+      const displayTitle = `${lessonDisplayNum} ${cleanLessonTitle}`;
+
+      return {
+        ...l,
+        displayNumber: lessonDisplayNum,
+        title: displayTitle
+      };
+    });
+
+    return {
+      ...mod,
+      displayNumber: displayNum,
+      displayTitle,
+      title: displayTitle,
+      lessons: numberedLessons
+    };
+  });
+}
+
+/**
  * Universal helper that takes course slug and database modules/lessons,
  * and produces rich interactive ModuleItem[] for the universal learning player.
  */
@@ -1101,7 +1203,7 @@ export function getCurriculumForCourse(slug: string, dbCourse?: any): ModuleItem
 
   // If dbCourse is provided, build dynamic ModuleItem[] from database records merged with rich metadata
   if (dbCourse && Array.isArray(dbCourse.modules) && dbCourse.modules.length > 0) {
-    return dbCourse.modules.map((m: any, mIdx: number) => {
+    const rawResult: ModuleItem[] = dbCourse.modules.map((m: any, mIdx: number) => {
       const modOrder = m.orderIndex || mIdx + 1;
       const richMod = richData?.[mIdx];
 
@@ -1157,17 +1259,20 @@ export function getCurriculumForCourse(slug: string, dbCourse?: any): ModuleItem
         }
       };
     });
+
+    return reorganizeModulesAndLessons(rawResult);
   }
 
   // Fallback: If no dbCourse but rich data exists, return rich curriculum with canonical codes
   if (richData && richData.length > 0) {
-    return richData.map((m, mIdx) => ({
+    const rawFallback: ModuleItem[] = richData.map((m, mIdx) => ({
       ...m,
       lessons: m.lessons.map((l, lIdx) => ({
         ...l,
         code: l.code || `l-${mIdx + 1}-${lIdx + 1}`
       }))
     }));
+    return reorganizeModulesAndLessons(rawFallback);
   }
 
   return [];

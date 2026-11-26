@@ -35,7 +35,7 @@ const DEFAULT_COURSES: SearchableCourse[] = [
     originalPrice: 37499,
     discountPercent: 20,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/ai-business-automation-masterclass.jpg',
     description: 'Master AI-powered business automation, intelligent workflows, application integrations and modern business systems using industry-leading platforms such as Zapier, n8n, HubSpot, Apollo.io, GoHighLevel and Make.com.',
     skills: ['Zapier', 'n8n', 'HubSpot', 'Apollo.io', 'GoHighLevel', 'Make.com', 'OpenAI', 'Claude', 'Google Gemini', 'WhatsApp API', 'Voice AI'],
     nextBatch: 'Self-Paced with 24/7 Practical Labs',
@@ -52,7 +52,7 @@ const DEFAULT_COURSES: SearchableCourse[] = [
     originalPrice: 37499,
     discountPercent: 20,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/ai-digital-marketing-course.jpg',
     description: 'Master digital marketing with artificial intelligence through hands-on training in SEO, Google Ads, GA4, Social Media Marketing, Email Marketing, Content Marketing, Marketing Automation, Affiliate Marketing, and Freelancing.',
     skills: ['AI-Driven Technical SEO', 'Google Ads & PMax', 'GA4 & GTM DataLayers', 'CRM & Agent Automation', 'GenAI Creative Studio', 'Full-Funnel Capstone'],
     nextBatch: '01 Dec 2026 (Live + Hybrid)',
@@ -69,7 +69,7 @@ const DEFAULT_COURSES: SearchableCourse[] = [
     originalPrice: 37499,
     discountPercent: 20,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/aman-digital-marketing-course.jpg',
     skills: ['AI-Driven Technical SEO', 'Hostinger Web Setup', 'Google Ads & PMax', 'GA4 & GTM DataLayers', 'CRM & Agent Automation', 'Practical Assignments'],
     nextBatch: '01 Dec 2026 (Live + Recorded)',
   },
@@ -85,7 +85,7 @@ const DEFAULT_COURSES: SearchableCourse[] = [
     originalPrice: 29999,
     discountPercent: 15,
     price: 24999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60',
+    thumbnailUrl: '/images/courses/digital-marketing-foundations.jpg',
     description: 'Master practical digital marketing strategy through real-time instructor guidance. Build end-to-end customer acquisition funnels, plan multi-channel campaigns, execute content schedules, and measure performance metrics across modern channels.',
     skills: ['Funnel Architecture', 'Omnichannel Strategy', 'Paid Media Pacing', 'CRO & Landing Pages'],
     nextBatch: '25 Nov 2026 (Live Evening)',
@@ -102,7 +102,7 @@ const DEFAULT_COURSES: SearchableCourse[] = [
     originalPrice: 39999,
     discountPercent: 25,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1571786256017-aee7a0c009b6?w=800&auto=format&fit=crop&q=60',
+    thumbnailUrl: '/images/courses/seo-and-ai-search-optimization.jpg',
     description: 'Learn modern search mechanics beyond basic keywords. Conduct technical site audits, build topical clusters, optimize for Google Search Console, and master Answer Engine Optimisation (AEO) for AI search engines.',
     skills: ['Technical Crawl Audits', 'AEO Entity Schema', 'Topical Authority', 'Search Console'],
     nextBatch: '05 Dec 2026 (Live Weekend)',
@@ -119,7 +119,7 @@ const DEFAULT_COURSES: SearchableCourse[] = [
     originalPrice: 44999,
     discountPercent: 20,
     price: 35999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=60',
+    thumbnailUrl: '/images/courses/paid-performance-google-meta-ads.jpg',
     description: 'Master high-volume paid media buying. Set up Google Search and Performance Max campaigns, architect Meta Ads creative testing frameworks, configure Server-Side Conversion APIs, and optimize ad spend with rigorous ROAS attribution.',
     skills: ['Google Search & PMax', 'Meta Creative Testing', 'Conversion API (CAPI)', 'ROAS Attribution'],
     nextBatch: '01 Dec 2026 (Live Cohort)',
@@ -136,7 +136,7 @@ const DEFAULT_COURSES: SearchableCourse[] = [
     originalPrice: 32999,
     discountPercent: 25,
     price: 24999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&auto=format&fit=crop&q=60',
+    thumbnailUrl: '/images/courses/analytics-ga4-google-tag-manager.jpg',
     description: 'Stop guessing which marketing channels work. Master Google Tag Manager dataLayers, configure custom GA4 conversion events, implement cross-domain tracking, and build interactive client-facing dashboards in Looker Studio.',
     skills: ['GTM DataLayers', 'GA4 Custom Events', 'Looker Studio BI', 'Attribution Modeling'],
     nextBatch: '28 Nov 2026 (Live Cohort)',
@@ -153,7 +153,7 @@ const DEFAULT_COURSES: SearchableCourse[] = [
     originalPrice: 24999,
     discountPercent: 20,
     price: 19999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800&auto=format&fit=crop&q=60',
+    thumbnailUrl: '/images/courses/social-media-marketing-strategy.jpg',
     description: 'Build organic social media systems that drive revenue. Learn platform-specific distribution across LinkedIn, Instagram, and YouTube, engineer high-engagement content calendars, establish distinctive brand voice, and analyze community sentiment.',
     skills: ['Content Architecture', 'Short-Form Scripts', 'Community Governance', 'Editorial Calendars'],
     nextBatch: '08 Dec 2026 (Live Cohort)',
@@ -170,7 +170,7 @@ const DEFAULT_COURSES: SearchableCourse[] = [
     originalPrice: 39999,
     discountPercent: 25,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=60',
+    thumbnailUrl: '/images/courses/ai-tools-for-digital-marketers.jpg',
     description: 'Transform modern marketing operations using production AI workflows. Build customized prompt chains for campaign research, automate multi-lingual content variations, integrate marketing automation triggers, and maintain responsible AI governance.',
     skills: ['Systematic Prompt Chains', 'Competitive Intelligence AI', 'Content Automation', 'AI Ethics & Review'],
     nextBatch: '26 Nov 2026 (Live Cohort)',
@@ -424,11 +424,11 @@ export default function CoursesPage() {
                     {/* Course Cover Image */}
                     <div className="relative aspect-video overflow-hidden bg-slate-100">
                       <img
-                        src={course.thumbnailUrl}
+                        src={course.thumbnailUrl || `/images/courses/${course.slug}.jpg`}
                         alt={course.title}
                         onError={(e) => {
                           e.currentTarget.onerror = null;
-                          e.currentTarget.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=80';
+                          e.currentTarget.src = `/images/courses/${course.slug}.jpg` || '/images/courses/fallback.svg';
                         }}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />

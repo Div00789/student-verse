@@ -14,11 +14,13 @@ import {
   Video,
   Calendar,
   Users,
-  Check
+  Check,
+  Lock
 } from 'lucide-react';
 import { formatINR } from '../../../lib/currency';
 import EnrollmentActionButton from '../../../components/EnrollmentActionButton';
 import { getCourseBySlug } from '../../../lib/courseService';
+import { getCurriculumForCourse } from '../../../lib/courseCurriculum';
 import { buildAiBusinessAutomationCurriculum } from '../../../lib/aiBusinessAutomationCurriculum';
 
 const COURSE_DATA: Record<string, any> = {
@@ -34,7 +36,7 @@ const COURSE_DATA: Record<string, any> = {
     originalPrice: 37499,
     discountPercent: 20,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/ai-digital-marketing-course.jpg',
     trainerName: 'StudentVerse Expert Faculty (Industry Growth Directors & AI Leads)',
     batchCode: 'SV-AIDM-COHORT1',
     batchSchedule: 'Mon & Wed: 18:00 - 20:00 UTC (100% Live Sessions + 24/7 Practical Labs)',
@@ -192,7 +194,7 @@ const COURSE_DATA: Record<string, any> = {
     originalPrice: 29999,
     discountPercent: 15,
     price: 24999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/digital-marketing-foundations.jpg',
     trainerName: 'Marcus Vance (Senior Performance Lead)',
     batchCode: 'SV-DM-NOV26',
     batchSchedule: 'Tue & Thu: 18:00 - 20:00 UTC (100% Live on Google Meet)',
@@ -235,7 +237,7 @@ const COURSE_DATA: Record<string, any> = {
     originalPrice: 39999,
     discountPercent: 25,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1571786256017-aee7a0c009b6?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/seo-and-ai-search-optimization.jpg',
     trainerName: 'Elena Rostova (Technical SEO Architect)',
     batchCode: 'SV-SEO-DEC26',
     batchSchedule: 'Sat & Sun: 14:00 - 16:30 UTC (100% Live on Google Meet)',
@@ -276,7 +278,7 @@ const COURSE_DATA: Record<string, any> = {
     originalPrice: 44999,
     discountPercent: 20,
     price: 35999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/paid-performance-google-meta-ads.jpg',
     trainerName: 'David Zhao (Paid Acquisition Director)',
     batchCode: 'SV-ADS-DEC26',
     batchSchedule: 'Mon & Wed: 17:00 - 19:00 UTC (100% Live on Google Meet)',
@@ -317,7 +319,7 @@ const COURSE_DATA: Record<string, any> = {
     originalPrice: 32999,
     discountPercent: 25,
     price: 24999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/analytics-ga4-google-tag-manager.jpg',
     trainerName: 'Priya Sharma (Analytics & BI Lead)',
     batchCode: 'SV-GA4-NOV26',
     batchSchedule: 'Tue & Fri: 18:00 - 20:00 UTC (100% Live on Google Meet)',
@@ -358,7 +360,7 @@ const COURSE_DATA: Record<string, any> = {
     originalPrice: 24999,
     discountPercent: 20,
     price: 19999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/social-media-marketing-strategy.jpg',
     trainerName: 'Chloe Bennett (Brand & Social Director)',
     batchCode: 'SV-SMM-DEC26',
     batchSchedule: 'Tue & Thu: 16:00 - 18:00 UTC (100% Live on Google Meet)',
@@ -392,7 +394,7 @@ const COURSE_DATA: Record<string, any> = {
     originalPrice: 39999,
     discountPercent: 25,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/ai-tools-for-digital-marketers.jpg',
     trainerName: 'Dr. Aris Thorne (Marketing Automation Specialist)',
     batchCode: 'SV-AI-NOV26',
     batchSchedule: 'Thu & Sat: 17:30 - 19:30 UTC (100% Live on Google Meet)',
@@ -426,7 +428,7 @@ const COURSE_DATA: Record<string, any> = {
     originalPrice: 37499,
     discountPercent: 20,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/ai-business-automation-masterclass.jpg',
     trainerName: 'StudentVerse Expert Automation Faculty',
     batchCode: 'SV-AIBA-COHORT1',
     batchSchedule: 'Self-Paced with 24/7 Practical Lab Access & Weekly Mentor Reviews',
@@ -505,7 +507,7 @@ const COURSE_DATA: Record<string, any> = {
     originalPrice: 37499,
     discountPercent: 20,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: '/images/courses/aman-digital-marketing-course.jpg',
     trainerName: 'StudentVerse Expert Faculty (Industry Growth Directors & AI Leads)',
     batchCode: 'SV-AMDM-COHORT1',
     batchSchedule: 'Mon & Wed: 18:00 - 20:00 UTC (100% Live Sessions + Recorded Video Masterclasses + 24/7 Labs)',
@@ -557,6 +559,8 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
     notFound();
   }
 
+  const curriculumModules = getCurriculumForCourse(params.slug, dbCourse);
+
   const course = {
     ...fallback,
     ...dbCourse,
@@ -567,6 +571,10 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
     discountPercent: fallback?.discountPercent || 20,
     price: (dbCourse?.price && dbCourse.price >= 1000) ? dbCourse.price : (fallback?.price || 29999),
   };
+
+  const displayModules = (curriculumModules && curriculumModules.length > 0)
+    ? curriculumModules
+    : (course.modules || []);
 
   return (
     <div className="py-12 bg-slate-50 min-h-screen">
@@ -720,24 +728,64 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
 
         {/* Detailed Syllabus Accordion */}
         <div className="max-w-3xl space-y-6">
-          <h2 className="text-2xl font-black text-slate-900">Live Cohort Syllabus</h2>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-2xl font-black text-slate-900">
+              {course.format === 'SELF_PACED' || course.slug === 'ai-business-automation-masterclass' ? 'Curriculum Syllabus & Modules' : 'Live Cohort Syllabus'}
+            </h2>
+            {curriculumModules && curriculumModules.length > 0 && (
+              <span className="text-xs font-semibold text-slate-500">
+                {curriculumModules.reduce((acc, m) => acc + (m.availableVideoCount || 0), 0)} Available Videos &bull; {curriculumModules.reduce((acc, m) => acc + (m.lessons?.length || 0), 0)} Lessons
+              </span>
+            )}
+          </div>
           <div className="space-y-4">
-            {course.modules.map((mod: any, idx: number) => (
-              <div key={idx} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-                <h3 className="text-base font-bold text-slate-900">{mod.title}</h3>
-                <div className="divide-y divide-slate-100">
-                  {mod.lessons.map((lesson: any, lIdx: number) => (
-                    <div key={lIdx} className="py-3 flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-3">
-                        <Video className="w-4 h-4 text-indigo-600 flex-shrink-0" />
-                        <span className="font-medium text-slate-800">{lesson.title}</span>
-                      </div>
-                      <span className="text-slate-400 font-medium">{lesson.duration}</span>
-                    </div>
-                  ))}
+            {displayModules.map((mod: any, idx: number) => {
+              const isAvailable = (mod.availableVideoCount ?? 0) > 0;
+              return (
+                <div key={mod.id || idx} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h3 className="text-base font-bold text-slate-900">{mod.title}</h3>
+                    {mod.availabilityStatus ? (
+                      <span className={`px-2.5 py-1 text-[11px] font-bold rounded-md flex items-center gap-1.5 ${
+                        isAvailable ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200'
+                      }`}>
+                        {!isAvailable && <Lock className="w-3 h-3 text-slate-500" />}
+                        {mod.availabilityStatus}
+                      </span>
+                    ) : null}
+                  </div>
+                  <div className="divide-y divide-slate-100">
+                    {mod.lessons.map((lesson: any, lIdx: number) => {
+                      const lessonLocked = lesson.isAvailable === false;
+                      return (
+                        <div key={lesson.id || lIdx} className={`py-3 flex items-center justify-between text-xs ${lessonLocked ? 'opacity-70' : ''}`}>
+                          <div className="flex items-center gap-3">
+                            {lessonLocked ? (
+                              <Lock className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                            ) : (
+                              <Video className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+                            )}
+                            <span className={`font-medium ${lessonLocked ? 'text-slate-600' : 'text-slate-800'}`}>
+                              {lesson.title}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {lessonLocked && (
+                              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                                Coming Soon
+                              </span>
+                            )}
+                            <span className="text-slate-400 font-medium">
+                              {lesson.duration || (lesson.durationMinutes ? `${lesson.durationMinutes} min` : '')}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

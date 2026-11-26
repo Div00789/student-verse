@@ -60,7 +60,7 @@ async function runSeed() {
     format: 'SELF_PACED',
     status: 'PUBLISHED',
     durationHours: 68,
-    totalSessions: 16,
+    totalSessions: 199,
     priceMinorUnits: 2999900,
     currency: 'INR',
     description: 'Master AI-powered business automation, intelligent workflows, application integrations and modern business systems using industry-leading platforms such as Zapier, n8n, HubSpot, Apollo.io, GoHighLevel and Make.com. Learn to build intelligent AI agents, automate repetitive business processes, integrate applications using APIs and webhooks, develop WhatsApp and voice AI assistants, and implement production-ready automation solutions.',
@@ -217,17 +217,7 @@ async function runSeed() {
         .eq('orderIndex', lessonOrder)
         .maybeSingle();
 
-      // Check if this is the HubSpot UI & Contacts Object video or Meeting Scheduler video or Marketing Email video
-      const isHubSpotVideo = (modOrder === 5 && (lessonOrder === 3 || lesson.title.includes('Contacts')));
-      const isHubSpotMeetingVideo = (modOrder === 5 && (lessonOrder === 18 || lesson.title.toLowerCase().includes('meeting')));
-      const isHubSpotMarketingEmailVideo = (modOrder === 5 && (lessonOrder === 10 || lesson.title.toLowerCase().includes('marketing emails')));
-      const resolvedVideoUrl = isHubSpotVideo
-        ? hubspotVideoUrl
-        : isHubSpotMeetingVideo
-          ? hubspotMeetingLoomUrl
-          : isHubSpotMarketingEmailVideo
-            ? hubspotMarketingEmailVideoUrl
-            : (lesson.videoUrl || null);
+      const resolvedVideoUrl = lesson.videoUrl || null;
       const durationMin = lesson.durationMinutes || Math.round((lesson.durationSec || 1200) / 60);
 
       const lessonPayload = {

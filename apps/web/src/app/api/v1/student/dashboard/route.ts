@@ -115,7 +115,7 @@ export async function GET(req: NextRequest) {
       const subtitle = courseObj.subtitle || '100% Live Instructor-Led Cohort & Verified Skill Mastery';
       const durationHours = courseObj.durationHours || 30;
       const category = courseObj.category || 'Digital Skills & Career Track';
-      const thumbnailUrl = courseObj.thumbnailUrl || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80';
+      const thumbnailUrl = courseObj.thumbnailUrl || `/images/courses/${slug}.jpg`;
 
       const progressRecords = (lpData || []).filter((lp: any) => lp.enrollmentId === e.id);
       const completedCount = progressRecords.length;

@@ -8,42 +8,27 @@ import { rawModules } from './aiBusinessAutomationData';
  * 16 Practical Assignments, 160 Knowledge Check Questions, 30+ Downloadable Templates.
  */
 export function buildAiBusinessAutomationCurriculum(): ModuleItem[] {
-  // Primary Videos for HubSpot
-  const hubspotVideoUrl = 'https://drive.google.com/file/d/1FBLKSAhNLw8monsWiYg7iGe22xvl0c2b/view';
-  const hubspotMeetingLoomUrl = 'https://www.loom.com/share/dd97e7cbe9ad4e34a418c169568c1a55';
-  const hubspotMarketingEmailVideoUrl =
-    'https://folfptytrdsltklqutjv.supabase.co/storage/v1/object/public/course-assets/videos/How_to_create_Marketing_Emails_in_HubSpot.mp4';
-
   // Build the complete array of 16 ModuleItem objects
   return (rawModules as any[]).map((m) => {
     const lessons: LessonItem[] = m.lessons.map((l: any, lIdx: number) => {
       const code = `l-${m.num}-${lIdx + 1}`;
-      const durationMin = Math.round(l.durationSec / 60);
-      const isHubSpotContactsVideo = (m.num === 5 && (lIdx + 1 === 3 || l.title.includes('Contacts')));
-      const isHubSpotMeetingVideo = (m.num === 5 && (lIdx + 1 === 18 || l.title.toLowerCase().includes('meeting') || l.title.toLowerCase().includes('scheduler')));
-      const isHubSpotMarketingEmailVideo = (m.num === 5 && (lIdx + 1 === 10 || l.title.includes('Marketing Emails')));
-      const resolvedVideoUrl = isHubSpotContactsVideo
-        ? hubspotVideoUrl
-        : isHubSpotMeetingVideo
-          ? hubspotMeetingLoomUrl
-          : isHubSpotMarketingEmailVideo
-            ? hubspotMarketingEmailVideoUrl
-            : (l.videoUrl || undefined);
+      const durationMin = Math.round((l.durationSec || 1200) / 60);
+      const resolvedVideoUrl = l.videoUrl || undefined;
+      const isAvailable = Boolean(resolvedVideoUrl);
+      const isHubSpotMarketingEmailVideo = Boolean(l.title && l.title.includes('Marketing Email'));
 
       return {
         id: `l-auto-${m.num}-${lIdx + 1}`,
         code,
         title: l.title,
         type: 'RECORDED_VIDEO',
-        duration: isHubSpotMarketingEmailVideo ? '5 min (4m 39s)' : `${durationMin} min`,
+        duration: `${durationMin} min`,
         durationMinutes: durationMin,
         videoUrl: resolvedVideoUrl,
+        isAvailable,
         notes: l.notes,
         aiTools: l.aiTools,
-        resources: isHubSpotMarketingEmailVideo ? [
-          { title: 'HubSpot Marketing Email Best Practices Guide', url: '#', type: 'PDF' },
-          { title: 'Email Deliverability & Personalization Tokens Checklist', url: '#', type: 'TEMPLATE' }
-        ] : [
+        resources: [
           { title: `${l.title} Guide & Blueprint`, url: '#', type: 'PDF' },
           { title: 'Workflow Blueprint & Checklist', url: '#', type: 'TEMPLATE' }
         ],

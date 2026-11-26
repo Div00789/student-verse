@@ -322,6 +322,12 @@ export default function CourseLearningPlayerPage() {
       (l) => l.id === lessonIdentifier || l.code === lessonIdentifier
     ) || currentLesson;
 
+    // Prevent manual or automatic completion of locked / unavailable lessons
+    if (markCompleted && !targetLesson?.isAvailable && !targetLesson?.videoUrl) {
+      setActionError('This lesson is currently being prepared and cannot be completed yet.');
+      return;
+    }
+
     const targetLessonId = targetLesson.id || targetLesson.code || lessonIdentifier;
     if (!targetLessonId) return;
 
@@ -492,6 +498,7 @@ export default function CourseLearningPlayerPage() {
     (lessonToComplete?: LessonItem | null) => {
       const target = lessonToComplete || currentLessonRef.current;
       if (!target) return;
+      if (!target.isAvailable && !target.videoUrl) return;
       const targetId = target.id || target.code || '';
       if (!targetId) return;
 
@@ -643,6 +650,15 @@ export default function CourseLearningPlayerPage() {
 
   const progressPercentage = totalLessons > 0 ? courseProgressPct : 0;
   const currentLessonIsCompleted = isLessonDone(currentLesson);
+  const currentLessonIsAvailable = Boolean(currentLesson?.isAvailable || (currentLesson?.videoUrl && currentLesson.videoUrl.trim() !== ''));
+
+  const allCourseLessons = modules.flatMap((m) => m.lessons || []);
+  const availableCourseLessons = allCourseLessons.filter((l) => Boolean(l.isAvailable || (l.videoUrl && l.videoUrl.trim() !== '')));
+  const totalAvailableLessons = availableCourseLessons.length;
+  const completedAvailableCount = availableCourseLessons.filter(isLessonDone).length;
+  const availableProgressPct = totalAvailableLessons > 0
+    ? Math.min(100, Math.round((completedAvailableCount / totalAvailableLessons) * 1000) / 10)
+    : 0;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
@@ -669,21 +685,29 @@ export default function CourseLearningPlayerPage() {
           </div>
         </div>
 
-        {/* Dynamic Course Progress Indicator */}
-        <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+        {/* Dynamic Dual Progress Indicator (Available Content vs Overall Curriculum) */}
+        <div className="flex items-center gap-3 sm:gap-5 flex-shrink-0">
           <div className="text-right hidden sm:block">
-            <span className="text-[11px] text-slate-400 font-medium block">
-              Curriculum Progress: {completedCount} / {totalLessons} Lessons
+            <span className="text-[11px] text-slate-300 font-medium block">
+              Available Content: <strong className="text-emerald-400">{completedAvailableCount}/{totalAvailableLessons}</strong> ({availableProgressPct}%)
             </span>
-            <span className="text-xs font-black text-emerald-400">
-              {totalLessons > 0 ? `${progressPercentage}% Completed` : 'Content Ready'}
+            <span className="text-[10px] text-slate-500 block">
+              Overall Curriculum: {completedCount}/{totalLessons} ({progressPercentage}%)
             </span>
           </div>
-          <div className="w-20 sm:w-32 h-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
-            <div
-              className="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 transition-all duration-500"
-              style={{ width: `${progressPercentage}%` }}
-            />
+          <div className="w-24 sm:w-36 space-y-1">
+            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700" title={`Available Videos: ${availableProgressPct}%`}>
+              <div
+                className="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 transition-all duration-500"
+                style={{ width: `${availableProgressPct}%` }}
+              />
+            </div>
+            <div className="w-full h-1 bg-slate-800/80 rounded-full overflow-hidden" title={`Overall Course Progress: ${progressPercentage}%`}>
+              <div
+                className="h-full bg-indigo-500/70 transition-all duration-500"
+                style={{ width: `${progressPercentage}%` }}
+              />
+            </div>
           </div>
         </div>
       </header>
@@ -806,38 +830,24 @@ export default function CourseLearningPlayerPage() {
                   })()}
                 </div>
               ) : (
-                <div className="space-y-4 max-w-lg">
-                  <div className="w-20 h-20 rounded-3xl bg-indigo-600/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center mx-auto shadow-inner group-hover:scale-105 transition-transform duration-300">
-                    {currentLesson?.type === 'LIVE_SESSION' ? (
-                      <Video className="w-9 h-9" />
-                    ) : currentLesson?.type === 'PROJECT' ? (
-                      <FileText className="w-9 h-9" />
-                    ) : (
-                      <PlayCircle className="w-9 h-9" />
-                    )}
+                <div className="space-y-4 max-w-lg p-6">
+                  <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto shadow-inner">
+                    <Lock className="w-8 h-8 text-amber-400" />
                   </div>
-                  <div className="space-y-1.5">
-                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                      {currentLesson?.type?.replace('_', ' ') || 'LESSON'} &bull; {currentLesson?.duration}
+                  <div className="space-y-2">
+                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30 inline-flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                      Coming Soon &bull; Recording in Production
                     </span>
                     <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                       {currentLesson?.title}
                     </h2>
-                    <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
-                      {currentModule?.title} &bull; {course?.title}
+                    <p className="text-sm font-semibold text-slate-200 max-w-md mx-auto leading-relaxed">
+                      This lesson is currently being prepared and will be available soon.
                     </p>
-                  </div>
-                  <div className="pt-2 flex flex-wrap items-center justify-center gap-2">
-                    {course?.slug === 'ai-business-automation-masterclass' || currentLesson?.type === 'RECORDED_VIDEO' ? (
-                      <span className="inline-flex items-center gap-2 text-xs font-semibold text-amber-400 bg-amber-500/10 px-3.5 py-1.5 rounded-xl border border-amber-500/30">
-                        <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                        Recording in Production &bull; Video Coming Soon
-                      </span>
-                    ) : (
-                      <span className="text-[11px] text-slate-500 font-medium bg-slate-950/70 px-3 py-1.5 rounded-xl border border-slate-800">
-                        100% Live Instructor-Led Cohort Session
-                      </span>
-                    )}
+                    <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+                      Explore the planned curriculum notes, objectives, and required tools in the tabs below.
+                    </p>
                   </div>
                 </div>
               )}
@@ -868,6 +878,20 @@ export default function CourseLearningPlayerPage() {
                         Auto-completes at 90%+ playback
                       </span>
                     )}
+                  </div>
+                ) : !currentLessonIsAvailable ? (
+                  <div className="flex items-center gap-3">
+                    <button
+                      disabled
+                      className="px-5 py-2.5 rounded-xl bg-slate-800/80 text-slate-500 font-bold text-xs uppercase tracking-wider flex items-center gap-2 cursor-not-allowed border border-slate-700/50"
+                      title="This lesson is currently locked and cannot be completed."
+                    >
+                      <Lock className="w-4 h-4 text-slate-500" />
+                      <span>Coming Soon • Locked</span>
+                    </button>
+                    <span className="text-[11px] text-amber-400/80 hidden sm:inline flex items-center gap-1.5">
+                      Lesson locked until video is published
+                    </span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-3">
@@ -1270,19 +1294,27 @@ export default function CourseLearningPlayerPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
                           <span className="font-bold text-white block leading-snug truncate">{mod.title}</span>
-                          {isModCompleted && (
+                          {isModCompleted ? (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#22C55E]/20 text-[#22C55E] border border-[#22C55E]/40 text-[10px] font-bold flex-shrink-0 animate-in fade-in duration-200">
                               <Check className="w-3 h-3 text-white stroke-[3] bg-[#22C55E] rounded-full p-0.5" />
                               <span>Completed</span>
                             </span>
-                          )}
+                          ) : !mod.isAvailable && mod.availableVideoCount === 0 ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 flex-shrink-0">
+                              <Lock className="w-2.5 h-2.5" /> Coming Soon
+                            </span>
+                          ) : null}
                         </div>
 
-                        {/* Dynamic Module Progress Stats */}
+                        {/* Dynamic Module Progress Stats & Availability Status */}
                         <div className="flex items-center justify-between text-[10px] text-slate-400 mt-1">
-                          <span>{modCompletedCount} of {modTotalLessons} Completed</span>
+                          <span className={mod.isAvailable && (mod.availableVideoCount ?? 0) > 0 ? 'text-emerald-400 font-semibold' : 'text-slate-400'}>
+                            {mod.isAvailable && (mod.availableVideoCount ?? 0) > 0
+                              ? `${mod.availableVideoCount} Video${(mod.availableVideoCount || 0) > 1 ? 's' : ''} Available`
+                              : 'Coming Soon'}
+                          </span>
                           <span className={isModCompleted ? 'text-[#22C55E] font-bold' : 'text-slate-400 font-medium'}>
-                            {modProgressPct}%
+                            {modCompletedCount} of {modTotalLessons}
                           </span>
                         </div>
 
@@ -1309,6 +1341,7 @@ export default function CourseLearningPlayerPage() {
                         {mod.lessons.map((lesson, lIdx) => {
                           const isCurrent = activeModuleIndex === modIdx && activeLessonIndex === lIdx;
                           const isCompleted = isLessonDone(lesson);
+                          const isLessonAvailable = Boolean(lesson.isAvailable || (lesson.videoUrl && lesson.videoUrl.trim() !== ''));
                           const lessonKey = lesson.id || lesson.code || `${mod.id}-${lIdx}`;
 
                           return (
@@ -1318,60 +1351,80 @@ export default function CourseLearningPlayerPage() {
                               className={`w-full p-2.5 rounded-xl text-left text-xs transition-all flex items-start gap-2.5 cursor-pointer ${
                                 isCurrent
                                   ? 'bg-indigo-600/90 text-white font-bold shadow'
-                                  : 'text-slate-300 hover:bg-slate-800/80 hover:text-white font-medium'
+                                  : isLessonAvailable
+                                    ? 'text-slate-300 hover:bg-slate-800/80 hover:text-white font-medium'
+                                    : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 font-normal opacity-80'
                               }`}
                             >
-                              {/* Interactive Accessible Checkbox */}
-                              <div
-                                role="checkbox"
-                                aria-checked={isCompleted}
-                                aria-label={`Mark ${lesson.title} as ${isCompleted ? 'incomplete' : 'complete'}`}
-                                tabIndex={0}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleToggleLesson(lesson.id || lesson.code || '', !isCompleted, 'MANUAL_CHECKBOX');
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter' || e.key === ' ') {
-                                    e.preventDefault();
+                              {/* Interactive Accessible Checkbox or Lock Icon */}
+                              {isLessonAvailable ? (
+                                <div
+                                  role="checkbox"
+                                  aria-checked={isCompleted}
+                                  aria-label={`Mark ${lesson.title} as ${isCompleted ? 'incomplete' : 'complete'}`}
+                                  tabIndex={0}
+                                  onClick={(e) => {
                                     e.stopPropagation();
                                     handleToggleLesson(lesson.id || lesson.code || '', !isCompleted, 'MANUAL_CHECKBOX');
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleToggleLesson(lesson.id || lesson.code || '', !isCompleted, 'MANUAL_CHECKBOX');
+                                    }
+                                  }}
+                                  title={
+                                    isCompleted
+                                      ? 'Completed • Click to mark as incomplete'
+                                      : 'Click to mark as complete'
                                   }
-                                }}
-                                title={
-                                  isCompleted
-                                    ? 'Completed • Click to mark as incomplete'
-                                    : 'Click to mark as complete'
-                                }
-                                className={`w-4 h-4 rounded-[4px] border flex items-center justify-center transition-all duration-150 cursor-pointer flex-shrink-0 mt-0.5 shadow-sm active:scale-90 ${
-                                  isCompleted
-                                    ? 'bg-[#22C55E] border-[#22C55E] text-white'
-                                    : 'border-[#64748B] bg-slate-950/80 hover:border-slate-400 text-transparent'
-                                } ${isSavingLesson === (lesson.id || lesson.code) ? 'opacity-50 pointer-events-none' : ''}`}
-                              >
-                                {isSavingLesson === (lesson.id || lesson.code) ? (
-                                  <Loader2 className="w-2.5 h-2.5 animate-spin text-white" />
-                                ) : isCompleted ? (
-                                  <Check className="w-3 h-3 text-white stroke-[3]" />
-                                ) : null}
-                              </div>
+                                  className={`w-4 h-4 rounded-[4px] border flex items-center justify-center transition-all duration-150 cursor-pointer flex-shrink-0 mt-0.5 shadow-sm active:scale-90 ${
+                                    isCompleted
+                                      ? 'bg-[#22C55E] border-[#22C55E] text-white'
+                                      : 'border-[#64748B] bg-slate-950/80 hover:border-slate-400 text-transparent'
+                                  } ${isSavingLesson === (lesson.id || lesson.code) ? 'opacity-50 pointer-events-none' : ''}`}
+                                >
+                                  {isSavingLesson === (lesson.id || lesson.code) ? (
+                                    <Loader2 className="w-2.5 h-2.5 animate-spin text-white" />
+                                  ) : isCompleted ? (
+                                    <Check className="w-3 h-3 text-white stroke-[3]" />
+                                  ) : null}
+                                </div>
+                              ) : (
+                                <div
+                                  className="w-4 h-4 rounded-[4px] border border-slate-700/80 bg-slate-950/80 flex items-center justify-center flex-shrink-0 mt-0.5 cursor-not-allowed text-slate-500"
+                                  title="This lesson is currently locked and cannot be completed."
+                                >
+                                  <Lock className="w-2.5 h-2.5 text-slate-500" />
+                                </div>
+                              )}
 
                               <div className="flex-1 overflow-hidden">
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                  <span className="block truncate">{lesson.title}</span>
+                                <div className="flex items-center justify-between gap-1.5">
+                                  <span className={`block truncate ${!isLessonAvailable && !isCurrent ? 'text-slate-400' : ''}`}>
+                                    {lesson.title}
+                                  </span>
                                   {isCompleted && (
-                                    <span className="text-[9px] font-bold text-[#22C55E] uppercase tracking-wider px-1.5 py-0.5 bg-[#22C55E]/10 rounded border border-[#22C55E]/30">
+                                    <span className="text-[9px] font-bold text-[#22C55E] uppercase tracking-wider px-1.5 py-0.5 bg-[#22C55E]/10 rounded border border-[#22C55E]/30 flex-shrink-0">
                                       Completed
                                     </span>
                                   )}
+                                  {!isLessonAvailable && (
+                                    <span className="text-[9px] font-bold text-amber-400/90 uppercase tracking-wider px-1.5 py-0.5 bg-amber-500/10 rounded border border-amber-500/20 inline-flex items-center gap-1 flex-shrink-0">
+                                      <Lock className="w-2.5 h-2.5" /> Coming Soon
+                                    </span>
+                                  )}
                                 </div>
-                                <span
-                                  className={`text-[10px] block mt-0.5 ${
-                                    isCurrent ? 'text-indigo-200' : 'text-slate-500'
-                                  }`}
-                                >
-                                  {lesson.type?.replace('_', ' ')} &bull; {lesson.duration}
-                                </span>
+                                {isLessonAvailable && (
+                                  <span
+                                    className={`text-[10px] block mt-0.5 ${
+                                      isCurrent ? 'text-indigo-200' : 'text-slate-500'
+                                    }`}
+                                  >
+                                    {lesson.type?.replace('_', ' ')} &bull; {lesson.duration}
+                                  </span>
+                                )}
                               </div>
                             </div>
                           );
