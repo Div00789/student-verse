@@ -152,7 +152,33 @@ const rawModules = [
       { code: '5.7', title: '5.7 Data Segmentation & Lists', durationSec: 1200, aiTools: ['HubSpot Active & Static Lists'], notes: 'Build dynamic segmentations: Active Lists (real-time behavioral and demographic filter updates) vs Static Lists for specific historical campaigns.' },
       { code: '5.8', title: '5.8 Forms & Lead Capture', durationSec: 1200, aiTools: ['HubSpot Forms Builder'], notes: 'Build lead capture forms: embedded forms, standalone pages, popup banners, progressive profiling fields, and automated notifications.' },
       { code: '5.9', title: '5.9 Landing Pages & CTAs', durationSec: 1200, aiTools: ['HubSpot CMS / Landing Pages'], notes: 'Design high-converting landing pages: responsive modules, dynamic personalization tokens, A/B variant testing, and custom thank-you redirects.' },
-      { code: '5.10', title: '5.10 Email Marketing Automation', durationSec: 1200, aiTools: ['HubSpot Drag-and-Drop Email'], notes: 'Draft automated email marketing templates: subject line A/B testing, personalization tokens, sender profiles, and CAN-SPAM / GDPR compliance.' },
+      {
+        code: '5.10',
+        title: '5.10 – How to Create Marketing Emails in HubSpot',
+        durationSec: 279,
+        actualDurationSec: 279,
+        plannedDurationSec: 1200,
+        videoUrl: '/videos/How_to_create_Marketing_Emails_in_HubSpot.mp4',
+        aiTools: ['HubSpot Marketing Hub', 'HubSpot Drag-and-Drop Email Editor'],
+        notes: 'This lesson introduces students to creating professional marketing emails using HubSpot. Students will learn how to navigate the marketing email editor, select and customize templates, configure sender details and subject lines, insert personalization tokens, configure subscription types and recipient lists, preview and test emails across desktop and mobile, and schedule or send campaigns.',
+        learningObjectives: [
+          'Understand HubSpot marketing emails',
+          'Navigate the marketing email dashboard',
+          'Create a new marketing email',
+          'Select and customise email templates',
+          'Use the drag-and-drop email editor',
+          'Configure sender details and subject lines',
+          'Add personalization tokens',
+          'Select recipients and manage subscriptions',
+          'Preview and test marketing emails',
+          'Understand email scheduling and performance reporting'
+        ],
+        assignment: {
+          title: 'Create Your First HubSpot Marketing Email',
+          instructions: 'Create a marketing email for a sample business using HubSpot. Build a clean layout, write compelling copy with preview text, add personalization tokens, preview on desktop/mobile, and send an authorized test email.',
+          deliverables: 'Submit screenshots of the completed email template (desktop & mobile preview), personalized tokens configuration, and the received test email.'
+        }
+      },
       { code: '5.11', title: '5.11 Marketing Campaign Management', durationSec: 1200, aiTools: ['HubSpot Campaigns Tool'], notes: 'Orchestrate multi-asset campaigns: tag landing pages, forms, emails, social posts, and UTM tracking links under unified campaign dashboards.' },
       { code: '5.12', title: '5.12 Workflow Fundamentals', durationSec: 1200, aiTools: ['HubSpot Workflows'], notes: 'Master workflow automation: enrollment triggers, re-enrollment criteria, action execution order, delay steps, and unenrollment rules.' },
       { code: '5.13', title: '5.13 Advanced Workflow Automation', durationSec: 1200, aiTools: ['HubSpot Advanced Logic'], notes: 'Build complex branch trees: if/then branches, branching based on multiple property conditions, webhooks actions, and cross-object workflows.' },

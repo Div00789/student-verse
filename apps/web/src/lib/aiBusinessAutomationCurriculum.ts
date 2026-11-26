@@ -19,27 +19,43 @@ export function buildAiBusinessAutomationCurriculum(): ModuleItem[] {
       const durationMin = Math.round(l.durationSec / 60);
       const isHubSpotContactsVideo = (m.num === 5 && (lIdx + 1 === 3 || l.title.includes('Contacts')));
       const isHubSpotMeetingVideo = (m.num === 5 && (lIdx + 1 === 18 || l.title.toLowerCase().includes('meeting') || l.title.toLowerCase().includes('scheduler')));
+      const isHubSpotMarketingEmailVideo = (m.num === 5 && (lIdx + 1 === 10 || l.title.includes('Marketing Emails')));
       const resolvedVideoUrl = isHubSpotContactsVideo
         ? hubspotVideoUrl
         : isHubSpotMeetingVideo
           ? hubspotMeetingLoomUrl
-          : (l.videoUrl || undefined);
+          : isHubSpotMarketingEmailVideo
+            ? '/videos/How_to_create_Marketing_Emails_in_HubSpot.mp4'
+            : (l.videoUrl || undefined);
 
       return {
         id: `l-auto-${m.num}-${lIdx + 1}`,
         code,
         title: l.title,
         type: 'RECORDED_VIDEO',
-        duration: `${durationMin} min`,
+        duration: isHubSpotMarketingEmailVideo ? '5 min (4m 39s)' : `${durationMin} min`,
         durationMinutes: durationMin,
         videoUrl: resolvedVideoUrl,
         notes: l.notes,
         aiTools: l.aiTools,
-        resources: [
+        resources: isHubSpotMarketingEmailVideo ? [
+          { title: 'HubSpot Marketing Email Best Practices Guide', url: '#', type: 'PDF' },
+          { title: 'Email Deliverability & Personalization Tokens Checklist', url: '#', type: 'TEMPLATE' }
+        ] : [
           { title: `${l.title} Guide & Blueprint`, url: '#', type: 'PDF' },
           { title: 'Workflow Blueprint & Checklist', url: '#', type: 'TEMPLATE' }
         ],
-        quiz: {
+        quiz: isHubSpotMarketingEmailVideo ? {
+          question: 'In HubSpot Marketing Email editor, what is the best practice before sending an automated campaign to your full list?',
+          options: [
+            'Preview the email layout on desktop and mobile, and send a test email to verify personalization tokens and rendering.',
+            'Send directly to the entire database without testing tokens or links.',
+            'Delete the unsubscribe link to increase deliverability metrics.',
+            'Use unverified sender addresses that have no SPF or DKIM DNS records.'
+          ],
+          correctIndex: 0,
+          explanation: 'Before publishing or sending a marketing email in HubSpot, you must preview both desktop and mobile versions and send a test email to ensure all personalization tokens, formatting, and CTAs function properly.'
+        } : {
           question: `In ${l.title}, what is the critical architectural principle for building scalable, production-grade business automations?`,
           options: [
             'Designing for idempotency, strict schema validation, and fault-tolerant error recovery.',

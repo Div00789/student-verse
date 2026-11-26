@@ -426,7 +426,7 @@ const COURSE_DATA: Record<string, any> = {
     originalPrice: 37499,
     discountPercent: 20,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&auto=format&fit=crop&q=80',
     trainerName: 'StudentVerse Expert Automation Faculty',
     batchCode: 'SV-AIBA-COHORT1',
     batchSchedule: 'Self-Paced with 24/7 Practical Lab Access & Weekly Mentor Reviews',
@@ -505,7 +505,7 @@ const COURSE_DATA: Record<string, any> = {
     originalPrice: 37499,
     discountPercent: 20,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1432888622747-4eb9a8f2c293?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&auto=format&fit=crop&q=80',
     trainerName: 'StudentVerse Expert Faculty (Industry Growth Directors & AI Leads)',
     batchCode: 'SV-AMDM-COHORT1',
     batchSchedule: 'Mon & Wed: 18:00 - 20:00 UTC (100% Live Sessions + Recorded Video Masterclasses + 24/7 Labs)',
@@ -588,9 +588,15 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
               <span className="text-xs font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1 rounded-full">
                 {course.category}
               </span>
-              <span className="text-xs font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full flex items-center gap-1">
-                <Video className="w-3.5 h-3.5" /> 100% Live Instructor-Led
-              </span>
+              {course.format === 'SELF_PACED' || course.slug === 'ai-business-automation-masterclass' ? (
+                <span className="text-xs font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+                  <PlayCircle className="w-3.5 h-3.5 text-indigo-600" /> Self-Paced Recorded Masterclass
+                </span>
+              ) : (
+                <span className="text-xs font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full flex items-center gap-1">
+                  <Video className="w-3.5 h-3.5" /> 100% Live Instructor-Led
+                </span>
+              )}
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-950 tracking-tight leading-tight">
@@ -605,11 +611,17 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
               <span className="flex items-center gap-1.5 font-medium text-slate-700">
                 <Clock className="w-4 h-4 text-indigo-600" /> Duration: <strong>{course.durationHours} Hours</strong>
               </span>
+              {course.format === 'SELF_PACED' || course.slug === 'ai-business-automation-masterclass' ? (
+                <span className="flex items-center gap-1.5 font-medium text-slate-700">
+                  <Video className="w-4 h-4 text-indigo-600" /> Curriculum: <strong>16 Modules &bull; 200 Lessons</strong>
+                </span>
+              ) : (
+                <span className="flex items-center gap-1.5 font-medium text-slate-700">
+                  <Video className="w-4 h-4 text-indigo-600" /> Total Live Sessions: <strong>{course.totalSessions} Live Cohort Classes</strong>
+                </span>
+              )}
               <span className="flex items-center gap-1.5 font-medium text-slate-700">
-                <Video className="w-4 h-4 text-indigo-600" /> Total Live Sessions: <strong>{course.totalSessions} Live Cohort Classes</strong>
-              </span>
-              <span className="flex items-center gap-1.5 font-medium text-slate-700">
-                <GraduationCap className="w-4 h-4 text-indigo-600" /> Level: <strong>{course.level}</strong>
+                <GraduationCap className="w-4 h-4 text-indigo-600" /> Level: <strong>{course.slug === 'ai-business-automation-masterclass' ? 'Beginner to Advanced' : course.level}</strong>
               </span>
               <span className="flex items-center gap-1.5 font-medium text-slate-700">
                 <ShieldCheck className="w-4 h-4 text-emerald-600" /> Certificate: <strong>StudentVerse Verifiable</strong>
@@ -668,7 +680,9 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
 
               {/* Batch info box */}
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
-                <span className="font-bold text-slate-900 block">Upcoming Live Cohort:</span>
+                <span className="font-bold text-slate-900 block">
+                  {course.format === 'SELF_PACED' || course.slug === 'ai-business-automation-masterclass' ? 'Learning Format & Access:' : 'Upcoming Live Cohort:'}
+                </span>
                 <div className="text-slate-600">
                   <span>Batch: <strong className="text-indigo-700 font-mono">{course.batchCode}</strong></span><br />
                   <span>Schedule: <strong>{course.batchSchedule}</strong></span><br />
@@ -681,7 +695,11 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
               <div className="space-y-2 text-[11px] text-slate-500 pt-2 border-t border-slate-100">
                 <div className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>100% Live Interactive Classes on Google Meet</span>
+                  <span>
+                    {course.format === 'SELF_PACED' || course.slug === 'ai-business-automation-masterclass'
+                      ? 'Recorded Video Masterclasses + Practical Labs'
+                      : '100% Live Interactive Classes on Google Meet'}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-emerald-600" />

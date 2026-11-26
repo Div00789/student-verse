@@ -44,6 +44,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 // Import curriculum builder from compiled or directly emulate
 const hubspotVideoUrl = 'https://drive.google.com/file/d/1FBLKSAhNLw8monsWiYg7iGe22xvl0c2b/view';
 const hubspotMeetingLoomUrl = 'https://www.loom.com/share/dd97e7cbe9ad4e34a418c169568c1a55';
+const hubspotMarketingEmailVideoUrl = '/videos/How_to_create_Marketing_Emails_in_HubSpot.mp4';
 
 // Read curriculum definitions
 async function runSeed() {
@@ -76,7 +77,7 @@ async function runSeed() {
       'Develop conversational AI WhatsApp bots with Meta Cloud API and deploy real-time AI Voice Receptionists using Vapi and Retell AI',
       'Build and submit 15 production portfolio projects and earn your StudentVerse Certified AI & Business Automation Specialist credential'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80'
+    thumbnailUrl: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&auto=format&fit=crop&q=80'
   };
 
   const { data: existingCourse } = await supabase
@@ -216,14 +217,17 @@ async function runSeed() {
         .eq('orderIndex', lessonOrder)
         .maybeSingle();
 
-      // Check if this is the HubSpot UI & Contacts Object video or Meeting Scheduler video
+      // Check if this is the HubSpot UI & Contacts Object video or Meeting Scheduler video or Marketing Email video
       const isHubSpotVideo = (modOrder === 5 && (lessonOrder === 3 || lesson.title.includes('Contacts')));
       const isHubSpotMeetingVideo = (modOrder === 5 && (lessonOrder === 18 || lesson.title.toLowerCase().includes('meeting')));
+      const isHubSpotMarketingEmailVideo = (modOrder === 5 && (lessonOrder === 10 || lesson.title.toLowerCase().includes('marketing emails')));
       const resolvedVideoUrl = isHubSpotVideo
         ? hubspotVideoUrl
         : isHubSpotMeetingVideo
           ? hubspotMeetingLoomUrl
-          : (lesson.videoUrl || null);
+          : isHubSpotMarketingEmailVideo
+            ? hubspotMarketingEmailVideoUrl
+            : (lesson.videoUrl || null);
       const durationMin = lesson.durationMinutes || Math.round((lesson.durationSec || 1200) / 60);
 
       const lessonPayload = {

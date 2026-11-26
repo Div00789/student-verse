@@ -21,18 +21,21 @@ import { useCourseSearch, SearchableCourse } from '../../lib/courseSearch';
 
 const DEFAULT_COURSES: SearchableCourse[] = [
   {
-    id: 'c-aiba-101',
+    id: 'c-aiba-200',
     slug: 'ai-business-automation-masterclass',
     title: 'AI & Business Automation Masterclass',
     subtitle: 'Learn AI. Build Automations. Transform Businesses. (Zapier, n8n, HubSpot, Apollo.io, GoHighLevel & Make.com)',
     category: 'Artificial Intelligence & Automation',
     level: 'BEGINNER TO ADVANCED',
+    format: 'SELF_PACED',
     durationHours: 68,
     totalSessions: 16,
+    totalModules: 16,
+    totalLessons: 200,
     originalPrice: 37499,
     discountPercent: 20,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&auto=format&fit=crop&q=80',
     description: 'Master AI-powered business automation, intelligent workflows, application integrations and modern business systems using industry-leading platforms such as Zapier, n8n, HubSpot, Apollo.io, GoHighLevel and Make.com.',
     skills: ['Zapier', 'n8n', 'HubSpot', 'Apollo.io', 'GoHighLevel', 'Make.com', 'OpenAI', 'Claude', 'Google Gemini', 'WhatsApp API', 'Voice AI'],
     nextBatch: 'Self-Paced with 24/7 Practical Labs',
@@ -66,7 +69,7 @@ const DEFAULT_COURSES: SearchableCourse[] = [
     originalPrice: 37499,
     discountPercent: 20,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1432888622747-4eb9a8f2c293?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&auto=format&fit=crop&q=80',
     skills: ['AI-Driven Technical SEO', 'Hostinger Web Setup', 'Google Ads & PMax', 'GA4 & GTM DataLayers', 'CRM & Agent Automation', 'Practical Assignments'],
     nextBatch: '01 Dec 2026 (Live + Recorded)',
   },
@@ -423,15 +426,27 @@ export default function CoursesPage() {
                       <img
                         src={course.thumbnailUrl}
                         alt={course.title}
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=80';
+                        }}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                       <div className="absolute top-3 left-3 flex flex-wrap gap-2">
                         <span className="px-2.5 py-1 bg-slate-900/80 backdrop-blur text-white text-[10px] font-bold uppercase rounded-md tracking-wider">
-                          {course.level}
+                          {course.slug === 'ai-business-automation-masterclass' || course.level?.includes('ADVANCED')
+                            ? 'Beginner to Advanced'
+                            : (course.level?.replace(/_/g, ' ') || 'Beginner')}
                         </span>
-                        <span className="px-2.5 py-1 bg-emerald-600/90 backdrop-blur text-white text-[10px] font-bold rounded-md flex items-center gap-1">
-                          <Video className="w-3 h-3" /> 100% Live
-                        </span>
+                        {course.format === 'SELF_PACED' || course.slug === 'ai-business-automation-masterclass' ? (
+                          <span className="px-2.5 py-1 bg-indigo-600/90 backdrop-blur text-white text-[10px] font-bold rounded-md flex items-center gap-1 shadow">
+                            <PlayCircle className="w-3 h-3" /> Self-Paced
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-1 bg-emerald-600/90 backdrop-blur text-white text-[10px] font-bold rounded-md flex items-center gap-1">
+                            <Video className="w-3 h-3" /> 100% Live
+                          </span>
+                        )}
                         {isCompleted ? (
                           <span className="px-2.5 py-1 bg-emerald-500 text-slate-950 text-[10px] font-black rounded-md flex items-center gap-1 shadow">
                             <CheckCircle2 className="w-3 h-3" /> Completed
@@ -473,7 +488,10 @@ export default function CoursesPage() {
                   <div className="p-6 pt-0 border-t border-slate-100 mt-4 space-y-3">
                     <div className="flex items-center justify-between text-xs text-slate-500 pt-3">
                       <span className="flex items-center gap-1 font-semibold text-slate-700">
-                        <Clock className="w-3.5 h-3.5 text-indigo-500" /> {course.durationHours} Hours ({course.totalSessions} Live Sessions)
+                        <Clock className="w-3.5 h-3.5 text-indigo-500" />
+                        {course.format === 'SELF_PACED' || course.slug === 'ai-business-automation-masterclass'
+                          ? `${course.durationHours || 68} Hours (${course.totalLessons || 200} Lessons)`
+                          : `${course.durationHours} Hours (${course.totalSessions} Live Sessions)`}
                       </span>
                       <div className="text-right">
                         <div className="flex items-center justify-end gap-1.5">

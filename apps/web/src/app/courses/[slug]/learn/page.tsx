@@ -674,7 +674,7 @@ export default function CourseLearningPlayerPage() {
                   {(() => {
                     const driveFileId = getDriveFileId(currentLesson.videoUrl);
                     const loomEmbedUrl = getLoomEmbedUrl(currentLesson.videoUrl);
-                    const isDirectVideo = currentLesson.videoUrl.match(/\.(mp4|webm|ogg)($|\?)/i);
+                    const isDirectVideo = currentLesson.videoUrl.match(/\.(mp4|webm|ogg)($|\?)/i) || currentLesson.videoUrl.startsWith('/videos/');
 
                     if (driveFileId) {
                       return (

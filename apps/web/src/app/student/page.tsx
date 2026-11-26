@@ -42,7 +42,7 @@ const ALL_EXPLORE_COURSES = [
     originalPrice: 37499,
     discountPercent: 20,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&auto=format&fit=crop&q=80',
     description: 'Master AI-powered business automation, intelligent workflows, application integrations and modern business systems using Zapier, n8n, HubSpot, Apollo.io, GoHighLevel and Make.com.',
   },
   {
@@ -70,7 +70,7 @@ const ALL_EXPLORE_COURSES = [
     originalPrice: 37499,
     discountPercent: 20,
     price: 29999,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1432888622747-4eb9a8f2c293?w=800&auto=format&fit=crop&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&auto=format&fit=crop&q=80',
   },
   {
     slug: 'digital-marketing-foundations',
