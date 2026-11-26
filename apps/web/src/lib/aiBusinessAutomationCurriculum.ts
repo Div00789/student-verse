@@ -11,6 +11,8 @@ export function buildAiBusinessAutomationCurriculum(): ModuleItem[] {
   // Primary Videos for HubSpot
   const hubspotVideoUrl = 'https://drive.google.com/file/d/1FBLKSAhNLw8monsWiYg7iGe22xvl0c2b/view';
   const hubspotMeetingLoomUrl = 'https://www.loom.com/share/dd97e7cbe9ad4e34a418c169568c1a55';
+  const hubspotMarketingEmailVideoUrl =
+    'https://folfptytrdsltklqutjv.supabase.co/storage/v1/object/public/course-assets/videos/How_to_create_Marketing_Emails_in_HubSpot.mp4';
 
   // Build the complete array of 16 ModuleItem objects
   return (rawModules as any[]).map((m) => {
@@ -25,7 +27,7 @@ export function buildAiBusinessAutomationCurriculum(): ModuleItem[] {
         : isHubSpotMeetingVideo
           ? hubspotMeetingLoomUrl
           : isHubSpotMarketingEmailVideo
-            ? '/videos/How_to_create_Marketing_Emails_in_HubSpot.mp4'
+            ? hubspotMarketingEmailVideoUrl
             : (l.videoUrl || undefined);
 
       return {

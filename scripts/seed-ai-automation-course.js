@@ -44,7 +44,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 // Import curriculum builder from compiled or directly emulate
 const hubspotVideoUrl = 'https://drive.google.com/file/d/1FBLKSAhNLw8monsWiYg7iGe22xvl0c2b/view';
 const hubspotMeetingLoomUrl = 'https://www.loom.com/share/dd97e7cbe9ad4e34a418c169568c1a55';
-const hubspotMarketingEmailVideoUrl = '/videos/How_to_create_Marketing_Emails_in_HubSpot.mp4';
+const hubspotMarketingEmailVideoUrl = 'https://folfptytrdsltklqutjv.supabase.co/storage/v1/object/public/course-assets/videos/How_to_create_Marketing_Emails_in_HubSpot.mp4';
 
 // Read curriculum definitions
 async function runSeed() {

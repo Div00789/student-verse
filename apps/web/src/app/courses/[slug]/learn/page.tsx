@@ -63,6 +63,7 @@ export default function CourseLearningPlayerPage() {
   const [saveStatus, setSaveStatus] = useState<'IDLE' | 'SAVING' | 'SAVED' | 'ERROR'>('IDLE');
   const [actionNotice, setActionNotice] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [driveStreamError, setDriveStreamError] = useState<boolean>(false);
 
   // Active Tab inside Lesson Workspace
   const [activeTab, setActiveTab] = useState<'notes' | 'quiz' | 'assignment' | 'resources'>('notes');
@@ -305,6 +306,7 @@ export default function CourseLearningPlayerPage() {
     setSelectedQuizOption(null);
     setQuizSubmitted(false);
     setActiveTab('notes');
+    setDriveStreamError(false);
   };
 
   const handleToggleLesson = async (
@@ -503,8 +505,20 @@ export default function CourseLearningPlayerPage() {
     [completedLessonIds, modules]
   );
 
-  // External video message listener (YouTube, Vimeo, HTML5 postMessage, custom LMS players)
+  // External video message listener (YouTube, Vimeo, Loom player.js, HTML5 postMessage, custom LMS players)
   useEffect(() => {
+    const subscribeIframePlayers = () => {
+      try {
+        const iframes = document.querySelectorAll('iframe');
+        iframes.forEach((frame) => {
+          try {
+            frame.contentWindow?.postMessage({ method: 'addEventListener', value: 'ended', context: 'player.js' }, '*');
+            frame.contentWindow?.postMessage({ method: 'addEventListener', value: 'timeupdate', context: 'player.js' }, '*');
+          } catch (_) {}
+        });
+      } catch (_) {}
+    };
+
     const handleWindowMessage = (event: MessageEvent) => {
       try {
         let payload = event.data;
@@ -513,8 +527,26 @@ export default function CourseLearningPlayerPage() {
             payload = JSON.parse(payload);
           } catch (_) {}
         }
+
+        // Loom / Vimeo / Wistia standard player.js protocol
+        if (payload?.context === 'player.js') {
+          if (payload?.event === 'ready') {
+            subscribeIframePlayers();
+          }
+          if (payload?.event === 'ended') {
+            handleAutoVideoComplete(currentLessonRef.current);
+          }
+          if (payload?.event === 'timeupdate' && payload?.data) {
+            const seconds = payload.data.seconds ?? payload.data.currentTime;
+            const duration = payload.data.duration;
+            if (duration && duration > 0 && seconds && (seconds / duration >= 0.90)) {
+              handleAutoVideoComplete(currentLessonRef.current);
+            }
+          }
+        }
+
         // YouTube Player API event: state 0 is YT.PlayerState.ENDED
-        if (payload?.event === 'onStateChange' && payload?.info === 0) {
+        if (payload?.event === 'onStateChange' && (payload?.info === 0 || payload?.data === 0)) {
           handleAutoVideoComplete(currentLessonRef.current);
         }
         // Vimeo API ended event
@@ -525,8 +557,11 @@ export default function CourseLearningPlayerPage() {
         if (
           payload?.type === 'VIDEO_ENDED' ||
           payload?.type === 'LESSON_COMPLETED' ||
+          payload?.type === 'loom:ended' ||
           payload?.event === 'video_ended' ||
-          payload?.action === 'ENDED'
+          payload?.action === 'ENDED' ||
+          payload?.name === 'ended' ||
+          payload?.name === 'video-ended'
         ) {
           handleAutoVideoComplete(currentLessonRef.current);
         }
@@ -534,10 +569,18 @@ export default function CourseLearningPlayerPage() {
     };
 
     window.addEventListener('message', handleWindowMessage);
-    return () => window.removeEventListener('message', handleWindowMessage);
-  }, [handleAutoVideoComplete]);
+
+    // Proactively subscribe to mounted iframes after rendering
+    const timer = setTimeout(subscribeIframePlayers, 1200);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('message', handleWindowMessage);
+    };
+  }, [handleAutoVideoComplete, currentLesson?.id, currentLesson?.videoUrl]);
 
   const handleNextLesson = () => {
+    setDriveStreamError(false);
     if (!currentModule) return;
     if (activeLessonIndex < currentModule.lessons.length - 1) {
       setActiveLessonIndex((prev) => prev + 1);
@@ -550,6 +593,7 @@ export default function CourseLearningPlayerPage() {
   };
 
   const handlePrevLesson = () => {
+    setDriveStreamError(false);
     if (activeLessonIndex > 0) {
       setActiveLessonIndex((prev) => prev - 1);
     } else if (activeModuleIndex > 0) {
@@ -674,9 +718,12 @@ export default function CourseLearningPlayerPage() {
                   {(() => {
                     const driveFileId = getDriveFileId(currentLesson.videoUrl);
                     const loomEmbedUrl = getLoomEmbedUrl(currentLesson.videoUrl);
-                    const isDirectVideo = currentLesson.videoUrl.match(/\.(mp4|webm|ogg)($|\?)/i) || currentLesson.videoUrl.startsWith('/videos/');
+                    const isDirectVideo =
+                      currentLesson.videoUrl.match(/\.(mp4|webm|ogg)($|\?)/i) ||
+                      currentLesson.videoUrl.startsWith('/videos/') ||
+                      currentLesson.videoUrl.includes('supabase.co/storage');
 
-                    if (driveFileId) {
+                    if (driveFileId && !driveStreamError) {
                       return (
                         <video
                           key={`drive-${driveFileId}`}
@@ -684,7 +731,27 @@ export default function CourseLearningPlayerPage() {
                           controls
                           playsInline
                           className="w-full h-full object-contain bg-black"
+                          onTimeUpdate={(e) => {
+                            const v = e.currentTarget;
+                            if (v.duration && v.duration > 0 && v.currentTime / v.duration >= 0.90) {
+                              handleAutoVideoComplete(currentLesson);
+                            }
+                          }}
                           onEnded={() => handleAutoVideoComplete(currentLesson)}
+                          onError={() => setDriveStreamError(true)}
+                        />
+                      );
+                    }
+
+                    if (driveFileId && driveStreamError) {
+                      return (
+                        <iframe
+                          key={`drive-preview-${driveFileId}`}
+                          src={`https://drive.google.com/file/d/${driveFileId}/preview`}
+                          title={currentLesson.title}
+                          className="w-full h-full border-0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
                         />
                       );
                     }
@@ -692,6 +759,7 @@ export default function CourseLearningPlayerPage() {
                     if (loomEmbedUrl) {
                       return (
                         <iframe
+                          id="loom-player-iframe"
                           key={`loom-${loomEmbedUrl}`}
                           src={loomEmbedUrl}
                           title={currentLesson.title}
@@ -710,6 +778,12 @@ export default function CourseLearningPlayerPage() {
                           controls
                           playsInline
                           className="w-full h-full object-contain bg-black"
+                          onTimeUpdate={(e) => {
+                            const v = e.currentTarget;
+                            if (v.duration && v.duration > 0 && v.currentTime / v.duration >= 0.90) {
+                              handleAutoVideoComplete(currentLesson);
+                            }
+                          }}
                           onEnded={() => handleAutoVideoComplete(currentLesson)}
                         />
                       );
@@ -788,20 +862,34 @@ export default function CourseLearningPlayerPage() {
                       <span>Completed</span>
                       <span className="text-[10px] font-normal opacity-85 group-hover:underline ml-1">(Undo)</span>
                     </button>
+                    {currentLesson?.videoUrl && (
+                      <span className="text-[11px] text-indigo-300/80 bg-indigo-500/10 px-2.5 py-1 rounded-lg border border-indigo-500/20 hidden sm:inline-flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                        Auto-completes at 90%+ playback
+                      </span>
+                    )}
                   </div>
                 ) : (
-                  <button
-                    onClick={() => handleToggleLesson(currentLesson?.id || currentLesson?.code || '', true, 'MARK_COMPLETE_BUTTON')}
-                    disabled={isSavingLesson === (currentLesson?.id || currentLesson?.code)}
-                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-2 active:scale-95"
-                  >
-                    {isSavingLesson === (currentLesson?.id || currentLesson?.code) ? (
-                      <Loader2 className="w-4 h-4 animate-spin text-white" />
-                    ) : (
-                      <CheckCircle2 className="w-4 h-4 text-indigo-200" />
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => handleToggleLesson(currentLesson?.id || currentLesson?.code || '', true, 'MARK_COMPLETE_BUTTON')}
+                      disabled={isSavingLesson === (currentLesson?.id || currentLesson?.code)}
+                      className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-2 active:scale-95"
+                    >
+                      {isSavingLesson === (currentLesson?.id || currentLesson?.code) ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      ) : (
+                        <CheckCircle2 className="w-4 h-4 text-indigo-200" />
+                      )}
+                      <span>Mark as Complete</span>
+                    </button>
+                    {currentLesson?.videoUrl && (
+                      <span className="text-[11px] text-indigo-300/80 bg-indigo-500/10 px-2.5 py-1 rounded-lg border border-indigo-500/20 hidden sm:inline-flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                        Auto-completes at 90%+ playback
+                      </span>
                     )}
-                    <span>Mark as Complete</span>
-                  </button>
+                  </div>
                 )}
               </div>
 

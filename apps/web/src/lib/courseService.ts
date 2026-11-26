@@ -209,7 +209,10 @@ export async function getAllCourses(): Promise<UniversalCourse[]> {
             title,
             orderIndex,
             durationMinutes,
-            contentType
+            contentType,
+            videoUrl,
+            notes,
+            aiToolsUsed
           )
         )
       `)
@@ -257,6 +260,7 @@ export async function getAllCourses(): Promise<UniversalCourse[]> {
               type: l.contentType === 'PROJECT' ? 'PROJECT' : (l.contentType === 'RECORDED_VIDEO' ? 'RECORDED_VIDEO' : 'LIVE_SESSION'),
               duration: `${l.durationMinutes || 60} min`,
               durationMinutes: l.durationMinutes || 60,
+              videoUrl: l.videoUrl || undefined,
               notes: l.notes || '',
               aiTools: l.aiToolsUsed || [],
               resources: [],
