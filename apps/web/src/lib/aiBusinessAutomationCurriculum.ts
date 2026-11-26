@@ -8,8 +8,9 @@ import { rawModules } from './aiBusinessAutomationData';
  * 16 Practical Assignments, 160 Knowledge Check Questions, 30+ Downloadable Templates.
  */
 export function buildAiBusinessAutomationCurriculum(): ModuleItem[] {
-  // Primary Video for HubSpot UI & Contacts Object
+  // Primary Videos for HubSpot
   const hubspotVideoUrl = 'https://drive.google.com/file/d/1FBLKSAhNLw8monsWiYg7iGe22xvl0c2b/view';
+  const hubspotMeetingLoomUrl = 'https://www.loom.com/share/dd97e7cbe9ad4e34a418c169568c1a55';
 
   // Build the complete array of 16 ModuleItem objects
   return (rawModules as any[]).map((m) => {
@@ -17,7 +18,12 @@ export function buildAiBusinessAutomationCurriculum(): ModuleItem[] {
       const code = `l-${m.num}-${lIdx + 1}`;
       const durationMin = Math.round(l.durationSec / 60);
       const isHubSpotContactsVideo = (m.num === 5 && (lIdx + 1 === 3 || l.title.includes('Contacts')));
-      const resolvedVideoUrl = isHubSpotContactsVideo ? hubspotVideoUrl : (l.videoUrl || undefined);
+      const isHubSpotMeetingVideo = (m.num === 5 && (lIdx + 1 === 18 || l.title.toLowerCase().includes('meeting') || l.title.toLowerCase().includes('scheduler')));
+      const resolvedVideoUrl = isHubSpotContactsVideo
+        ? hubspotVideoUrl
+        : isHubSpotMeetingVideo
+          ? hubspotMeetingLoomUrl
+          : (l.videoUrl || undefined);
 
       return {
         id: `l-auto-${m.num}-${lIdx + 1}`,

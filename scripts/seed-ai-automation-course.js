@@ -43,6 +43,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 // Import curriculum builder from compiled or directly emulate
 const hubspotVideoUrl = 'https://drive.google.com/file/d/1FBLKSAhNLw8monsWiYg7iGe22xvl0c2b/view';
+const hubspotMeetingLoomUrl = 'https://www.loom.com/share/dd97e7cbe9ad4e34a418c169568c1a55';
 
 // Read curriculum definitions
 async function runSeed() {
@@ -215,9 +216,14 @@ async function runSeed() {
         .eq('orderIndex', lessonOrder)
         .maybeSingle();
 
-      // Check if this is the HubSpot UI & Contacts Object video
+      // Check if this is the HubSpot UI & Contacts Object video or Meeting Scheduler video
       const isHubSpotVideo = (modOrder === 5 && (lessonOrder === 3 || lesson.title.includes('Contacts')));
-      const resolvedVideoUrl = isHubSpotVideo ? hubspotVideoUrl : (lesson.videoUrl || null);
+      const isHubSpotMeetingVideo = (modOrder === 5 && (lessonOrder === 18 || lesson.title.toLowerCase().includes('meeting')));
+      const resolvedVideoUrl = isHubSpotVideo
+        ? hubspotVideoUrl
+        : isHubSpotMeetingVideo
+          ? hubspotMeetingLoomUrl
+          : (lesson.videoUrl || null);
       const durationMin = lesson.durationMinutes || Math.round((lesson.durationSec || 1200) / 60);
 
       const lessonPayload = {

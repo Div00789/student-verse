@@ -98,6 +98,13 @@ export default function CourseLearningPlayerPage() {
     return match ? match[1] : null;
   };
 
+  // Helper: extract Loom embed URL
+  const getLoomEmbedUrl = (url?: string) => {
+    if (!url) return null;
+    const match = url.match(/loom\.com\/(share|embed)\/([a-zA-Z0-9_-]+)/);
+    return match ? `https://www.loom.com/embed/${match[2]}` : null;
+  };
+
   // 1. Single Unified Initialization Effect: Authenticates and fetches Course & Progress in Parallel
   useEffect(() => {
     let isCancelled = false;
@@ -666,6 +673,7 @@ export default function CourseLearningPlayerPage() {
                 <div className="relative w-full h-full">
                   {(() => {
                     const driveFileId = getDriveFileId(currentLesson.videoUrl);
+                    const loomEmbedUrl = getLoomEmbedUrl(currentLesson.videoUrl);
                     const isDirectVideo = currentLesson.videoUrl.match(/\.(mp4|webm|ogg)($|\?)/i);
 
                     if (driveFileId) {
@@ -677,6 +685,19 @@ export default function CourseLearningPlayerPage() {
                           playsInline
                           className="w-full h-full object-contain bg-black"
                           onEnded={() => handleAutoVideoComplete(currentLesson)}
+                        />
+                      );
+                    }
+
+                    if (loomEmbedUrl) {
+                      return (
+                        <iframe
+                          key={`loom-${loomEmbedUrl}`}
+                          src={loomEmbedUrl}
+                          title={currentLesson.title}
+                          className="w-full h-full border-0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
                         />
                       );
                     }
