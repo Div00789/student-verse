@@ -19,6 +19,7 @@ import {
 import { formatINR } from '../../../lib/currency';
 import EnrollmentActionButton from '../../../components/EnrollmentActionButton';
 import { getCourseBySlug } from '../../../lib/courseService';
+import { buildAiBusinessAutomationCurriculum } from '../../../lib/aiBusinessAutomationCurriculum';
 
 const COURSE_DATA: Record<string, any> = {
   'ai-digital-marketing-course': {
@@ -408,6 +409,85 @@ const COURSE_DATA: Record<string, any> = {
         ]
       }
     ]
+  },
+  'ai-business-automation-masterclass': {
+    slug: 'ai-business-automation-masterclass',
+    title: 'AI & Business Automation Masterclass',
+    subtitle: 'Learn AI. Build Automations. Transform Businesses. (Zapier, n8n, HubSpot, Apollo.io, GoHighLevel & Make.com)',
+    category: 'Artificial Intelligence & Automation',
+    level: 'BEGINNER TO ADVANCED',
+    format: 'SELF-PACED + PRACTICAL LABS + PORTFOLIO PROJECTS',
+    durationHours: 68,
+    totalSessions: 16,
+    originalPrice: 37499,
+    discountPercent: 20,
+    price: 29999,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80',
+    trainerName: 'StudentVerse Expert Automation Faculty',
+    batchCode: 'SV-AIBA-COHORT1',
+    batchSchedule: 'Self-Paced with 24/7 Practical Lab Access & Weekly Mentor Reviews',
+    description: 'Master AI-powered business automation, intelligent workflows, application integrations and modern business systems using industry-leading platforms such as Zapier, n8n, HubSpot, Apollo.io, GoHighLevel and Make.com. Learn to build intelligent AI agents, automate repetitive business processes, integrate applications using APIs and webhooks, develop WhatsApp and voice AI assistants, and implement production-ready automation solutions.',
+    prerequisites: [
+      'Basic computer knowledge and web literacy',
+      'Curiosity to master modern AI automation platforms and intelligent agentic workflows',
+      'No prior coding or technical engineering experience required'
+    ],
+    learningOutcomes: [
+      'Build end-to-end multi-step automations in Zapier, n8n, Make.com, HubSpot, Apollo.io, and GoHighLevel',
+      'Deploy autonomous AI agents with function calling, vector knowledge retrieval (RAG), and Model Context Protocol (MCP)',
+      'Integrate external platforms using RESTful APIs, webhooks, JSON schemas, Postman, and OAuth2 security',
+      'Implement AI-powered sales outreach, waterfall data enrichment, and email infrastructure in Clay, Smartlead, and Instantly',
+      'Develop conversational AI WhatsApp bots with Meta Cloud API and deploy real-time AI Voice Receptionists using Vapi and Retell AI',
+      'Build and submit 15 production portfolio projects and earn your StudentVerse Certified AI & Business Automation Specialist credential'
+    ],
+    skills: [
+      'Zapier', 'n8n', 'HubSpot', 'Apollo.io', 'GoHighLevel', 'Make.com', 'OpenAI', 'Claude', 'Google Gemini',
+      'Supabase', 'Airtable', 'Clay', 'Smartlead', 'Instantly.ai', 'Vapi', 'Retell AI', 'WhatsApp Business API',
+      'Postman', 'GitHub', 'Docker', 'Stripe'
+    ],
+    projects: [
+      'Automated Lead Capture System',
+      'AI Email Management Assistant',
+      'AI Lead Qualification Engine',
+      'B2B Lead Generation Engine',
+      'Automated Sales Outreach System',
+      'Automated Marketing & Sales System',
+      'Sales Funnel & Appointment System',
+      'Multi-Application Automation',
+      'AI Customer Support Assistant',
+      'WhatsApp AI Sales Assistant',
+      'AI Voice Receptionist',
+      'Automated Invoice Processing',
+      'Automated Recruitment Administration',
+      'Automated Business Reporting',
+      'Complete AI Business Automation Engine'
+    ],
+    careerOpportunities: [
+      'AI Automation Specialist',
+      'Business Automation Consultant',
+      'AI Agent Developer',
+      'Workflow Automation Specialist',
+      'n8n Automation Developer',
+      'Zapier Automation Specialist',
+      'Business Integration Specialist',
+      'HubSpot Automation Specialist',
+      'GoHighLevel Specialist',
+      'Sales Automation Specialist',
+      'No-Code Automation Developer',
+      'AI Solutions Consultant',
+      'Automation Freelancer'
+    ],
+    certification: 'StudentVerse Certified AI & Business Automation Specialist',
+    modules: buildAiBusinessAutomationCurriculum().map((m) => ({
+      title: m.title,
+      description: m.description,
+      lessons: m.lessons.map((l) => ({
+        title: l.title,
+        duration: l.duration,
+        type: l.type,
+        freePreview: l.code === '1.1'
+      }))
+    }))
   },
   'aman-digital-marketing-course': {
     slug: 'aman-digital-marketing-course',

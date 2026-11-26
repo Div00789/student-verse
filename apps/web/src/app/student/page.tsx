@@ -32,6 +32,20 @@ import { searchAndFilterCourses } from '../../lib/courseSearch';
 
 const ALL_EXPLORE_COURSES = [
   {
+    slug: 'ai-business-automation-masterclass',
+    title: 'AI & Business Automation Masterclass',
+    subtitle: 'Learn AI. Build Automations. Transform Businesses. Master Zapier, n8n, HubSpot, Apollo.io, GoHighLevel & AI Agents.',
+    category: 'Artificial Intelligence & Automation',
+    durationHours: 68,
+    totalLessons: 200,
+    level: 'Beginner to Advanced',
+    originalPrice: 37499,
+    discountPercent: 20,
+    price: 29999,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80',
+    description: 'Master AI-powered business automation, intelligent workflows, application integrations and modern business systems using Zapier, n8n, HubSpot, Apollo.io, GoHighLevel and Make.com.',
+  },
+  {
     slug: 'ai-digital-marketing-course',
     title: 'AI Digital Marketing Course',
     subtitle: 'Comprehensive 14-Module Professional Programme: SEO, PPC, GA4, Paid Media, Automation & Modern AI Tools',

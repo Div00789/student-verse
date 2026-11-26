@@ -21,6 +21,23 @@ import { useCourseSearch, SearchableCourse } from '../../lib/courseSearch';
 
 const DEFAULT_COURSES: SearchableCourse[] = [
   {
+    id: 'c-aiba-101',
+    slug: 'ai-business-automation-masterclass',
+    title: 'AI & Business Automation Masterclass',
+    subtitle: 'Learn AI. Build Automations. Transform Businesses. (Zapier, n8n, HubSpot, Apollo.io, GoHighLevel & Make.com)',
+    category: 'Artificial Intelligence & Automation',
+    level: 'BEGINNER TO ADVANCED',
+    durationHours: 68,
+    totalSessions: 16,
+    originalPrice: 37499,
+    discountPercent: 20,
+    price: 29999,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80',
+    description: 'Master AI-powered business automation, intelligent workflows, application integrations and modern business systems using industry-leading platforms such as Zapier, n8n, HubSpot, Apollo.io, GoHighLevel and Make.com.',
+    skills: ['Zapier', 'n8n', 'HubSpot', 'Apollo.io', 'GoHighLevel', 'Make.com', 'OpenAI', 'Claude', 'Google Gemini', 'WhatsApp API', 'Voice AI'],
+    nextBatch: 'Self-Paced with 24/7 Practical Labs',
+  },
+  {
     id: 'c-aidm-100',
     slug: 'ai-digital-marketing-course',
     title: 'AI Digital Marketing Course',

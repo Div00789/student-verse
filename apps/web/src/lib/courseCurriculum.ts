@@ -1089,6 +1089,9 @@ function buildAmanCurriculum(): ModuleItem[] {
 
 RICH_CURRICULUM_DATA['aman-digital-marketing-course'] = buildAmanCurriculum();
 
+import { buildAiBusinessAutomationCurriculum } from './aiBusinessAutomationCurriculum';
+RICH_CURRICULUM_DATA['ai-business-automation-masterclass'] = buildAiBusinessAutomationCurriculum();
+
 /**
  * Universal helper that takes course slug and database modules/lessons,
  * and produces rich interactive ModuleItem[] for the universal learning player.

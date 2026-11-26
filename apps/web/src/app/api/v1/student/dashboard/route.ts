@@ -84,6 +84,7 @@ export async function GET(req: NextRequest) {
       : { data: [] };
 
     const totalLessonsBySlug: Record<string, number> = {
+      'ai-business-automation-masterclass': 200,
       'ai-digital-marketing-course': 41,
       'aman-digital-marketing-course': 44,
       'digital-marketing-foundations': 8,
@@ -95,6 +96,7 @@ export async function GET(req: NextRequest) {
     };
 
     const totalModulesBySlug: Record<string, number> = {
+      'ai-business-automation-masterclass': 16,
       'ai-digital-marketing-course': 14,
       'aman-digital-marketing-course': 15,
       'digital-marketing-foundations': 4,

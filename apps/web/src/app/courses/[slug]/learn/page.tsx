@@ -733,9 +733,16 @@ export default function CourseLearningPlayerPage() {
                     </p>
                   </div>
                   <div className="pt-2 flex flex-wrap items-center justify-center gap-2">
-                    <span className="text-[11px] text-slate-500 font-medium bg-slate-950/70 px-3 py-1.5 rounded-xl border border-slate-800">
-                      100% Live Instructor-Led Cohort Session
-                    </span>
+                    {course?.slug === 'ai-business-automation-masterclass' || currentLesson?.type === 'RECORDED_VIDEO' ? (
+                      <span className="inline-flex items-center gap-2 text-xs font-semibold text-amber-400 bg-amber-500/10 px-3.5 py-1.5 rounded-xl border border-amber-500/30">
+                        <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                        Recording in Production &bull; Video Coming Soon
+                      </span>
+                    ) : (
+                      <span className="text-[11px] text-slate-500 font-medium bg-slate-950/70 px-3 py-1.5 rounded-xl border border-slate-800">
+                        100% Live Instructor-Led Cohort Session
+                      </span>
+                    )}
                   </div>
                 </div>
               )}
